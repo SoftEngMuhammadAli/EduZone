@@ -7,18 +7,20 @@ export const getAllCourses = catchAsyncHandler(async (req, res) => {
   try {
     const courses = await Course.find({})
       .populate("user", "name email")
-      .populate("assignment")
-      .populate("lesson");
+      .populate("assignment", "title description")
+      .populate("lesson", "title content");
 
     if (!courses || courses.length === 0) {
       return res.status(404).json({ message: "No courses found." });
     }
+    console.error(`Getting All Courses: ${courses}`);
 
     return res.status(200).json({
       message: "Courses fetched successfully!",
       data: courses,
     });
   } catch (error) {
+    console.error(`Server Error: ${error.message}`);
     return res
       .status(500)
       .json({ message: "Server error", error: error.message });
@@ -36,7 +38,8 @@ export const getCourseById = catchAsyncHandler(async (req, res) => {
     const course = await Course.findById(id)
       .populate("user", "name email")
       .populate("lesson")
-      .populate("assignment");
+      .populate("assignment")
+      .populate("category", "name");
 
     if (!course) {
       return res.status(404).json({ error: "Course not found" });
@@ -58,36 +61,20 @@ export const createCourse = catchAsyncHandler(async (req, res) => {
       category,
       duration,
       level,
-      views = 0,
-      students = 0,
-      rating = 1,
+      views,
+      students,
+      rating,
       assignment = null,
       lesson = null,
     } = req.body;
 
     const user = req.user?.userId;
-    const imageFiles = req.files?.images || [];
+    const imageFiles = req.files?.map((file) => file.filename) || [];
 
-    if (!title || title.trim().length < 3) {
+    if (!title || !description || !duration) {
       return res
         .status(400)
-        .json({ message: "Title must be at least 3 characters." });
-    }
-
-    if (!description || description.trim().length < 10) {
-      return res
-        .status(400)
-        .json({ message: "Description must be at least 10 characters." });
-    }
-
-    if (!category || !mongoose.Types.ObjectId.isValid(category)) {
-      return res
-        .status(400)
-        .json({ message: "Valid category ID is required." });
-    }
-
-    if (!duration || typeof duration !== "string") {
-      return res.status(400).json({ message: "Duration is required." });
+        .json({ message: `${title}, ${description}, ${duration}` });
     }
 
     if (!level || !["Beginner", "Intermediate", "Advanced"].includes(level)) {
@@ -111,7 +98,11 @@ export const createCourse = catchAsyncHandler(async (req, res) => {
       images: imageFiles,
     });
 
+    console.log(`Creating Course: ${newCourse}`);
+
     await newCourse.save();
+
+    console.log(`${newCourse} is Created!`);
 
     await Notification.create({
       userId: user,
