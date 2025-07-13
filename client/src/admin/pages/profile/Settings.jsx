@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 
-// Inline SVG icon components
 const UserIcon = () => (
   <svg
     className="w-5 h-5 mr-3"
@@ -76,7 +75,7 @@ const tabs = [
 const AdminSettingsPage = () => {
   const [activeTab, setActiveTab] = useState("profile");
   const [formData, setFormData] = useState({
-    name: "Admin User",
+    name: "Admin",
     email: "admin@example.com",
     bio: "This is a short bio for the admin profile.",
   });
@@ -213,26 +212,185 @@ const AdminSettingsPage = () => {
           </>
         )}
 
+        {/* Update Password Fields */}
         {activeTab === "password" && (
-          <div>
+          <div className="flex flex-col gap-5">
             <h1 className="text-2xl font-semibold mb-4">Change Password</h1>
-            <p className="text-gray-600">Password update form goes here...</p>
+            <div>
+              <label className="block font-medium mb-1">Current Password</label>
+              <input
+                name="currenPassword"
+                type="password"
+                value=""
+                disabled
+                className="w-full px-4 py-2 border rounded-md bg-gray-100"
+              />
+            </div>{" "}
+            <div>
+              <label className="block font-medium mb-1">New Password</label>
+              <input
+                name="new-password"
+                type="passsword"
+                value=""
+                disabled
+                className="w-full px-4 py-2 border rounded-md bg-gray-100"
+              />
+            </div>{" "}
+            <div>
+              <label className="block font-medium mb-1">
+                Re-Enter New Password
+              </label>
+              <input
+                name="re-enter-new-password"
+                type="password"
+                value=""
+                disabled
+                className="w-full px-4 py-2 border rounded-md bg-gray-100"
+              />
+            </div>
+            <button
+              onClick={() => {
+                alert("This is not implemented yet!");
+              }}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-md"
+            >
+              Update Password
+            </button>
           </div>
         )}
 
+        {/* Notifications */}
         {activeTab === "notifications" && (
-          <div>
-            <h1 className="text-2xl font-semibold mb-4">
+          <div className="w-full mx-auto bg-white p-6 rounded-xl shadow">
+            <h1 className="text-2xl font-semibold mb-4 text-gray-800">
               Notification Settings
             </h1>
-            <p className="text-gray-600">Notification preferences go here...</p>
+            <p className="text-gray-600 mb-6">
+              Manage your notification preferences.
+            </p>
+
+            <div className="space-y-5">
+              {/* Email Notifications */}
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-base font-medium text-gray-800">
+                    Email Notifications
+                  </h2>
+                  <p className="text-sm text-gray-500">
+                    Get updates about courses, announcements, and offers via
+                    email.
+                  </p>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    className="sr-only peer"
+                    defaultChecked
+                  />
+                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-300 rounded-full peer peer-checked:bg-blue-600 transition-all"></div>
+                </label>
+              </div>
+
+              {/* Push Notifications */}
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-base font-medium text-gray-800">
+                    Push Notifications
+                  </h2>
+                  <p className="text-sm text-gray-500">
+                    Receive real-time updates on your dashboard.
+                  </p>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" className="sr-only peer" />
+                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-300 rounded-full peer peer-checked:bg-blue-600 transition-all"></div>
+                </label>
+              </div>
+
+              {/* SMS Notifications */}
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-base font-medium text-gray-800">
+                    SMS Notifications
+                  </h2>
+                  <p className="text-sm text-gray-500">
+                    Important alerts will be sent to your phone.
+                  </p>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" className="sr-only peer" />
+                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-300 rounded-full peer peer-checked:bg-blue-600 transition-all"></div>
+                </label>
+              </div>
+            </div>
           </div>
         )}
 
+        {/* Preferences Tab */}
         {activeTab === "preferences" && (
-          <div>
-            <h1 className="text-2xl font-semibold mb-4">Preferences</h1>
-            <p className="text-gray-600">Theme, language, and more settings.</p>
+          <div className="w-full mx-auto bg-white p-6 rounded-xl shadow">
+            <h1 className="text-2xl font-semibold mb-4 text-gray-800">
+              Preferences
+            </h1>
+            <p className="text-gray-600 mb-6">
+              Choose your theme, language, and layout preferences.
+            </p>
+
+            <div className="space-y-6">
+              {/* Theme Selection */}
+              <div>
+                <label
+                  htmlFor="theme"
+                  className="block mb-2 text-sm font-medium text-gray-700"
+                >
+                  Theme
+                </label>
+                <select
+                  id="theme"
+                  className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option value="light">Light</option>
+                  <option value="dark">Dark</option>
+                  <option value="system">System Default</option>
+                </select>
+              </div>
+
+              {/* Language Selection */}
+              <div>
+                <label
+                  htmlFor="language"
+                  className="block mb-2 text-sm font-medium text-gray-700"
+                >
+                  Language
+                </label>
+                <select
+                  id="language"
+                  className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option value="ar">العربية (Arabic)</option>
+                  <option value="en">English</option>
+                  <option value="fr">Français</option>
+                </select>
+              </div>
+
+              {/* Layout Option */}
+              <div>
+                <label
+                  htmlFor="layout"
+                  className="block mb-2 text-sm font-medium text-gray-700"
+                >
+                  Layout Style
+                </label>
+                <select
+                  id="layout"
+                  className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option value="default">Default</option>
+                  <option value="compact">Compact</option>
+                  <option value="spacious">Spacious</option>
+                </select>
+              </div>
+            </div>
           </div>
         )}
       </main>

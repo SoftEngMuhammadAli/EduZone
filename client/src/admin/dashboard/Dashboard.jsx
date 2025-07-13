@@ -22,6 +22,11 @@ const AdminDashboard = () => {
     "GET"
   );
 
+  const { data: adminsData, loading: adminLoading } = useFetchData(
+    `${BASE_URL}/api/users/role/admin`,
+    "GET"
+  );
+
   const { data: instructorsData, loading: instructorsLoading } = useFetchData(
     `${BASE_URL}/api/users/role/instructor`,
     "GET"
@@ -35,12 +40,19 @@ const AdminDashboard = () => {
 
   const studentsCount = studentsLoading
     ? "..."
-    : studentsData?.filter((user) => user.user_type === "student").length || 0;
+    : (studentsData || []).filter((user) => user.user_type === "student")
+        .length;
+
+  const adminsCount = adminLoading
+    ? "..."
+    : (adminsData || []).filter((user) => user.user_type === "admin").length;
 
   const instructorsCount = instructorsLoading
     ? "..."
-    : instructorsData?.filter((user) => user.user_type === "instructor")
-        .length || 0;
+    : (instructorsData || []).filter((user) => user.user_type === "instructor")
+        .length;
+
+  const blogsCount = blogsLoading ? "..." : blogs?.length || 0;
 
   const coursesCount = loading ? "..." : courses?.length || 0;
 
@@ -56,6 +68,8 @@ const AdminDashboard = () => {
             studentsCount={studentsCount}
             instructorsCount={instructorsCount}
             coursesCount={coursesCount}
+            blogsCount={blogsCount}
+            adminsCount={adminsCount}
           />
 
           <AdminDashboardCourses

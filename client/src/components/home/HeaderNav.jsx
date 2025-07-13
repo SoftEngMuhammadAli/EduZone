@@ -26,7 +26,10 @@ const HeaderNav = () => {
     <header className="bg-[#1C1E53] text-white relative z-50">
       <div className="flex items-center justify-between px-6 py-4">
         {/* Logo */}
-        <Link to="/home" className="text-2xl font-semibold underline">
+        <Link
+          to={isAdmin ? "/*" : "/home"}
+          className="text-2xl font-semibold underline"
+        >
           EduZone
         </Link>
 

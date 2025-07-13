@@ -6,12 +6,12 @@ import AboutUs from "../../components/about/AboutUs";
 import CourseRecommendations from "../../components/courses/CourseRecommendations";
 import CoursesFeedBack from "../../components/courses/CoursesFeedBack";
 import AskedQuestions from "../../components/frequently-asked-questions/AskedQuestions";
-import CourseRegistration from "../../components/courses/CourseRegistration";
 import ReadHomeBlogs from "../../components/blogs/ReadHomeBlogs";
 import ContactUs from "../../components/contact/ContactUs";
 import { AppFooter } from "../../components/footer/Footer";
 import TermsAndConditions from "../../components/terms-and-conditions/TermsAndConditions";
 import PrivacyPolicy from "../../components/privacy-policy/PrivacyPolicy";
+import TrustedBySection from "../../components/about/TrusterBy";
 
 const Home = () => {
   return (
@@ -37,8 +37,8 @@ const Home = () => {
       {/* Frequently asked questions */}
       <AskedQuestions />
 
-      {/* Register YourSelf */}
-      <CourseRegistration />
+      {/* Trusted By */}
+      <TrustedBySection />
 
       {/* Blogs */}
       <ReadHomeBlogs />
