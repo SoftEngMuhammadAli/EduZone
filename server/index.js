@@ -19,7 +19,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173",
-      "https://edu-zone-eight.vercel.app",
+      "https://edu-zone-kappa.vercel.app",
       "https://eduzone-jscm.onrender.com",
     ],
 
