@@ -28,7 +28,7 @@ const HomeBanner = () => {
           </button>
 
           <button
-            onClick={() => navigate("/learning-room")}
+            onClick={() => navigate("/user/learning-room")}
             className="text-[#FCD980] hover:underline font-medium flex items-center gap-2 justify-center"
           >
             View Learning Path →
@@ -59,7 +59,7 @@ const HomeBanner = () => {
             </button>
 
             <button
-              onClick={() => navigate("/learning-room")}
+              onClick={() => navigate("/user/learning-room")}
               className="text-[#FCD980] hover:underline font-medium flex items-center gap-2"
             >
               View Learning Path →

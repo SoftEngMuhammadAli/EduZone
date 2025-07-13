@@ -22,7 +22,6 @@ import NotFound from "../pages/home/NotFound";
 import TermsAndConditions from "../components/terms-and-conditions/TermsAndConditions";
 import PrivacyPolicy from "../components/privacy-policy/PrivacyPolicy";
 import AdminDashboard from "../admin/dashboard/Dashboard";
-import LearningRoom from "../components/learning-room/LearningRoom";
 import SeeAllEduZoneBenefits from "../components/home/AllBenefits";
 import ProtectedRouteWrapper from "../routes/ProtectedRoutes";
 import RoleProtectedRouteWrapper from "../routes/RoleProtectedRoutes";
@@ -40,6 +39,8 @@ import BlogListPage from "../admin/pages/blog/BlogsList";
 import CoursesListPage from "../admin/pages/courses/CoursesList";
 import InstructorProfile from "../admin/pages/instructors/InstructorProfile";
 import StudentProfile from "../admin/pages/students/StudentProfile";
+import LearningRoom from "../pages/learning-room/LearningRoom";
+import ContinueLearning from "../components/learning-room/ContinueLearning";
 
 const AppRoutes = () => {
   return (
@@ -78,7 +79,7 @@ const MainLayout = () => {
               user_type === "admin" ? (
                 <Navigate to="/admin/dashboard-page" />
               ) : (
-                <Navigate to="/learning-room" />
+                <Navigate to="/user/learning-room" />
               )
             ) : (
               <LoginPage />
@@ -92,7 +93,7 @@ const MainLayout = () => {
               user_type === "admin" ? (
                 <Navigate to="/admin/dashboard-page" />
               ) : (
-                <Navigate to="/learning-room" />
+                <Navigate to="/user/learning-room" />
               )
             ) : (
               <SignUpPage />
@@ -185,7 +186,11 @@ const MainLayout = () => {
               />
             }
           >
-            <Route path="/learning-room" element={<LearningRoom />} />
+            <Route path={`/user/learning-room`} element={<LearningRoom />} />
+            <Route
+              path={`/user/continue-learning`}
+              element={<ContinueLearning />}
+            />
           </Route>
         </Route>
 

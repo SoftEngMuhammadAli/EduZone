@@ -71,7 +71,7 @@ const HeaderNav = () => {
             <>
               <Link to="/home">Home</Link>
               <Link to="/seeAllCourses">Courses</Link>
-              <Link to="/learning-room">Learning Room</Link>
+              <Link to="/user/learning-room">Learning Room</Link>
               <Link to="/contact">Contact Us</Link>
               <Link to="/about">About Us</Link>
               <Link to="/help">Help</Link>
@@ -140,7 +140,10 @@ const HeaderNav = () => {
                 <Link to="/seeAllCourses" onClick={() => setIsMenuOpen(false)}>
                   Courses
                 </Link>
-                <Link to="/learning-room" onClick={() => setIsMenuOpen(false)}>
+                <Link
+                  to="/user/learning-room"
+                  onClick={() => setIsMenuOpen(false)}
+                >
                   Learning Room
                 </Link>
                 <Link to="/contact" onClick={() => setIsMenuOpen(false)}>
