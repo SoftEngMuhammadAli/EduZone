@@ -17,7 +17,11 @@ const __dirname = path.dirname(__filename);
 
 app.use(
   cors({
-    origin: ["http://localhost:5173", "https://edu-zone-eight.vercel.app"],
+    origin: [
+      "http://localhost:5173",
+      "https://edu-zone-eight.vercel.app",
+      "https://eduzone-jscm.onrender.com",
+    ],
 
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
