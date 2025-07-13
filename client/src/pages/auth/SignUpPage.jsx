@@ -35,7 +35,9 @@ const SignUpPage = () => {
       return;
     }
 
-    await dispatch(register(userData));
+    await dispatch(register(userData)).then((res) => {
+      if (!res.error) navigate("/login");
+    });
     form.reset();
   };
 

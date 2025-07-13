@@ -36,12 +36,6 @@ const SeeAllCoursesList = () => {
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold leading-snug">
             All Courses For You
           </h2>
-          <button
-            onClick={() => navigate("/home")}
-            className="px-5 py-2 text-sm font-semibold rounded-md bg-[#F4F6FC] text-gray-800 hover:bg-[#2405F2] hover:text-white transition"
-          >
-            ← Back to Home
-          </button>
         </div>
 
         {/* Loading State */}
@@ -77,14 +71,25 @@ const SeeAllCoursesList = () => {
             >
               {/* Course Image */}
               <div className="h-48 sm:h-56 md:h-64 overflow-hidden flex items-center justify-center bg-gray-100">
-                <span className="text-gray-500">No Image Found</span>
+                {course.images?.length > 0 ? (
+                  <img
+                    src={`${import.meta.env.VITE_BASE_URL}/uploads/${
+                      course.images[0]
+                    }`}
+                    alt={course.title}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <span className="text-gray-500">No Image Found</span>
+                )}
               </div>
 
               {/* Course Content */}
               <div className="p-6 flex flex-col flex-grow">
                 <span className="inline-block px-3 py-1 text-xs font-semibold text-[#2405F2] bg-[#2405F2]/10 rounded-full mb-2">
-                  {course.category}
+                  {course.category.name}
                 </span>
+
                 <h3 className="text-lg sm:text-xl font-semibold mb-1 sm:mb-2">
                   {course.title}
                 </h3>

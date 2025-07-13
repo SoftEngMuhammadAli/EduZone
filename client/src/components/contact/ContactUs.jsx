@@ -65,10 +65,12 @@ const ContactUs = () => {
               </div>
               <div className="mt-10 space-y-2">
                 <p className="text-base md:text-lg font-medium">
-                  <a href="tel:+6288999222333">📞 +6288 999 222 333</a>
+                  <a href="tel:+923028186660">📞 +92 302 8186660</a>
                 </p>
                 <p className="text-base md:text-lg font-medium">
-                  <a href="mailto:info@eduzone.com">📧 info@eduzone.com</a>
+                  <a href="mailto:softeng.aliijaz@gmail.com">
+                    📧 softeng.aliijaz@gmail.com
+                  </a>
                 </p>
                 <p className="text-xs md:text-sm text-gray-400 mt-4">
                   🕘 Office Hours: Mon - Fri, 9am - 5pm

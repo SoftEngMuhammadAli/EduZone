@@ -1,7 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import useFetchData from "../../../hooks/useCustomHooks";
-import { useSelector } from "react-redux";
 import { BASE_URL } from "../../../utils/constants";
 
 const StudentsListPage = () => {

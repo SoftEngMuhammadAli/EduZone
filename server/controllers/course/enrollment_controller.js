@@ -5,6 +5,7 @@ import Notification from "../../models/notifications/notification_model.js";
 
 export const enrollInCourse = catchAsyncHandler(async (req, res) => {
   try {
+    console.log("Incoming payload:", req.body);
     const { userId, courseId } = req.body;
 
     if (!userId || !courseId) {
@@ -21,12 +22,22 @@ export const enrollInCourse = catchAsyncHandler(async (req, res) => {
     }
 
     const enrollment = new EnrollmentCourse({ userId, courseId });
+    console.log(`Enrollment Process: ${enrollment}`);
+
     await enrollment.save();
+
+    console.log(`Enrollment Process Success: ${enrollment}`);
 
     const populatedEnrollment = await EnrollmentCourse.findById(enrollment._id)
       .populate("courseId", "title description")
       .populate("userId", "name email");
 
+    if (!populatedEnrollment.courseId) {
+      console.error("❌ Course not found for enrollment:", enrollment.courseId);
+      return res.status(500).json({
+        error: "Enrollment saved, but course data not found during population",
+      });
+    }
     // Notification for successful enrollment
     await Notification.create({
       userId,
