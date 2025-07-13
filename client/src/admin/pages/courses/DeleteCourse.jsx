@@ -26,36 +26,35 @@ const DeleteCoursePage = () => {
       {loading && <p>Loading courses...</p>}
       {error && <p className="text-red-600">{error}</p>}
 
-      <table className="w-full bg-white shadow rounded overflow-hidden">
-        <thead className="bg-gray-100 text-left text-sm">
+      <table className="w-full bg-white shadow-md rounded text-sm">
+        <thead className="bg-gray-100 text-left">
           <tr>
-            <th className="p-3">Title</th>
-            <th className="p-3">Category</th>
-            <th className="p-3">Action</th>
+            <th className="p-4 font-medium">Course Title</th>
+            <th className="p-4 font-medium text-center">Action</th>
           </tr>
         </thead>
         <tbody>
-          {courses.map((course) => (
-            <tr key={course._id} className="border-t text-sm">
-              <td className="p-3">{course.title}</td>
-              <td className="p-3">{course.category}</td>
-              <td className="p-3 text-center">
-                <button
-                  onClick={() => handleDelete(course._id)}
-                  className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
-                >
-                  Delete
-                </button>
-              </td>
-            </tr>
-          ))}
-          {courses.length === 0 && !loading && (
-            <tr>
-              <td colSpan="3" className="text-center py-6 text-gray-500">
-                No courses available.
-              </td>
-            </tr>
-          )}
+          {courses.length > 0
+            ? courses.map((course) => (
+                <tr key={course._id} className="border-t hover:bg-gray-50">
+                  <td className="p-4">{course.title}</td>
+                  <td className="p-4 text-center">
+                    <button
+                      onClick={() => handleDelete(course._id)}
+                      className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))
+            : !loading && (
+                <tr>
+                  <td colSpan="2" className="text-center py-6 text-gray-500">
+                    No courses available.
+                  </td>
+                </tr>
+              )}
         </tbody>
       </table>
     </div>

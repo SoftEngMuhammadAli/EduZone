@@ -7,8 +7,7 @@ export const getAllCourses = catchAsyncHandler(async (req, res) => {
   try {
     const courses = await Course.find({})
       .populate("user", "name email")
-      .populate("assignment", "title description")
-      .populate("lesson", "title content");
+      .populate("category", "name");
 
     if (!courses || courses.length === 0) {
       return res.status(404).json({ message: "No courses found." });
@@ -37,8 +36,6 @@ export const getCourseById = catchAsyncHandler(async (req, res) => {
 
     const course = await Course.findById(id)
       .populate("user", "name email")
-      .populate("lesson")
-      .populate("assignment")
       .populate("category", "name");
 
     if (!course) {
@@ -64,17 +61,13 @@ export const createCourse = catchAsyncHandler(async (req, res) => {
       views,
       students,
       rating,
-      assignment = null,
-      lesson = null,
     } = req.body;
 
     const user = req.user?.userId;
     const imageFiles = req.files?.map((file) => file.filename) || [];
 
     if (!title || !description || !duration) {
-      return res
-        .status(400)
-        .json({ message: `${title}, ${description}, ${duration}` });
+      return res.status(400).json({ message: "Required fields missing" });
     }
 
     if (!level || !["Beginner", "Intermediate", "Advanced"].includes(level)) {
@@ -93,16 +86,10 @@ export const createCourse = catchAsyncHandler(async (req, res) => {
       duration,
       level,
       user,
-      assignment,
-      lesson,
       images: imageFiles,
     });
 
-    console.log(`Creating Course: ${newCourse}`);
-
     await newCourse.save();
-
-    console.log(`${newCourse} is Created!`);
 
     await Notification.create({
       userId: user,

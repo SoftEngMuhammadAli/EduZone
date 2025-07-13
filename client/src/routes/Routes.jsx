@@ -150,19 +150,19 @@ const MainLayout = () => {
             }
           >
             <Route
-              path="/courses-management/get-all-courses"
+              path="/admin/courses-management/get-all-courses"
               element={<CoursesListPage />}
             />
             <Route
-              path="/courses-management/create-course"
+              path="/admin/courses-management/create-course"
               element={<CreateCoursePage />}
             />
             <Route
-              path="/courses-management/update-course"
+              path="/admin/courses-management/update-course/:id"
               element={<UpdateCoursePage />}
             />{" "}
             <Route
-              path="/courses-management/delete-course"
+              path="/admin/courses-management/delete-course"
               element={<DeleteCoursePage />}
             />
           </Route>

@@ -17,7 +17,7 @@ const CoursesListPage = () => {
     dispatch(fetchCourses());
 
     axiosInstance
-      .get("/api/blogs/categories")
+      .get("/api/courses/categories")
       .then((res) => setCategories(res.data.data))
       .catch((err) => console.error("Failed to load categories", err));
   }, [dispatch]);
@@ -40,7 +40,7 @@ const CoursesListPage = () => {
       {loading && <p>Loading courses...</p>}
       {error && <p className="text-red-600">{error}</p>}
       {!loading && courses?.length === 0 && (
-        <p className="text-gray-500">No courses found.</p>
+        <p className="text-gray-500">Please Try Again Later!</p>
       )}
 
       {!loading && courses?.length > 0 && (
@@ -78,7 +78,9 @@ const CoursesListPage = () => {
                 <td className="p-3 space-x-2">
                   <button
                     onClick={() =>
-                      navigate(`/admin/courses/update/${course._id}`)
+                      navigate(
+                        `/admin/courses-management/update-course/${course._id}`
+                      )
                     }
                     className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
                   >

@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCourses } from "../../features/admin/courseSlice";
-import AdminProfileCard from "../components/AdminProfileCard";
+import AdminProfileCard from "../components/UserProfileCard";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -17,14 +17,10 @@ const AdminDashboard = () => {
     <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row">
       {/* Sidebar */}
       <aside className="w-full md:w-64 bg-[#1e2344] text-white p-6">
-        <h1 className="text-2xl font-bold mb-8">[EduZone]</h1>
+        <h1 className="text-2xl text-center font-bold mb-8">
+          Admin Dashboard Management
+        </h1>
         <nav className="space-y-6">
-          {["Dashboard", "All Courses", "All Users"].map((item) => (
-            <div key={item} className="hover:text-yellow-400 cursor-pointer">
-              {item}
-            </div>
-          ))}
-
           <div className="mt-8 border-t border-white pt-4 space-y-2">
             <p className="text-sm uppercase text-gray-300">Blog Management</p>
             <div
@@ -56,25 +52,33 @@ const AdminDashboard = () => {
           <div className="mt-8 border-t border-white pt-4 space-y-2">
             <p className="text-sm uppercase text-gray-300">Course Management</p>
             <div
-              onClick={() => navigate("/courses-management/get-all-courses")}
+              onClick={() =>
+                navigate("/admin/courses-management/get-all-courses")
+              }
               className="hover:text-yellow-400 cursor-pointer"
             >
               📄 Get All Course
             </div>
             <div
-              onClick={() => navigate("/courses-management/create-course")}
+              onClick={() =>
+                navigate("/admin/courses-management/create-course")
+              }
               className="hover:text-yellow-400 cursor-pointer"
             >
               ➕ Create Course
             </div>
             <div
-              onClick={() => navigate("/courses-management/update-course")}
+              onClick={() =>
+                navigate("/admin/courses-management/update-course")
+              }
               className="hover:text-yellow-400 cursor-pointer"
             >
               ✏️ Update Course
             </div>
             <div
-              onClick={() => navigate("/courses-management/delete-course")}
+              onClick={() =>
+                navigate("/admin/courses-management/delete-course")
+              }
               className="hover:text-yellow-400 cursor-pointer"
             >
               🗑️ Delete Course
@@ -137,7 +141,7 @@ const AdminDashboard = () => {
         {/* Learning Activity Section */}
         <div className="mt-8">
           <div className="flex justify-between items-center mb-4 flex-wrap gap-4">
-            <h2 className="font-semibold text-lg">Learning Activity</h2>
+            <h2 className="font-semibold text-lg">Courses View</h2>
             <div className="flex gap-2 flex-wrap">
               <input
                 type="text"
@@ -156,49 +160,43 @@ const AdminDashboard = () => {
             <p className="text-gray-500">No courses available.</p>
           ) : (
             <div className="space-y-4">
-              {courses.map((course) => (
+              {courses.slice(0, 6).map((course) => (
                 <div
                   key={course._id}
                   className="bg-white p-4 rounded-xl shadow"
                 >
                   <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                     <div className="flex items-center gap-4">
-                      <div className="w-20 h-16 bg-gray-300 rounded overflow-hidden">
-                        {course.images?.[0] && (
+                      <div className="w-24 h-24 bg-gray-300 rounded overflow-hidden flex items-center justify-center shrink-0">
+                        {course.images?.[0] ? (
                           <img
-                            src={`${import.meta.env.VITE_BASE_URL}/${
+                            src={`${import.meta.env.VITE_BASE_URL}/uploads/${
                               course.images[0]
                             }`}
                             alt={course.title}
                             className="w-full h-full object-cover"
                           />
+                        ) : (
+                          <span className="text-xs text-gray-500">
+                            No Image
+                          </span>
                         )}
                       </div>
+
                       <div>
                         <h3 className="font-semibold text-sm md:text-base">
                           {course.title}
                         </h3>
-                        <p className="text-sm text-gray-500">
+                        <p className="text-sm text-gray-500 line-clamp-4">
                           {course.description}
                         </p>
                       </div>
                     </div>
 
                     <div className="flex flex-col items-end gap-2 w-full md:w-1/3">
-                      <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-blue-500 rounded-full"
-                          style={{
-                            width: `${Math.floor(Math.random() * 80) + 10}%`,
-                          }}
-                        ></div>
-                      </div>
-                      <div className="flex justify-between items-center w-full">
-                        <span className="text-sm text-gray-500">Active</span>
-                        <button className="text-blue-600 text-sm">
-                          Continue &gt;
-                        </button>
-                      </div>
+                      <button className="text-blue-600 text-sm">
+                        More &gt;
+                      </button>
                     </div>
                   </div>
                 </div>

@@ -1,20 +1,57 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { updateCourse } from "../../../features/admin/courseSlice";
+import { useParams, useNavigate } from "react-router-dom";
+import axiosInstance from "../../../services/axios";
 
-const UpdateCoursePage = ({ course }) => {
+const UpdateCoursePage = () => {
+  const { id } = useParams();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { loading, error } = useSelector((state) => state.course);
 
   const [formData, setFormData] = useState({
-    title: course.title,
-    description: course.description,
-    duration: course.duration,
-    level: course.level,
-    category: course.category,
-    assignment: course.assignment,
-    lesson: course.lesson,
+    title: "",
+    description: "",
+    duration: "",
+    level: "Beginner",
+    category: "",
   });
+
+  const [categories, setCategories] = useState([]);
+  const [loadingCourse, setLoadingCourse] = useState(true);
+
+  useEffect(() => {
+    // Fetch categories
+    axiosInstance
+      .get("/api/courses/categories")
+      .then((res) => setCategories(res.data.data))
+      .catch((err) => console.error("Failed to load categories", err));
+  }, []);
+
+  useEffect(() => {
+    // Fetch course data by ID
+    const fetchCourse = async () => {
+      try {
+        const res = await axiosInstance.get(`/api/courses/${id}`);
+        const course = res.data.data;
+
+        setFormData({
+          title: course.title || "",
+          description: course.description || "",
+          duration: course.duration || "",
+          level: course.level || "Beginner",
+          category: course.category?._id || "", // if category is populated
+        });
+      } catch (err) {
+        console.error("Failed to load course:", err);
+      } finally {
+        setLoadingCourse(false);
+      }
+    };
+
+    fetchCourse();
+  }, [id]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -23,35 +60,77 @@ const UpdateCoursePage = ({ course }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(updateCourse({ id: course._id, courseData: formData }));
+    dispatch(updateCourse({ id, courseData: formData })).then((res) => {
+      if (!res.error) navigate("/admin/dashboard-page");
+    });
   };
+
+  if (loadingCourse)
+    return <p className="text-center p-4">Loading course...</p>;
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white shadow rounded">
       <h1 className="text-2xl font-semibold mb-6">Update Course</h1>
       <form className="space-y-4" onSubmit={handleSubmit}>
-        {[
-          "title",
-          "description",
-          "duration",
-          "category",
-          "assignment",
-          "lesson",
-        ].map((field) => (
-          <div key={field}>
-            <label className="block text-sm font-medium capitalize">
-              {field}
-            </label>
-            <input
-              type="text"
-              name={field}
-              value={formData[field]}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border rounded"
-            />
-          </div>
-        ))}
+        {/* Title */}
+        <div>
+          <label className="block text-sm font-medium">Title</label>
+          <input
+            type="text"
+            name="title"
+            value={formData.title}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border rounded"
+            required
+          />
+        </div>
 
+        {/* Description */}
+        <div>
+          <label className="block text-sm font-medium">Description</label>
+          <textarea
+            name="description"
+            value={formData.description}
+            onChange={handleChange}
+            rows="4"
+            className="w-full px-4 py-2 border rounded"
+            required
+          ></textarea>
+        </div>
+
+        {/* Duration */}
+        <div>
+          <label className="block text-sm font-medium">Duration</label>
+          <input
+            type="text"
+            name="duration"
+            value={formData.duration}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border rounded"
+            required
+          />
+        </div>
+
+        {/* Category */}
+        <div>
+          <label className="block text-sm font-medium">Category</label>
+          <select
+            name="category"
+            value={formData.category}
+            onChange={handleChange}
+            required
+            className="w-full px-4 py-2 border rounded"
+          >
+            <option value="">Select a category</option>
+            {categories.map((cat) => (
+              <option key={cat._id} value={cat._id}>
+                {cat.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Level */}
         <div>
           <label className="block text-sm font-medium">Level</label>
           <select
@@ -59,13 +138,15 @@ const UpdateCoursePage = ({ course }) => {
             value={formData.level}
             onChange={handleChange}
             className="w-full px-4 py-2 border rounded"
+            required
           >
-            <option>Beginner</option>
-            <option>Intermediate</option>
-            <option>Advanced</option>
+            <option value="Beginner">Beginner</option>
+            <option value="Intermediate">Intermediate</option>
+            <option value="Advanced">Advanced</option>
           </select>
         </div>
 
+        {/* Submit */}
         <button
           type="submit"
           disabled={loading}
