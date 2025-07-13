@@ -38,6 +38,8 @@ import UpdateCoursePage from "../admin/pages/courses/UpdateCourse";
 import DeleteCoursePage from "../admin/pages/courses/DeleteCourse";
 import BlogListPage from "../admin/pages/blog/BlogsList";
 import CoursesListPage from "../admin/pages/courses/CoursesList";
+import InstructorProfile from "../admin/pages/instructors/InstructorProfile";
+import StudentProfile from "../admin/pages/students/StudentProfile";
 
 const AppRoutes = () => {
   return (
@@ -117,13 +119,21 @@ const MainLayout = () => {
             element={<RoleProtectedRouteWrapper allowedRoles={["admin"]} />}
           >
             <Route path="/admin/dashboard-page" element={<AdminDashboard />} />
+
             <Route
               path="/admin/get-all-students"
               element={<StudentsListPage />}
             />
+            <Route path="/admin/students/:id" element={<StudentProfile />} />
+
             <Route
               path="/admin/get-all-instructors"
               element={<TeachersListPage />}
+            />
+
+            <Route
+              path="/admin/instructors/:id"
+              element={<InstructorProfile />}
             />
             <Route path="/admin/settings" element={<AdminSettingsPage />} />
             <Route

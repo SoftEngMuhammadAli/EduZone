@@ -128,7 +128,7 @@ const CreateCoursePage = () => {
             accept="image/*"
             multiple
             onChange={handleImageChange}
-            className="w-full bg-amber-100 mt-2 mb-2 p-5"
+            className="w-full bg-amber-100 rounded-lg mt-2 mb-2 p-5"
           />
           {previewImages.length > 0 && (
             <div className="flex flex-wrap gap-4 mt-2">

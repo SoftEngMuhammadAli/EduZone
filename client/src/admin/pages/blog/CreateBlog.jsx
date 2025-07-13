@@ -15,6 +15,7 @@ const CreateBlogPage = () => {
   const [category, setCategory] = useState("");
   const [images, setImages] = useState([]);
   const [categoryList, setCategoryList] = useState([]);
+  const [previewImages, setPreviewImages] = useState([]);
 
   useEffect(() => {
     axiosInstance
@@ -22,6 +23,13 @@ const CreateBlogPage = () => {
       .then((res) => setCategoryList(res.data.data))
       .catch((err) => console.error("Category fetch error:", err));
   }, []);
+
+  const handleImageChange = (e) => {
+    const files = Array.from(e.target.files);
+    setImages(files);
+    const previews = files.map((file) => URL.createObjectURL(file));
+    setPreviewImages(previews);
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -108,17 +116,26 @@ const CreateBlogPage = () => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Upload Images
-          </label>
+          <label className="block text-sm font-medium">Upload Images</label>
           <input
             type="file"
-            name="images"
             accept="image/*"
             multiple
-            onChange={(e) => setImages(Array.from(e.target.files))}
-            className="mt-1 block w-full"
+            onChange={handleImageChange}
+            className="w-full bg-amber-100 rounded-lg mt-2 mb-2 p-5"
           />
+          {previewImages.length > 0 && (
+            <div className="flex flex-wrap gap-4 mt-2">
+              {previewImages.map((src, index) => (
+                <img
+                  key={index}
+                  src={src}
+                  alt={`preview-${index}`}
+                  className="w-32 h-32 object-cover rounded border"
+                />
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="pt-4">

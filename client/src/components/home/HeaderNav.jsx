@@ -14,11 +14,11 @@ const HeaderNav = () => {
   const handleLogout = () => {
     dispatch(logout());
     navigate("/login");
+    setShowDropdown(false);
+    setIsMenuOpen(false);
   };
 
   const isAdmin = user?.user_type === "admin";
-  // const isStudent = user?.user_type === "student";
-  // const isInstructor = user?.user_type === "instructor";
 
   const toggleDropdown = () => setShowDropdown((prev) => !prev);
 
@@ -66,7 +66,6 @@ const HeaderNav = () => {
               <Link to="/admin/dashboard-page">Dashboard</Link>
               <Link to="/admin/get-all-students">Manage Students</Link>
               <Link to="/admin/get-all-instructors">Manage Instructors</Link>
-              <Link to="/admin/settings">Settings</Link>
             </>
           ) : (
             <>
@@ -90,13 +89,8 @@ const HeaderNav = () => {
             {showDropdown && (
               <div className="absolute right-0 mt-2 w-48 bg-white text-black rounded shadow-lg z-50">
                 <Link
-                  to="/profile"
-                  className="block px-4 py-2 hover:bg-gray-100"
-                >
-                  Profile
-                </Link>
-                <Link
-                  to="/settings"
+                  to="/admin/settings"
+                  onClick={() => setShowDropdown(false)}
                   className="block px-4 py-2 hover:bg-gray-100"
                 >
                   Settings
@@ -137,9 +131,6 @@ const HeaderNav = () => {
                 >
                   Manage Instructors
                 </Link>
-                <Link to="/admin/settings" onClick={() => setIsMenuOpen(false)}>
-                  Settings
-                </Link>
               </>
             ) : (
               <>
@@ -163,17 +154,11 @@ const HeaderNav = () => {
                 </Link>
               </>
             )}
-            <Link to="/profile" onClick={() => setIsMenuOpen(false)}>
-              Profile
-            </Link>
-            <Link to="/settings" onClick={() => setIsMenuOpen(false)}>
+            <Link to="/admin/settings" onClick={() => setIsMenuOpen(false)}>
               Settings
             </Link>
             <button
-              onClick={() => {
-                handleLogout();
-                setIsMenuOpen(false);
-              }}
+              onClick={handleLogout}
               className="text-left w-full px-4 py-1 bg-white hover:bg-blue-600 text-black rounded"
             >
               Logout
