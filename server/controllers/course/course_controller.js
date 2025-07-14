@@ -6,7 +6,7 @@ import Notification from "../../models/notifications/notification_model.js";
 export const getAllCourses = catchAsyncHandler(async (req, res) => {
   try {
     const courses = await Course.find({})
-      .populate("user", "name email")
+      .populate("courseCreatedBy", "name email user_type")
       .populate("category", "name");
 
     if (!courses || courses.length === 0) {
@@ -35,7 +35,7 @@ export const getCourseById = catchAsyncHandler(async (req, res) => {
     }
 
     const course = await Course.findById(id)
-      .populate("user", "name email")
+      .populate("courseCreatedBy", "name email user_type")
       .populate("category", "name");
 
     if (!course) {
@@ -63,7 +63,7 @@ export const createCourse = catchAsyncHandler(async (req, res) => {
       rating,
     } = req.body;
 
-    const user = req.user?.userId;
+    const courseCreatedBy = req.user?.userId;
     const imageFiles = req.files?.map((file) => file.filename) || [];
 
     if (!title || !description || !duration) {
@@ -85,11 +85,12 @@ export const createCourse = catchAsyncHandler(async (req, res) => {
       rating,
       duration,
       level,
-      user,
+      courseCreatedBy: courseCreatedBy,
       images: imageFiles,
     });
 
     await newCourse.save();
+    await newCourse.populate("courseCreatedBy", "name email");
 
     await Notification.create({
       userId: user,

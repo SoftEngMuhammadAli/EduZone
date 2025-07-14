@@ -9,7 +9,8 @@ const UserProfileCard = () => {
   }
 
   const isAdmin = user.user_type === "admin";
-  const isRegularUser = user.user_type === "student";
+  const isStudent = user.user_type === "student";
+  const isTeacher = user.user_type === "instructor";
 
   return (
     <div className="bg-white rounded-xl shadow-sm px-4 py-3 mb-6 flex items-center">
@@ -34,7 +35,13 @@ const UserProfileCard = () => {
       {/* Trailing Text / Role */}
       <div className="text-right">
         <span className="text-xs font-medium px-10 py-2 bg-blue-100 text-blue-700 rounded-lg">
-          {isAdmin ? "Admin" : isRegularUser ? "Student" : "Unknown Role"}
+          {isAdmin
+            ? "Admin"
+            : isStudent
+            ? "Student"
+            : isTeacher
+            ? "instrcutor"
+            : "Unknown Role"}
         </span>
       </div>
     </div>

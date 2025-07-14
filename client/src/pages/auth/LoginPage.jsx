@@ -13,9 +13,11 @@ const LoginPage = () => {
   useEffect(() => {
     if (user) {
       if (user.user_type === "admin") {
-        navigate("/dashboard");
+        navigate("/admin/dashboard-page");
+      } else if (user.user_type === "instructor") {
+        navigate("/instructor/instructor-dashboard-page");
       } else {
-        navigate("/home");
+        navigate("/user/learning-room");
       }
     }
   }, [user, navigate]);
@@ -27,6 +29,7 @@ const LoginPage = () => {
     const credentials = {
       email: form.email.value,
       password: form.password.value,
+      user_type: form.user_type.value,
     };
 
     if (!credentials) {
@@ -87,6 +90,16 @@ const LoginPage = () => {
               className="w-full p-3 rounded bg-[#2D2F6B] text-white placeholder-gray-300 focus:outline-none"
               required
             />
+
+            <select
+              name="user_type"
+              className="w-full p-3 rounded bg-[#2D2F6B] text-white focus:outline-none"
+              required
+            >
+              <option value="">Select Role</option>
+              <option value="student">Student</option>
+              <option value="instructor">Instructor</option>
+            </select>
 
             <div className="flex items-center text-white text-sm">
               <input type="checkbox" id="remember" className="mr-2" />

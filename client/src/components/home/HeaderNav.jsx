@@ -18,16 +18,24 @@ const HeaderNav = () => {
     setIsMenuOpen(false);
   };
 
-  const isAdmin = user?.user_type === "admin";
-
   const toggleDropdown = () => setShowDropdown((prev) => !prev);
+
+  const isAdmin = user?.user_type === "admin";
+  const isInstructor = user?.user_type === "instructor";
+  const isStudent = user?.user_type === "student";
 
   return (
     <header className="bg-[#1C1E53] text-white relative z-50">
       <div className="flex items-center justify-between px-6 py-4">
         {/* Logo */}
         <Link
-          to={isAdmin ? "/*" : "/home"}
+          to={
+            isAdmin
+              ? "/admin/dashboard-page"
+              : isInstructor
+              ? "/instructor/instructor-dashboard-page"
+              : "/home"
+          }
           className="text-2xl font-semibold underline"
         >
           EduZone
@@ -64,24 +72,36 @@ const HeaderNav = () => {
 
         {/* Desktop Nav */}
         <nav className="hidden md:flex gap-6 text-white text-base items-center">
-          {isAdmin ? (
+          {isAdmin && (
             <>
               <Link to="/admin/dashboard-page">Dashboard</Link>
               <Link to="/admin/get-all-students">Manage Students</Link>
               <Link to="/admin/get-all-instructors">Manage Instructors</Link>
             </>
-          ) : (
+          )}
+
+          {isInstructor && (
+            <>
+              <Link to="/instructor/instructor-dashboard-page">Dashboard</Link>
+              <Link to="/instructor/courses-management/get-all-courses">
+                My Courses
+              </Link>
+              <Link to="/instructor/profile">My Profile</Link>
+            </>
+          )}
+
+          {isStudent && (
             <>
               <Link to="/home">Home</Link>
               <Link to="/seeAllCourses">Courses</Link>
               <Link to="/user/learning-room">Learning Room</Link>
-              <Link to="/contact">Contact Us</Link>
-              <Link to="/about">About Us</Link>
+              <Link to="/contact">Contact</Link>
+              <Link to="/about">About</Link>
               <Link to="/help">Help</Link>
             </>
           )}
 
-          {/* Dropdown Trigger */}
+          {/* Dropdown */}
           <div className="relative">
             <button
               onClick={toggleDropdown}
@@ -92,11 +112,17 @@ const HeaderNav = () => {
             {showDropdown && (
               <div className="absolute right-0 mt-2 w-48 bg-white text-black rounded shadow-lg z-50">
                 <Link
-                  to="/admin/settings"
+                  to={
+                    isAdmin
+                      ? "/admin/settings"
+                      : isInstructor
+                      ? "/instructor/profile"
+                      : "/user/learning-room"
+                  }
                   onClick={() => setShowDropdown(false)}
                   className="block px-4 py-2 hover:bg-gray-100"
                 >
-                  Settings
+                  {isAdmin ? "Settings" : "Profile"}
                 </Link>
                 <button
                   onClick={handleLogout}
@@ -114,7 +140,7 @@ const HeaderNav = () => {
       {isMenuOpen && (
         <div className="md:hidden px-6 pb-4">
           <nav className="flex flex-col gap-4 text-white text-base">
-            {isAdmin ? (
+            {isAdmin && (
               <>
                 <Link
                   to="/admin/dashboard-page"
@@ -134,8 +160,36 @@ const HeaderNav = () => {
                 >
                   Manage Instructors
                 </Link>
+                <Link to="/admin/settings" onClick={() => setIsMenuOpen(false)}>
+                  Settings
+                </Link>
               </>
-            ) : (
+            )}
+
+            {isInstructor && (
+              <>
+                <Link
+                  to="/instructor/instructor-dashboard-page"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Dashboard
+                </Link>
+                <Link
+                  to="/instructor/courses-management/get-all-courses"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  My Courses
+                </Link>
+                <Link
+                  to="/instructor/profile"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  My Profile
+                </Link>
+              </>
+            )}
+
+            {isStudent && (
               <>
                 <Link to="/home" onClick={() => setIsMenuOpen(false)}>
                   Home
@@ -150,22 +204,20 @@ const HeaderNav = () => {
                   Learning Room
                 </Link>
                 <Link to="/contact" onClick={() => setIsMenuOpen(false)}>
-                  Contact Us
+                  Contact
                 </Link>
                 <Link to="/about" onClick={() => setIsMenuOpen(false)}>
-                  About Us
+                  About
                 </Link>
                 <Link to="/help" onClick={() => setIsMenuOpen(false)}>
                   Help
                 </Link>
               </>
             )}
-            <Link to="/admin/settings" onClick={() => setIsMenuOpen(false)}>
-              Settings
-            </Link>
+
             <button
               onClick={handleLogout}
-              className="text-left w-full px-4 py-1 bg-white hover:bg-blue-600 text-black rounded"
+              className="text-left w-full px-4 py-2 bg-white hover:bg-red-100 text-red-600 rounded"
             >
               Logout
             </button>

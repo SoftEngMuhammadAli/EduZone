@@ -19,7 +19,7 @@ const CourseSchema = new mongoose.Schema(
       enum: ["Beginner", "Intermediate", "Advanced"],
       required: true,
     },
-    user: {
+    courseCreatedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,

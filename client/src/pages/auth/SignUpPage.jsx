@@ -13,9 +13,11 @@ const SignUpPage = () => {
   useEffect(() => {
     if (user) {
       if (user.user_type === "admin") {
-        navigate("/dashboard");
+        navigate("/admin/dashboard-page");
+      } else if (user.user_type === "instructor") {
+        navigate("/instructor/instructor-dashboard-page");
       } else {
-        navigate("/home");
+        navigate("/user/learning-room");
       }
     }
   }, [user, navigate]);
@@ -28,10 +30,16 @@ const SignUpPage = () => {
       name: form.name.value.trim(),
       email: form.email.value.trim(),
       password: form.password.value,
+      user_type: form.user_type.value,
     };
 
-    if (!userData.name || !userData.email || !userData.password) {
-      console.error("All fields are required");
+    if (
+      !userData.name ||
+      !userData.email ||
+      !userData.password ||
+      !userData.user_type
+    ) {
+      console.error("All fields including role are required");
       return;
     }
 
@@ -93,6 +101,16 @@ const SignUpPage = () => {
               className="w-full p-3 rounded bg-[#2D2F6B] text-white placeholder-gray-300 focus:outline-none"
               required
             />
+
+            <select
+              name="user_type"
+              className="w-full p-3 rounded bg-[#2D2F6B] text-white focus:outline-none"
+              required
+            >
+              <option value="">Select Role</option>
+              <option value="student">Student</option>
+              <option value="instructor">Instructor</option>
+            </select>
 
             <button
               type="submit"

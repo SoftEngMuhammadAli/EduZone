@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  createCourse,
-  fetchCourses,
-} from "../../../features/admin/courseSlice";
+import { createCourse } from "../../../features/admin/courseSlice";
 import axiosInstance from "../../../services/axios";
 import { useNavigate } from "react-router-dom";
 
@@ -11,7 +8,6 @@ const CreateCoursePage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { loading, error } = useSelector((state) => state.course);
-  const { user } = useSelector((state) => state.auth);
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -46,18 +42,7 @@ const CreateCoursePage = () => {
     images.forEach((file) => formData.append("images", file));
 
     dispatch(createCourse(formData)).then((res) => {
-      if (!res.error) {
-        dispatch(fetchCourses());
-        if (user?.user_type === "admin") {
-          navigate("/admin/dashboard-page");
-        } else if (user?.user_type === "instructor") {
-          navigate("/instructor/instructor-dashboard-page");
-        } else {
-          console.warn("Unknown user type:", user?.user_type);
-        }
-      } else {
-        console.error("Course creation error:", res.error);
-      }
+      if (!res.error) navigate("/admin/dashboard-page");
     });
   };
 

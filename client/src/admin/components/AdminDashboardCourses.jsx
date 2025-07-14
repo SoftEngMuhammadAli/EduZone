@@ -1,4 +1,3 @@
-// components/AdminCoursesGrid.jsx
 import React from "react";
 
 const AdminCoursesGrid = ({ courses }) => {

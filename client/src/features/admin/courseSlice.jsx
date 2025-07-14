@@ -81,7 +81,7 @@ const courseSlice = createSlice({
       .addCase(createCourse.fulfilled, (state, action) => {
         state.loading = false;
         state.error = null;
-        state.courses.push(action.payload);
+        state.courses = action.payload.data;
       })
       .addCase(createCourse.rejected, (state, action) => {
         state.loading = false;
