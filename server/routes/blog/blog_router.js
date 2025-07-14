@@ -35,7 +35,7 @@ router.get("/categories/:id", checkAuth, handleGetBlogCategoryById);
 router.post(
   "/categories",
   checkAuth,
-  authorizeRoles("admin", "instructor"),
+  authorizeRoles("admin"),
   createBlogCategory
 );
 
@@ -43,7 +43,7 @@ router.post(
 router.put(
   "/categories/:id",
   checkAuth,
-  authorizeRoles("admin", "instructor"),
+  authorizeRoles("admin"),
   handleUpdateBlogCategoryById
 );
 
@@ -51,7 +51,7 @@ router.put(
 router.delete(
   "/categories/:id",
   checkAuth,
-  authorizeRoles("admin", "instructor"),
+  authorizeRoles("admin"),
   handleDeleteBlogCategoryById
 );
 
@@ -66,7 +66,7 @@ router.get("/:id", checkAuth, handleGetBlogById);
 router.post(
   "/",
   checkAuth,
-  authorizeRoles("admin", "instructor"),
+  authorizeRoles("admin"),
   upload.array("images", 5),
   handleCreateBlog
 );
@@ -75,17 +75,12 @@ router.post(
 router.put(
   "/:id",
   checkAuth,
-  authorizeRoles("admin", "instructor"),
+  authorizeRoles("admin"),
   upload.array("images", 5),
   handleUpdateBlogById
 );
 
 // DELETE blog by ID
-router.delete(
-  "/:id",
-  checkAuth,
-  authorizeRoles("admin", "instructor"),
-  handleDeleteBlogById
-);
+router.delete("/:id", checkAuth, authorizeRoles("admin"), handleDeleteBlogById);
 
 export default router;
