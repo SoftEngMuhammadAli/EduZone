@@ -5,9 +5,8 @@ import Notification from "../../models/notifications/notification_model.js";
 
 export const handleGetAllBlogs = catchAsyncHandler(async (req, res) => {
   try {
-    const blogs = await Blog.find({})
-      .populate("author", "name email")
-      .populate("category", "name");
+    const blogs = await Blog.find({}).populate("author", "name email");
+
     if (!blogs.length) {
       return res.status(404).json({ message: "No blogs found" });
     }
@@ -31,9 +30,7 @@ export const handleGetBlogById = catchAsyncHandler(async (req, res) => {
   }
 
   try {
-    const blog = await Blog.findById(id)
-      .populate("author", "name email")
-      .populate("category", "name");
+    const blog = await Blog.findById(id).populate("author", "name email");
     if (!blog) {
       return res.status(404).json({ error: "Blog not found" });
     }

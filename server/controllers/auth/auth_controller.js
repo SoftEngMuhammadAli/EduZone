@@ -32,7 +32,15 @@ export const registerUser = catchAsyncHandler(async (req, res) => {
       password: hashedPassword,
     });
 
+    if (!newUser) {
+      return res.redirect("/logout");
+    }
+
+    console.log("Data before Creating User", newUser);
+
     await newUser.save();
+
+    console.log("Data after Creating User", newUser);
 
     const token = generateToken(newUser);
     const userData = formatUserResponse(newUser);
@@ -77,18 +85,22 @@ export const loginUser = catchAsyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
+    res.clearCookie("token");
     return res
       .status(400)
       .json({ message: "Email and password are required." });
   }
 
   const user = await User.findOne({ email }).select("+password");
+
   if (!user) {
+    res.clearCookie("token");
     return res.status(400).json({ message: "Invalid email or password." });
   }
 
   const isValid = await compareAndSecurePassword(password, user.password);
   if (!isValid) {
+    res.clearCookie("token");
     return res.status(400).json({ message: "Invalid email or password." });
   }
 
@@ -143,4 +155,38 @@ export const getUserProfile = catchAsyncHandler(async (req, res) => {
       error: error.message,
     });
   }
+});
+
+// Assign Role
+export const assignUserRole = catchAsyncHandler(async (req, res) => {
+  const { userId, newRole } = req.body;
+
+  if (!userId || !newRole) {
+    return res
+      .status(400)
+      .json({ message: "User ID and new role are required." });
+  }
+
+  const validRoles = ["user", "admin", "instructor"];
+  if (!validRoles.includes(newRole)) {
+    return res.status(400).json({ message: `Invalid role: '${newRole}'` });
+  }
+
+  const user = await User.findById(userId);
+  if (!user) {
+    return res.status(404).json({ message: "User not found." });
+  }
+
+  user.user_type = newRole;
+  await user.save();
+
+  return res.status(200).json({
+    message: `Role updated successfully to '${newRole}'`,
+    user: {
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      user_type: user.user_type,
+    },
+  });
 });

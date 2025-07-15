@@ -15,14 +15,6 @@ import {
 } from "../../controllers/course/course_controller.js";
 
 import {
-  handleGetAllCourseCategories,
-  handleGetCourseCategoryById,
-  createCourseCategory,
-  handleUpdateCourseCategoryById,
-  handleDeleteCourseCategoryById,
-} from "../../controllers/course/course_category_controller.js";
-
-import {
   enrollInCourse,
   unEnrollFromCourse,
   getEnrolledCoursesByUserId,
@@ -32,30 +24,6 @@ import {
 } from "../../controllers/course/enrollment_controller.js";
 
 import { upload } from "../../middlewares/multer.js";
-
-//--///////////////////////////////////////////////
-// Course Categories Routes
-//--///////////////////////////////////////////////
-router.get("/categories", checkAuth, handleGetAllCourseCategories);
-router.get("/categories/:id", checkAuth, handleGetCourseCategoryById);
-router.post(
-  "/categories",
-  checkAuth,
-  authorizeRoles("admin", "instructor"),
-  createCourseCategory
-);
-router.put(
-  "/categories/:id",
-  checkAuth,
-  authorizeRoles("admin", "instructor"),
-  handleUpdateCourseCategoryById
-);
-router.delete(
-  "/categories/:id",
-  checkAuth,
-  authorizeRoles("admin", "instructor"),
-  handleDeleteCourseCategoryById
-);
 
 //--///////////////////////////////////////////////
 // Course Routes

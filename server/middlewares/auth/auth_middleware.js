@@ -1,10 +1,11 @@
 import jwt from "jsonwebtoken";
+import User from "../../models/users/users_model.js";
 import dotenv from "dotenv";
 dotenv.config();
 
 const SECRET_KEY = process.env.SECRET_KEY;
 
-function checkAuth(req, res, next) {
+async function checkAuth(req, res, next) {
   let token;
 
   const authorization = req.headers.authorization;
@@ -24,7 +25,13 @@ function checkAuth(req, res, next) {
 
   try {
     const decoded = jwt.verify(token, SECRET_KEY);
-    req.user = decoded;
+
+    const user = await User.findById(decoded.id);
+    if (!user) {
+      return res.status(401).json({ message: "Invalid token: user not found" });
+    }
+
+    req.user = user;
     next();
   } catch (error) {
     if (error instanceof jwt.TokenExpiredError) {

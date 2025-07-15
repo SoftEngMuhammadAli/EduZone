@@ -5,9 +5,10 @@ import Notification from "../../models/notifications/notification_model.js";
 
 export const getAllCourses = catchAsyncHandler(async (req, res) => {
   try {
-    const courses = await Course.find({})
-      .populate("courseCreatedBy", "name email user_type")
-      .populate("category", "name");
+    const courses = await Course.find({}).populate(
+      "courseCreatedBy",
+      "name email user_type"
+    );
 
     if (!courses || courses.length === 0) {
       return res.status(404).json({ message: "No courses found." });
@@ -34,9 +35,10 @@ export const getCourseById = catchAsyncHandler(async (req, res) => {
       return res.status(400).json({ error: "Invalid Course ID" });
     }
 
-    const course = await Course.findById(id)
-      .populate("courseCreatedBy", "name email user_type")
-      .populate("category", "name");
+    const course = await Course.findById(id).populate(
+      "courseCreatedBy",
+      "name email user_type"
+    );
 
     if (!course) {
       return res.status(404).json({ error: "Course not found" });
@@ -64,6 +66,11 @@ export const createCourse = catchAsyncHandler(async (req, res) => {
     } = req.body;
 
     const courseCreatedBy = req.user?.userId;
+
+    if (!courseCreatedBy) {
+      return res.status(401).json({ message: "Unauthorized: Missing user ID" });
+    }
+
     const imageFiles = req.files?.map((file) => file.filename) || [];
 
     if (!title || !description || !duration) {
@@ -89,8 +96,12 @@ export const createCourse = catchAsyncHandler(async (req, res) => {
       images: imageFiles,
     });
 
+    console.log("Before Uploading Course", newCourse);
+
     await newCourse.save();
     await newCourse.populate("courseCreatedBy", "name email");
+
+    console.log("After Uploading Course", newCourse);
 
     await Notification.create({
       userId: user,
@@ -132,7 +143,6 @@ export const updateCourseById = catchAsyncHandler(async (req, res) => {
       return res.status(404).json({ error: "Course not found" });
     }
 
-    // ✅ Create notification BEFORE sending response
     await Notification.create({
       userId: user,
       message: `Course "${updatedCourse.title}" has been updated.`,
