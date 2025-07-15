@@ -80,15 +80,7 @@ const HeaderNav = () => {
             </>
           )}
 
-          {isInstructor && (
-            <>
-              <Link to="/instructor/instructor-dashboard-page">Dashboard</Link>
-              <Link to="/instructor/courses-management/get-all-courses">
-                My Courses
-              </Link>
-              <Link to="/instructor/profile">My Profile</Link>
-            </>
-          )}
+          {isInstructor && <>{/* Empry For Instructor NavItems */}</>}
 
           {isStudent && (
             <>
@@ -107,7 +99,17 @@ const HeaderNav = () => {
               onClick={toggleDropdown}
               className="text-white hover:text-yellow-400"
             >
-              <MoreVertical />
+              {/* If teacher Then Show Only LogOut Button */}
+              {isInstructor ? (
+                <button
+                  onClick={handleLogout}
+                  className="bg-[white] rounded-lg w-full text-left px-4 py-2 hover:bg-red-100 text-black"
+                >
+                  Sign Out
+                </button>
+              ) : (
+                <MoreVertical />
+              )}
             </button>
             {showDropdown && (
               <div className="absolute right-0 mt-2 w-48 bg-white text-black rounded shadow-lg z-50">
@@ -166,28 +168,7 @@ const HeaderNav = () => {
               </>
             )}
 
-            {isInstructor && (
-              <>
-                <Link
-                  to="/instructor/instructor-dashboard-page"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Dashboard
-                </Link>
-                <Link
-                  to="/instructor/courses-management/get-all-courses"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  My Courses
-                </Link>
-                <Link
-                  to="/instructor/profile"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  My Profile
-                </Link>
-              </>
-            )}
+            {isInstructor && <>{/* Empry For Instructor NavItems */}</>}
 
             {isStudent && (
               <>

@@ -103,15 +103,6 @@ const AdminDashboardStatsCards = ({
               </p>
             </div>
 
-            {/* Instructors Card */}
-            <div className="bg-white p-6 rounded-2xl shadow hover:shadow-md transition-all duration-200">
-              <div className="text-sm text-gray-500 mb-1">Total</div>
-              <h3 className="text-lg font-semibold mb-2">Instructors</h3>
-              <p className="text-4xl font-bold text-green-600">
-                {instructorsCount}
-              </p>
-            </div>
-
             {/* Courses Card */}
             <div className="bg-white p-6 rounded-2xl shadow hover:shadow-md transition-all duration-200">
               <div className="text-sm text-gray-500 mb-1">Total</div>
