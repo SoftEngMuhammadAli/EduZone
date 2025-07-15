@@ -65,13 +65,11 @@ export const createCourse = catchAsyncHandler(async (req, res) => {
       rating,
     } = req.body;
 
-    const courseCreatedBy = req.user?.userId;
+    const courseCreatedBy = req.user?._id;
 
     if (!courseCreatedBy) {
       return res.status(401).json({ message: "Unauthorized: Missing user ID" });
     }
-
-    const imageFiles = req.files?.map((file) => file.filename) || [];
 
     if (!title || !description || !duration) {
       return res.status(400).json({ message: "Required fields missing" });
@@ -83,6 +81,8 @@ export const createCourse = catchAsyncHandler(async (req, res) => {
       });
     }
 
+    const imageFile = req.file?.filename || null;
+
     const newCourse = new Course({
       title: title.trim(),
       description: description.trim(),
@@ -92,8 +92,8 @@ export const createCourse = catchAsyncHandler(async (req, res) => {
       rating,
       duration,
       level,
-      courseCreatedBy: courseCreatedBy,
-      images: imageFiles,
+      courseCreatedBy,
+      image: imageFile,
     });
 
     console.log("Before Uploading Course", newCourse);
@@ -104,7 +104,7 @@ export const createCourse = catchAsyncHandler(async (req, res) => {
     console.log("After Uploading Course", newCourse);
 
     await Notification.create({
-      userId: user,
+      userId: courseCreatedBy,
       message: `New course "${newCourse.title}" has been published.`,
       type: "course",
       link: `/courses/${newCourse._id}`,
@@ -124,7 +124,7 @@ export const createCourse = catchAsyncHandler(async (req, res) => {
 export const updateCourseById = catchAsyncHandler(async (req, res) => {
   try {
     const { id } = req.params;
-    const user = req.user?.userId;
+    const user = req.user?._id;
 
     if (!user) {
       return res.status(401).json({ error: "Unauthorized access" });
@@ -176,7 +176,7 @@ export const deleteCourseById = catchAsyncHandler(async (req, res) => {
     }
 
     await Notification.create({
-      userId: req.user?.userId,
+      userId: req.user?._id,
       message: `Course "${deletedCourse.title}" has been deleted.`,
       type: "course",
       link: `/courses/${deletedCourse._id}`,

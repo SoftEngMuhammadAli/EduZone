@@ -24,10 +24,6 @@ const userSchema = new mongoose.Schema(
       enum: ["student", "instructor", "admin"],
       default: "student",
     },
-    registration_date: {
-      type: Date,
-      default: Date.now,
-    },
     profile_picture_url: {
       type: String,
       default: null,
@@ -36,6 +32,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: () => getRandomBio(),
       maxlength: 1000,
+    },
+    registration_date: {
+      type: Date,
+      default: Date.now,
     },
   },
   {

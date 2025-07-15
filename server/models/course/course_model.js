@@ -16,21 +16,32 @@ const CourseSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    images: {
-      type: [String],
+    level: {
+      type: String,
+      enum: ["Beginner", "Intermediate", "Advanced"],
+      required: true,
+    },
+    duration: {
+      type: String,
+      required: true,
+    },
+    image: {
+      type: String,
       default: null,
     },
     views: {
       type: Number,
       default: 0,
     },
-    students: { type: Number, default: 0 },
-    rating: { type: Number, min: 1, max: 5, default: 1 },
-    duration: { type: String, required: true },
-    level: {
-      type: String,
-      enum: ["Beginner", "Intermediate", "Advanced"],
-      required: true,
+    students: {
+      type: Number,
+      default: 0,
+    },
+    rating: {
+      type: Number,
+      min: 1,
+      max: 5,
+      default: 1,
     },
     courseCreatedBy: {
       type: mongoose.Schema.Types.ObjectId,

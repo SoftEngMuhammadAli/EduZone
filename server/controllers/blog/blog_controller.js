@@ -3,6 +3,7 @@ import Blog from "../../models/blog/blog_model.js";
 import { catchAsyncHandler } from "../../middlewares/error_middleware.js";
 import Notification from "../../models/notifications/notification_model.js";
 
+// GET All Blogs
 export const handleGetAllBlogs = catchAsyncHandler(async (req, res) => {
   try {
     const blogs = await Blog.find({}).populate("author", "name email");
@@ -10,6 +11,7 @@ export const handleGetAllBlogs = catchAsyncHandler(async (req, res) => {
     if (!blogs.length) {
       return res.status(404).json({ message: "No blogs found" });
     }
+
     return res.status(200).json({
       message: "Blogs fetched successfully",
       data: blogs,
@@ -22,6 +24,7 @@ export const handleGetAllBlogs = catchAsyncHandler(async (req, res) => {
   }
 });
 
+// GET Blog by ID
 export const handleGetBlogById = catchAsyncHandler(async (req, res) => {
   const { id } = req.params;
 
@@ -43,6 +46,7 @@ export const handleGetBlogById = catchAsyncHandler(async (req, res) => {
   }
 });
 
+// CREATE Blog
 export const handleCreateBlog = catchAsyncHandler(async (req, res) => {
   try {
     const { title, content, category, tags } = req.body;
@@ -54,27 +58,24 @@ export const handleCreateBlog = catchAsyncHandler(async (req, res) => {
       parsedTags = tags;
     }
 
-    const imageFiles = req.files?.map((file) => file.filename) || [];
+    const imageFile = req.file?.filename || null;
 
     const newBlog = new Blog({
       title,
       content,
-      author: req.user?.userId,
+      author: req.user?._id,
       category,
       tags: parsedTags,
-      images: imageFiles,
+      image: imageFile,
     });
 
-    console.log("🚀 New blog to be saved:", newBlog);
     await newBlog.save();
-    console.log("✅ Blog saved to MongoDB");
 
     return res.status(201).json({
       message: "Blog created successfully",
       data: newBlog,
     });
   } catch (err) {
-    console.error("❌ CREATE BLOG ERROR:", err);
     return res.status(500).json({
       error: "Failed to create blog",
       details: err.message,
@@ -82,6 +83,7 @@ export const handleCreateBlog = catchAsyncHandler(async (req, res) => {
   }
 });
 
+// UPDATE Blog by ID
 export const handleUpdateBlogById = catchAsyncHandler(async (req, res) => {
   const { id } = req.params;
 
@@ -90,12 +92,15 @@ export const handleUpdateBlogById = catchAsyncHandler(async (req, res) => {
   }
 
   try {
-    const imageFiles = req.files?.map((file) => file.filename) || [];
+    const imageFile = req.file?.filename || null;
 
     let parsedTags = [];
     if (req.body.tags) {
       try {
-        parsedTags = JSON.parse(req.body.tags);
+        parsedTags =
+          typeof req.body.tags === "string"
+            ? JSON.parse(req.body.tags)
+            : req.body.tags;
       } catch (err) {
         return res.status(400).json({ error: "Invalid tags format" });
       }
@@ -108,8 +113,8 @@ export const handleUpdateBlogById = catchAsyncHandler(async (req, res) => {
       tags: parsedTags,
     };
 
-    if (imageFiles.length > 0) {
-      updateData.images = imageFiles;
+    if (imageFile) {
+      updateData.image = imageFile;
     }
 
     const updatedBlog = await Blog.findByIdAndUpdate(id, updateData, {
@@ -122,7 +127,7 @@ export const handleUpdateBlogById = catchAsyncHandler(async (req, res) => {
     }
 
     await Notification.create({
-      userId: req.user?.userId,
+      userId: req.user?._id,
       message: `Blog "${updatedBlog.title}" has been updated.`,
       type: "custom",
       link: `/blogs/${updatedBlog._id}`,
@@ -140,6 +145,7 @@ export const handleUpdateBlogById = catchAsyncHandler(async (req, res) => {
   }
 });
 
+// DELETE Blog
 export const handleDeleteBlogById = catchAsyncHandler(async (req, res) => {
   const { id } = req.params;
 
@@ -154,7 +160,7 @@ export const handleDeleteBlogById = catchAsyncHandler(async (req, res) => {
     }
 
     await Notification.create({
-      userId: req.user?.userId,
+      userId: req.user?._id,
       message: `Blog "${deletedBlog.title}" has been deleted.`,
       type: "custom",
       link: `/blogs`,
