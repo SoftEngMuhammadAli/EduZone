@@ -86,7 +86,9 @@ const ReadHomeBlogs = () => {
                 </p>
                 <div className="mt-auto pt-3">
                   <button
-                    onClick={() => navigate(`/blog/${item._id}`)}
+                    onClick={() => {
+                      alert("Please click on See All Blogs");
+                    }}
                     className="bg-[#1C1E53] text-white px-4 py-2 rounded text-sm"
                   >
                     See More →

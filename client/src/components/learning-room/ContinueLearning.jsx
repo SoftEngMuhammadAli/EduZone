@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
+import { CheckCircle, PlayCircle, ArrowLeft, ArrowRight } from "lucide-react";
 
 const mockLessons = [
   {
@@ -49,83 +50,101 @@ const ContinueLearning = () => {
   const currentLesson = lessons[currentLessonIndex];
 
   return (
-    <div className="min-h-screen bg-gray-50 px-6 py-10">
-      <div className="max-w-5xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-b from-gray-100 to-white px-4 py-10">
+      <div className="max-w-6xl mx-auto">
         {/* Course Header */}
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-[#1C1E53]">
-            Course: {course.title || "Course Title"}
+        <div className="mb-8 text-center">
+          <h1 className="text-3xl font-bold text-[#1C1E53] mb-2">
+            {course.title || "Course Title"}
           </h1>
-          <p className="text-gray-600 mt-1 font-normal">
-            {course.description || "No description."}
+          <p className="text-gray-600 text-lg">
+            {course.description || "No description available."}
           </p>
         </div>
 
         {/* Video Player */}
-        <div className="aspect-w-16 aspect-h-9 mb-6 bg-black rounded overflow-hidden">
+        <div className="relative w-full aspect-w-16 aspect-h-9 rounded-lg overflow-hidden shadow-lg mb-6">
           <iframe
             src={currentLesson.videoUrl}
             title={currentLesson.title}
             allowFullScreen
-            className="min-h-screen w-full"
+            className="w-full h-full"
           />
         </div>
 
-        {/* Lesson Title */}
-        <h2 className="text-lg font-semibold text-gray-700 mb-2">
-          {currentLesson.title}
-        </h2>
+        {/* Lesson Info and Controls */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h2 className="text-xl font-semibold text-gray-800">
+              {currentLesson.title}
+            </h2>
+            <p className="text-sm text-gray-500">
+              Lesson {currentLessonIndex + 1} of {lessons.length}
+            </p>
+          </div>
 
-        {/* Action Buttons */}
-        <div className="flex justify-between items-center mt-4 mb-6">
-          <button
-            disabled={currentLessonIndex === 0}
-            onClick={prevLesson}
-            className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50"
-          >
-            ← Previous
-          </button>
+          <div className="flex gap-3">
+            <button
+              onClick={prevLesson}
+              disabled={currentLessonIndex === 0}
+              className="flex items-center gap-1 px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-200 disabled:opacity-40"
+            >
+              <ArrowLeft size={18} /> Prev
+            </button>
 
-          <button
-            onClick={handleMarkComplete}
-            className={`px-6 py-2 rounded ${
-              currentLesson.completed ? "bg-green-400" : "bg-yellow-400"
-            }`}
-          >
-            {currentLesson.completed ? "Completed" : "Mark as Complete"}
-          </button>
+            <button
+              onClick={handleMarkComplete}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-white font-medium ${
+                currentLesson.completed
+                  ? "bg-green-500 hover:bg-green-600"
+                  : "bg-yellow-500 hover:bg-yellow-600"
+              }`}
+            >
+              {currentLesson.completed ? (
+                <CheckCircle size={18} />
+              ) : (
+                <PlayCircle size={18} />
+              )}
+              {currentLesson.completed ? "Completed" : "Mark as Complete"}
+            </button>
 
-          <button
-            disabled={currentLessonIndex === lessons.length - 1}
-            onClick={nextLesson}
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
-          >
-            Next →
-          </button>
+            <button
+              onClick={nextLesson}
+              disabled={currentLessonIndex === lessons.length - 1}
+              className="flex items-center gap-1 px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-40"
+            >
+              Next <ArrowRight size={18} />
+            </button>
+          </div>
         </div>
 
-        {/* Lessons Progress List */}
-        <div className="mt-8">
-          <h3 className="text-md font-semibold text-gray-600 mb-2">
-            All Lessons
+        {/* Progress List */}
+        <div className="mt-10">
+          <h3 className="text-lg font-semibold text-gray-700 mb-4">
+            Lessons Progress
           </h3>
-          <ul className="space-y-2">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {lessons.map((lesson, index) => (
-              <li
+              <div
                 key={lesson.id}
-                className={`p-3 rounded border ${
-                  index === currentLessonIndex ? "bg-blue-100" : "bg-white"
+                className={`flex items-center justify-between p-4 border rounded-lg shadow-sm ${
+                  index === currentLessonIndex
+                    ? "bg-blue-100 border-blue-400"
+                    : "bg-white"
                 }`}
               >
-                <span className="font-medium">{lesson.title}</span>{" "}
+                <div>
+                  <p className="font-medium text-gray-800">{lesson.title}</p>
+                  <p className="text-sm text-gray-500">
+                    {lesson.completed ? "Completed" : "Not Completed"}
+                  </p>
+                </div>
                 {lesson.completed && (
-                  <span className="text-green-500 ml-2 text-sm">
-                    ✓ Completed
-                  </span>
+                  <CheckCircle size={20} className="text-green-500" />
                 )}
-              </li>
+              </div>
             ))}
-          </ul>
+          </div>
         </div>
       </div>
     </div>
