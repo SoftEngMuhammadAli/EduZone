@@ -48,10 +48,10 @@ const CoursesListPage = () => {
             {courses.map((course) => (
               <tr key={course._id} className="border-t">
                 <td className="p-3">
-                  {course.images?.[0] ? (
+                  {course.image ? (
                     <img
                       src={`${import.meta.env.VITE_BASE_URL}/uploads/${
-                        course.image[0]
+                        course.image
                       }`}
                       alt={course.title}
                       className="w-10 h-10 rounded object-cover"
@@ -61,13 +61,11 @@ const CoursesListPage = () => {
                   )}
                 </td>
                 <td className="p-3">{course.title}</td>
-                <td className="p-3">
-                  {course.category?.name || "Uncategorized"}
-                </td>
+                <td className="p-3">{course.category || "Uncategorized"}</td>
                 <td className="p-3">{course.level}</td>
                 <td className="p-3">{course.duration}</td>
                 <td className="p-3 text-sm text-gray-700">
-                  {course.courseCreatedBy?.name || "Unknown"}
+                  {course.courseCreatedBy || "Unknown"}
                 </td>
                 <td className="p-3 space-x-2">
                   <button

@@ -11,7 +11,7 @@ export const createBlogThunk = createAsyncThunk(
           "Content-Type": "multipart/form-data",
         },
       });
-      return response.data.data;
+      return response.data;
     } catch (error) {
       console.error(
         "CREATE BLOG ERROR:",
