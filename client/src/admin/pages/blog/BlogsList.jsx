@@ -6,7 +6,6 @@ import { useNavigate } from "react-router-dom";
 const BlogListPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
   const { blogs, loading, error } = useSelector((state) => state.blogs);
 
   useEffect(() => {
@@ -14,14 +13,9 @@ const BlogListPage = () => {
   }, [dispatch]);
 
   const handleDelete = (id) => {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this blog?"
-    );
-    if (confirmDelete) {
+    if (window.confirm("Are you sure you want to delete this blog?")) {
       dispatch(deleteBlog(id)).then((res) => {
-        if (!res.error) {
-          dispatch(fetchBlogs());
-        }
+        if (!res.error) dispatch(fetchBlogs());
       });
     }
   };
@@ -34,7 +28,7 @@ const BlogListPage = () => {
         <p>Loading...</p>
       ) : error ? (
         <p className="text-red-600">Error: {error}</p>
-      ) : !blogs || blogs.length === 0 ? (
+      ) : blogs.length === 0 ? (
         <p className="text-gray-500">No blogs found.</p>
       ) : (
         <div className="overflow-x-auto">
@@ -51,10 +45,10 @@ const BlogListPage = () => {
               {blogs.map((blog) => (
                 <tr key={blog._id} className="border-t text-sm">
                   <td className="px-4 py-3">
-                    {blog.images?.[0] ? (
+                    {blog.image ? (
                       <img
                         src={`${import.meta.env.VITE_BASE_URL}/uploads/${
-                          blog.images[0]
+                          blog.image
                         }`}
                         alt="Blog"
                         className="w-16 h-16 object-cover rounded"
@@ -64,7 +58,7 @@ const BlogListPage = () => {
                     )}
                   </td>
                   <td className="px-4 py-3">{blog.title}</td>
-                  <td className="px-4 py-3">{blog.category?.name || "N/A"}</td>
+                  <td className="px-4 py-3">{blog.category || "N/A"}</td>
                   <td className="px-4 py-3">
                     <div className="flex gap-2">
                       <button

@@ -40,9 +40,7 @@ const DeleteBlogPage = () => {
               {blogs.map((blog) => (
                 <tr key={blog._id} className="border-t text-sm">
                   <td className="px-4 py-3">{blog.title}</td>
-                  <td className="px-4 py-3">
-                    {blog.category?.name || "No category"}
-                  </td>
+                  <td className="px-4 py-3">{blog.category || "N/A"}</td>
                   <td className="px-4 py-3">
                     <button
                       onClick={() => handleDelete(blog._id)}

@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchBlogs, updateBlog } from "../../../features/admin/blogSlice";
+import {
+  fetchBlogs,
+  updateBlog,
+  deleteBlog,
+} from "../../../features/admin/blogSlice";
 import { useParams, useNavigate } from "react-router-dom";
 import axiosInstance from "../../../services/axios";
 
@@ -22,7 +26,7 @@ const UpdateBlogPage = () => {
     dispatch(fetchBlogs());
 
     axiosInstance
-      .get("/api/blogs/categories")
+      .get("/api/blog-categories")
       .then((res) => setCategoryList(res.data.data))
       .catch((err) => console.error("Category fetch error:", err));
   }, [dispatch]);
@@ -33,7 +37,7 @@ const UpdateBlogPage = () => {
       setTitle(blog.title);
       setContent(blog.content);
       setTags((blog.tags || []).join(", "));
-      setCategory(blog.category?._id || "");
+      setCategory(blog.category || "");
       setBlogLoaded(true);
     } else {
       setBlogLoaded(false);
@@ -58,14 +62,19 @@ const UpdateBlogPage = () => {
       "tags",
       JSON.stringify(tags.split(",").map((tag) => tag.trim()))
     );
-
-    if (image) {
-      formData.append("image", image);
-    }
+    if (image) formData.append("image", image);
 
     dispatch(updateBlog({ id, blogData: formData })).then((res) => {
       if (!res.error) navigate("/admin/dashboard-page");
     });
+  };
+
+  const handleDelete = () => {
+    if (window.confirm("Are you sure you want to delete this blog?")) {
+      dispatch(deleteBlog(id)).then((res) => {
+        if (!res.error) navigate("/admin/dashboard-page");
+      });
+    }
   };
 
   return (
@@ -80,84 +89,72 @@ const UpdateBlogPage = () => {
         <p className="text-gray-600">No blog found with the given ID.</p>
       ) : (
         <form className="space-y-4" onSubmit={handleSubmit}>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Title
-            </label>
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              required
-              className="mt-1 block w-full px-4 py-2 border rounded-md"
-            />
-          </div>
+          <input
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            required
+            className="w-full px-4 py-2 border rounded"
+            placeholder="Title"
+          />
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Content
-            </label>
-            <textarea
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              rows="6"
-              required
-              className="mt-1 block w-full px-4 py-2 border rounded-md"
-            />
-          </div>
+          <textarea
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            rows="5"
+            required
+            className="w-full px-4 py-2 border rounded"
+            placeholder="Content"
+          />
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Tags (comma-separated)
-            </label>
-            <input
-              type="text"
-              value={tags}
-              onChange={(e) => setTags(e.target.value)}
-              required
-              className="mt-1 block w-full px-4 py-2 border rounded-md"
-            />
-          </div>
+          <input
+            type="text"
+            value={tags}
+            onChange={(e) => setTags(e.target.value)}
+            required
+            className="w-full px-4 py-2 border rounded"
+            placeholder="Tags (comma-separated)"
+          />
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Category
-            </label>
-            <select
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              required
-              className="mt-1 block w-full px-4 py-2 border rounded-md"
-            >
-              <option value="">Select a category</option>
-              {categoryList.map((cat) => (
-                <option key={cat._id} value={cat._id}>
-                  {cat.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Upload Images
-            </label>
-            <input
-              type="file"
-              name="image"
-              accept="image/*"
-              onChange={handleImageChange}
-              className="mt-1 block w-full"
-            />
-          </div>
-
-          <button
-            type="submit"
-            className="w-full bg-green-600 text-white py-2 rounded-md hover:bg-green-700"
-            disabled={loading}
+          <select
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            required
+            className="w-full px-4 py-2 border rounded"
           >
-            {loading ? "Updating..." : "Update Blog"}
-          </button>
+            <option value="">Select a category</option>
+            {categoryList.map((cat) => (
+              <option key={cat._id} value={cat.name}>
+                {cat.name}
+              </option>
+            ))}
+          </select>
+
+          <input
+            type="file"
+            name="image"
+            accept="image/*"
+            onChange={handleImageChange}
+            className="w-full"
+          />
+
+          <div className="flex gap-4 pt-4">
+            <button
+              type="submit"
+              className="flex-1 bg-green-600 text-white py-2 rounded hover:bg-green-700"
+              disabled={loading}
+            >
+              {loading ? "Updating..." : "Update Blog"}
+            </button>
+
+            <button
+              type="button"
+              onClick={handleDelete}
+              className="flex-1 bg-red-600 text-white py-2 rounded hover:bg-red-700"
+            >
+              Delete Blog
+            </button>
+          </div>
         </form>
       )}
     </div>

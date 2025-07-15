@@ -8,24 +8,23 @@ const CreateBlogPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { loading, error } = useSelector((state) => state.blogs || {});
-
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [tags, setTags] = useState("");
   const [category, setCategory] = useState("");
-  const [image, setImage] = useState(null); // single image
+  const [image, setImage] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
   const [categoryList, setCategoryList] = useState([]);
 
   useEffect(() => {
     axiosInstance
-      .get("/api/blogs/categories")
+      .get("/api/blog-categories")
       .then((res) => setCategoryList(res.data.data))
       .catch((err) => console.error("Category fetch error:", err));
   }, []);
 
   const handleImageChange = (e) => {
-    const file = e.target.files[0];
+    const file = e.target.files?.[0];
     if (file) {
       setImage(file);
       setPreviewImage(URL.createObjectURL(file));
@@ -43,9 +42,7 @@ const CreateBlogPage = () => {
       "tags",
       JSON.stringify(tags.split(",").map((t) => t.trim()))
     );
-    if (image) {
-      formData.append("image", image); // match backend
-    }
+    if (image) formData.append("image", image);
 
     dispatch(createBlogThunk(formData)).then((res) => {
       if (!res.error) navigate("/admin/dashboard-page");
@@ -55,98 +52,66 @@ const CreateBlogPage = () => {
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-md">
       <h1 className="text-2xl font-semibold mb-6">Create New Blog</h1>
-
-      <form className="space-y-4" onSubmit={handleSubmit}>
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Title
-          </label>
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-            className="mt-1 block w-full px-4 py-2 border rounded-md"
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <input
+          type="text"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          required
+          placeholder="Title"
+          className="w-full border px-4 py-2 rounded"
+        />
+        <textarea
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          rows="5"
+          required
+          placeholder="Content"
+          className="w-full border px-4 py-2 rounded"
+        />
+        <select
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+          required
+          className="w-full border px-4 py-2 rounded"
+        >
+          <option value="">Select Category</option>
+          {categoryList.map((cat) => (
+            <option key={cat._id} value={cat.name}>
+              {cat.name}
+            </option>
+          ))}
+        </select>
+        <input
+          type="text"
+          value={tags}
+          onChange={(e) => setTags(e.target.value)}
+          required
+          placeholder="Tags (comma-separated)"
+          className="w-full border px-4 py-2 rounded"
+        />
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleImageChange}
+          className="w-full"
+        />
+        {previewImage && (
+          <img
+            src={previewImage}
+            alt="Preview"
+            className="w-32 h-32 object-cover mt-2 rounded"
           />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Content
-          </label>
-          <textarea
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            rows="6"
-            required
-            className="mt-1 block w-full px-4 py-2 border rounded-md"
-          ></textarea>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Category
-          </label>
-          <select
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            required
-            className="mt-1 block w-full px-4 py-2 border rounded-md"
-          >
-            <option value="">Select a category</option>
-            {categoryList.map((cat) => (
-              <option key={cat._id} value={cat._id}>
-                {cat.name}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Tags (comma-separated)
-          </label>
-          <input
-            type="text"
-            value={tags}
-            onChange={(e) => setTags(e.target.value)}
-            required
-            placeholder="e.g. react,nodejs,express"
-            className="mt-1 block w-full px-4 py-2 border rounded-md"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium">Upload Image</label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageChange}
-            className="w-full bg-amber-100 rounded-lg mt-2 mb-2 p-5"
-          />
-          {previewImage && (
-            <div className="mt-2">
-              <img
-                src={previewImage}
-                alt="Preview"
-                className="w-32 h-32 object-cover rounded border"
-              />
-            </div>
-          )}
-        </div>
-
-        <div className="pt-4">
-          <button
-            type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition"
-            disabled={loading}
-          >
-            {loading ? "Creating..." : "Create Blog"}
-          </button>
-        </div>
-
+        )}
+        <button
+          type="submit"
+          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+          disabled={loading}
+        >
+          {loading ? "Creating..." : "Create Blog"}
+        </button>
         {error && (
-          <div className="text-red-600 text-sm pt-2">❌ Error: {error}</div>
+          <p className="text-red-600 text-sm pt-2">❌ Error: {error}</p>
         )}
       </form>
     </div>
