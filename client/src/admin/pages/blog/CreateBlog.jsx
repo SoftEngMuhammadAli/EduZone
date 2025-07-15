@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { createBlogThunk } from "../../../features/admin/blogSlice";
-import axiosInstance from "../../../services/axios";
 import { useNavigate } from "react-router-dom";
 
 const CreateBlogPage = () => {
@@ -14,14 +13,6 @@ const CreateBlogPage = () => {
   const [category, setCategory] = useState("");
   const [image, setImage] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
-  const [categoryList, setCategoryList] = useState([]);
-
-  useEffect(() => {
-    axiosInstance
-      .get("/api/blog-categories")
-      .then((res) => setCategoryList(res.data.data))
-      .catch((err) => console.error("Category fetch error:", err));
-  }, []);
 
   const handleImageChange = (e) => {
     const file = e.target.files?.[0];
@@ -69,19 +60,14 @@ const CreateBlogPage = () => {
           placeholder="Content"
           className="w-full border px-4 py-2 rounded"
         />
-        <select
+        <input
+          type="text"
           value={category}
           onChange={(e) => setCategory(e.target.value)}
           required
+          placeholder="Category"
           className="w-full border px-4 py-2 rounded"
-        >
-          <option value="">Select Category</option>
-          {categoryList.map((cat) => (
-            <option key={cat._id} value={cat.name}>
-              {cat.name}
-            </option>
-          ))}
-        </select>
+        />
         <input
           type="text"
           value={tags}

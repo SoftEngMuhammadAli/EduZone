@@ -6,7 +6,6 @@ import {
   deleteBlog,
 } from "../../../features/admin/blogSlice";
 import { useParams, useNavigate } from "react-router-dom";
-import axiosInstance from "../../../services/axios";
 
 const UpdateBlogPage = () => {
   const { id } = useParams();
@@ -18,17 +17,11 @@ const UpdateBlogPage = () => {
   const [content, setContent] = useState("");
   const [tags, setTags] = useState("");
   const [category, setCategory] = useState("");
-  const [categoryList, setCategoryList] = useState([]);
   const [blogLoaded, setBlogLoaded] = useState(false);
   const [image, setImage] = useState(null);
 
   useEffect(() => {
     dispatch(fetchBlogs());
-
-    axiosInstance
-      .get("/api/blog-categories")
-      .then((res) => setCategoryList(res.data.data))
-      .catch((err) => console.error("Category fetch error:", err));
   }, [dispatch]);
 
   useEffect(() => {
@@ -116,19 +109,14 @@ const UpdateBlogPage = () => {
             placeholder="Tags (comma-separated)"
           />
 
-          <select
+          <input
+            type="text"
             value={category}
             onChange={(e) => setCategory(e.target.value)}
             required
             className="w-full px-4 py-2 border rounded"
-          >
-            <option value="">Select a category</option>
-            {categoryList.map((cat) => (
-              <option key={cat._id} value={cat.name}>
-                {cat.name}
-              </option>
-            ))}
-          </select>
+            placeholder="Category"
+          />
 
           <input
             type="file"

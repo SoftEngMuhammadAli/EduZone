@@ -18,19 +18,9 @@ const UpdateCoursePage = () => {
     category: "",
   });
 
-  const [categories, setCategories] = useState([]);
   const [loadingCourse, setLoadingCourse] = useState(true);
 
   useEffect(() => {
-    // Fetch categories
-    axiosInstance
-      .get("/api/courses/categories")
-      .then((res) => setCategories(res.data.data))
-      .catch((err) => console.error("Failed to load categories", err));
-  }, []);
-
-  useEffect(() => {
-    // Fetch course data by ID
     const fetchCourse = async () => {
       try {
         const res = await axiosInstance.get(`/api/courses/${id}`);
@@ -41,7 +31,7 @@ const UpdateCoursePage = () => {
           description: course.description || "",
           duration: course.duration || "",
           level: course.level || "Beginner",
-          category: course.category?._id || "", // if category is populated
+          category: course.category || "",
         });
       } catch (err) {
         console.error("Failed to load course:", err);
@@ -72,7 +62,6 @@ const UpdateCoursePage = () => {
     <div className="max-w-4xl mx-auto p-6 bg-white shadow rounded">
       <h1 className="text-2xl font-semibold mb-6">Update Course</h1>
       <form className="space-y-4" onSubmit={handleSubmit}>
-        {/* Title */}
         <div>
           <label className="block text-sm font-medium">Title</label>
           <input
@@ -85,7 +74,6 @@ const UpdateCoursePage = () => {
           />
         </div>
 
-        {/* Description */}
         <div>
           <label className="block text-sm font-medium">Description</label>
           <textarea
@@ -98,7 +86,6 @@ const UpdateCoursePage = () => {
           ></textarea>
         </div>
 
-        {/* Duration */}
         <div>
           <label className="block text-sm font-medium">Duration</label>
           <input
@@ -111,26 +98,19 @@ const UpdateCoursePage = () => {
           />
         </div>
 
-        {/* Category */}
         <div>
           <label className="block text-sm font-medium">Category</label>
-          <select
+          <input
+            type="text"
             name="category"
             value={formData.category}
             onChange={handleChange}
-            required
             className="w-full px-4 py-2 border rounded"
-          >
-            <option value="">Select a category</option>
-            {categories.map((cat) => (
-              <option key={cat._id} value={cat._id}>
-                {cat.name}
-              </option>
-            ))}
-          </select>
+            required
+            placeholder="e.g. Programming, Design"
+          />
         </div>
 
-        {/* Level */}
         <div>
           <label className="block text-sm font-medium">Level</label>
           <select
@@ -146,7 +126,6 @@ const UpdateCoursePage = () => {
           </select>
         </div>
 
-        {/* Submit */}
         <button
           type="submit"
           disabled={loading}
