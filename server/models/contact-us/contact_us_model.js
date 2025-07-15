@@ -20,4 +20,4 @@ const ContactUsSchema = mongoose.Schema({
   },
 });
 
-export default mongoose.model("ContactUs", ContactUsSchema, "contact-us");
+export default mongoose.model("ContactUs", ContactUsSchema);

@@ -19,4 +19,4 @@ const likesSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.model("Like", likesSchema, "likes");
+export default mongoose.model("Like", likesSchema);

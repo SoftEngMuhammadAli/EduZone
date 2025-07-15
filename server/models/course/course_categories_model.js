@@ -15,5 +15,4 @@ const courseCategorySchema = new mongoose.Schema(
 export default mongoose.model(
   "CourseCategory",
   courseCategorySchema,
-  "course-categories"
 );

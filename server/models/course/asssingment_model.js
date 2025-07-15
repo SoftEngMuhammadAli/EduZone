@@ -35,4 +35,4 @@ const assignmentSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.model("Assignment", assignmentSchema, "assignments");
+export default mongoose.model("Assignment", assignmentSchema);

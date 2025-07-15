@@ -16,8 +16,4 @@ const termsAndConditionsSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.model(
-  "TermsConditions",
-  termsAndConditionsSchema,
-  "terms-and-conditions"
-);
+export default mongoose.model("TermsConditions", termsAndConditionsSchema);

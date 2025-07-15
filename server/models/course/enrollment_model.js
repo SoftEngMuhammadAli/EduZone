@@ -30,8 +30,4 @@ const enrollInCourse = new mongoose.Schema(
   }
 );
 
-export default mongoose.model(
-  "EnrolledCourses",
-  enrollInCourse,
-  "enrolled-courses"
-);
+export default mongoose.model("EnrolledCourses", enrollInCourse);

@@ -13,8 +13,4 @@ const blogCategorySchema = new mongoose.Schema(
   }
 );
 
-export default mongoose.model(
-  "BlogCategory",
-  blogCategorySchema,
-  "blog-categories"
-);
+export default mongoose.model("BlogCategory", blogCategorySchema);

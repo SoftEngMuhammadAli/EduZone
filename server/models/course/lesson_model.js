@@ -31,4 +31,4 @@ const lessonSchema = new mongoose.Schema(
   }
 );
 
-export default mongoose.model("Lesson", lessonSchema, "lessons");
+export default mongoose.model("Lesson", lessonSchema);
