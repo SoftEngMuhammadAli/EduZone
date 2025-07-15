@@ -24,7 +24,7 @@ const StudentsListPage = () => {
     );
   }
 
-  if (error || students.length === 0) {
+  if (error || !students || students.length === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center text-[#1C1E53] text-lg font-semibold">
         {error || "No students available."}
@@ -55,7 +55,8 @@ const StudentsListPage = () => {
                 <td className="py-3 px-4">
                   <img
                     src={
-                      student.profile_picture_url === null
+                      student.profile_picture_url === null ||
+                      !student.profile_picture_url
                         ? "https://picsum.photos/400/150"
                         : student.profile_picture_url
                     }

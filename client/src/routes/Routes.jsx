@@ -37,12 +37,11 @@ import UpdateCoursePage from "../admin/pages/courses/UpdateCourse";
 import DeleteCoursePage from "../admin/pages/courses/DeleteCourse";
 import BlogListPage from "../admin/pages/blog/BlogsList";
 import CoursesListPage from "../admin/pages/courses/CoursesList";
-import InstructorProfile from "../instructor/pages/profile/InstructorProfile";
-import StudentProfile from "../admin/pages/students/StudentProfile";
 import LearningRoom from "../pages/learning-room/LearningRoom";
 import ContinueLearning from "../components/learning-room/ContinueLearning";
 import InstructorDashboard from "../instructor/dashboard/Dashboard";
 import { useSelector } from "react-redux";
+import UserProfilePage from "../admin/components/shared/UserProfilePage";
 
 const AppRoutes = () => {
   return (
@@ -130,14 +129,14 @@ const MainLayout = () => {
               path="/admin/get-all-students"
               element={<StudentsListPage />}
             />
-            <Route path="/admin/students/:id" element={<StudentProfile />} />
+            <Route path="/admin/students/:id" element={<UserProfilePage />} />
             <Route
               path="/admin/get-all-instructors"
               element={<TeachersListPage />}
             />
             <Route
               path="/admin/instructors/:id"
-              element={<InstructorProfile />}
+              element={<UserProfilePage />}
             />
             <Route path="/admin/settings" element={<AdminSettingsPage />} />
             <Route
@@ -165,7 +164,6 @@ const MainLayout = () => {
               path="/instructor/instructor-dashboard-page"
               element={<InstructorDashboard />}
             />
-            <Route path="/instructor/profile" element={<InstructorProfile />} />
           </Route>
 
           {/* Admin + Instructor Shared Routes */}

@@ -4,7 +4,7 @@ import useFetchData from "../../../hooks/useCustomHooks";
 import { BASE_URL } from "../../../utils/constants";
 import UserProfileView from "../../components/UserProfileView";
 
-const StudentProfile = () => {
+const UserProfilePage = () => {
   const { id } = useParams();
   const {
     data: user,
@@ -17,10 +17,10 @@ const StudentProfile = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
-      <h1 className="text-2xl font-bold mb-4 text-center">Student Profile</h1>
+      <h1 className="text-2xl font-bold mb-4 text-center">User Profile</h1>
       <UserProfileView user={user} />
     </div>
   );
 };
 
-export default StudentProfile;
+export default UserProfilePage;
