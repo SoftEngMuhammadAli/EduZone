@@ -13,9 +13,9 @@ const CreateBlogPage = () => {
   const [content, setContent] = useState("");
   const [tags, setTags] = useState("");
   const [category, setCategory] = useState("");
-  const [images, setImages] = useState([]);
+  const [image, setImage] = useState(null); // single image
+  const [previewImage, setPreviewImage] = useState(null);
   const [categoryList, setCategoryList] = useState([]);
-  const [previewImages, setPreviewImages] = useState([]);
 
   useEffect(() => {
     axiosInstance
@@ -25,10 +25,11 @@ const CreateBlogPage = () => {
   }, []);
 
   const handleImageChange = (e) => {
-    const files = Array.from(e.target.files);
-    setImages(files);
-    const previews = files.map((file) => URL.createObjectURL(file));
-    setPreviewImages(previews);
+    const file = e.target.files[0];
+    if (file) {
+      setImage(file);
+      setPreviewImage(URL.createObjectURL(file));
+    }
   };
 
   const handleSubmit = (e) => {
@@ -42,9 +43,9 @@ const CreateBlogPage = () => {
       "tags",
       JSON.stringify(tags.split(",").map((t) => t.trim()))
     );
-    images.forEach((file) => {
-      formData.append("images", file);
-    });
+    if (image) {
+      formData.append("image", image); // match backend
+    }
 
     dispatch(createBlogThunk(formData)).then((res) => {
       if (!res.error) navigate("/admin/dashboard-page");
@@ -116,24 +117,20 @@ const CreateBlogPage = () => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium">Upload Images</label>
+          <label className="block text-sm font-medium">Upload Image</label>
           <input
             type="file"
             accept="image/*"
-            multiple
             onChange={handleImageChange}
             className="w-full bg-amber-100 rounded-lg mt-2 mb-2 p-5"
           />
-          {previewImages.length > 0 && (
-            <div className="flex flex-wrap gap-4 mt-2">
-              {previewImages.map((src, index) => (
-                <img
-                  key={index}
-                  src={src}
-                  alt={`preview-${index}`}
-                  className="w-32 h-32 object-cover rounded border"
-                />
-              ))}
+          {previewImage && (
+            <div className="mt-2">
+              <img
+                src={previewImage}
+                alt="Preview"
+                className="w-32 h-32 object-cover rounded border"
+              />
             </div>
           )}
         </div>

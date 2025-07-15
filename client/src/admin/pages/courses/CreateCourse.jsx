@@ -29,10 +29,11 @@ const CreateCoursePage = () => {
   }, []);
 
   const handleImageChange = (e) => {
-    const files = Array.from(e.target.files);
-    setImages(files);
-    const previews = files.map((file) => URL.createObjectURL(file));
-    setPreviewImages(previews);
+    const file = e.target.files?.[0];
+    if (file) {
+      setImages([file]);
+      setPreviewImages([URL.createObjectURL(file)]);
+    }
   };
 
   const handleSubmit = (e) => {
@@ -43,7 +44,9 @@ const CreateCoursePage = () => {
     formData.append("duration", duration);
     formData.append("level", level);
     formData.append("category", category);
-    images.forEach((file) => formData.append("images", file));
+    if (images[0]) {
+      formData.append("image", images[0]);
+    }
 
     dispatch(createCourse(formData)).then((res) => {
       if (!res.error) {
@@ -141,10 +144,10 @@ const CreateCoursePage = () => {
           <input
             type="file"
             accept="image/*"
-            multiple
             onChange={handleImageChange}
             className="w-full bg-amber-100 rounded-lg mt-2 mb-2 p-5"
           />
+
           {previewImages.length > 0 && (
             <div className="flex flex-wrap gap-4 mt-2">
               {previewImages.map((src, index) => (

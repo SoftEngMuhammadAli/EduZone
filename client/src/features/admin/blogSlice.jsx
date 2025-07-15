@@ -29,9 +29,11 @@ export const fetchBlogs = createAsyncThunk(
   async (_, thunkAPI) => {
     try {
       const response = await axiosInstance.get("/api/blogs");
-      return response.data;
+      return response.data.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error.message);
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || error.message
+      );
     }
   }
 );
@@ -116,7 +118,6 @@ const blogSlice = createSlice({
   },
   reducers: {},
   extraReducers: (builder) => {
-    builder;
     builder
       .addCase(createBlogThunk.pending, (state) => {
         state.loading = true;
@@ -137,7 +138,7 @@ const blogSlice = createSlice({
       })
       .addCase(fetchBlogs.fulfilled, (state, action) => {
         state.loading = false;
-        state.blogs = action.payload.data;
+        state.blogs = action.payload;
       })
       .addCase(fetchBlogs.rejected, (state, action) => {
         state.loading = false;

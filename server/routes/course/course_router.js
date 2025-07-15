@@ -66,7 +66,7 @@ router.post(
   "/",
   checkAuth,
   authorizeRoles("admin", "instructor"),
-  upload.array("images", 5),
+  upload.single("image"),
   createCourse
 );
 router.put(
@@ -86,14 +86,34 @@ router.delete(
 // Enrollment Routes
 //--///////////////////////////////////////////////
 router.post("/user/enrollments", checkAuth, enrollInCourse);
+
 router.get("/user/enrollments/:userId", checkAuth, getEnrolledCoursesByUserId);
+
 router.get(
   "/user/enrollments/search/:name",
   checkAuth,
   getEnrolledCoursesByStudentName
 );
-router.get("/user/enrollments", checkAuth, getAllEnrolledStudents);
-router.put("/user/enrollments/:id", checkAuth, updateCourseEnrollment);
-router.delete("/user/enrollments/:id", checkAuth, unEnrollFromCourse);
+
+router.get(
+  "/user/enrollments",
+  checkAuth,
+  authorizeRoles("admin", "instructor"),
+  getAllEnrolledStudents
+);
+
+router.put(
+  "/user/enrollments/:id",
+  checkAuth,
+  authorizeRoles("admin", "instructor"),
+  updateCourseEnrollment
+);
+
+router.delete(
+  "/user/enrollments/:id",
+  checkAuth,
+  authorizeRoles("admin", "instructor"),
+  unEnrollFromCourse
+);
 
 export default router;

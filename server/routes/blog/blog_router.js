@@ -67,7 +67,7 @@ router.post(
   "/",
   checkAuth,
   authorizeRoles("admin"),
-  upload.array("images", 5),
+  upload.single("image"),
   handleCreateBlog
 );
 
@@ -76,7 +76,7 @@ router.put(
   "/:id",
   checkAuth,
   authorizeRoles("admin"),
-  upload.array("images", 5),
+  upload.single("image"),
   handleUpdateBlogById
 );
 

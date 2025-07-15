@@ -14,9 +14,9 @@ const UpdateBlogPage = () => {
   const [content, setContent] = useState("");
   const [tags, setTags] = useState("");
   const [category, setCategory] = useState("");
-  const [images, setImages] = useState([]);
   const [categoryList, setCategoryList] = useState([]);
   const [blogLoaded, setBlogLoaded] = useState(false);
+  const [image, setImage] = useState(null);
 
   useEffect(() => {
     dispatch(fetchBlogs());
@@ -41,7 +41,10 @@ const UpdateBlogPage = () => {
   }, [blogs, id]);
 
   const handleImageChange = (e) => {
-    setImages(Array.from(e.target.files));
+    const file = e.target.files?.[0];
+    if (file) {
+      setImage(file);
+    }
   };
 
   const handleSubmit = (e) => {
@@ -55,9 +58,10 @@ const UpdateBlogPage = () => {
       "tags",
       JSON.stringify(tags.split(",").map((tag) => tag.trim()))
     );
-    images.forEach((file) => {
-      formData.append("images", file);
-    });
+
+    if (image) {
+      formData.append("image", image);
+    }
 
     dispatch(updateBlog({ id, blogData: formData })).then((res) => {
       if (!res.error) navigate("/admin/dashboard-page");
@@ -140,9 +144,8 @@ const UpdateBlogPage = () => {
             </label>
             <input
               type="file"
-              name="images"
+              name="image"
               accept="image/*"
-              multiple
               onChange={handleImageChange}
               className="mt-1 block w-full"
             />

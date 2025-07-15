@@ -41,6 +41,7 @@ const BlogListPage = () => {
           <table className="min-w-full bg-white border rounded-md shadow">
             <thead>
               <tr className="bg-gray-100 text-left text-sm font-semibold text-gray-700">
+                <th className="px-4 py-3">Image</th>
                 <th className="px-4 py-3">Title</th>
                 <th className="px-4 py-3">Category</th>
                 <th className="px-4 py-3">Actions</th>
@@ -49,9 +50,21 @@ const BlogListPage = () => {
             <tbody>
               {blogs.map((blog) => (
                 <tr key={blog._id} className="border-t text-sm">
+                  <td className="px-4 py-3">
+                    {blog.images?.[0] ? (
+                      <img
+                        src={`${import.meta.env.VITE_BASE_URL}/uploads/${
+                          blog.images[0]
+                        }`}
+                        alt="Blog"
+                        className="w-16 h-16 object-cover rounded"
+                      />
+                    ) : (
+                      <span className="text-gray-400">No image</span>
+                    )}
+                  </td>
                   <td className="px-4 py-3">{blog.title}</td>
                   <td className="px-4 py-3">{blog.category?.name || "N/A"}</td>
-
                   <td className="px-4 py-3">
                     <div className="flex gap-2">
                       <button

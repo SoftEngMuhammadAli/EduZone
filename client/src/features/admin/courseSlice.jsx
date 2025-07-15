@@ -106,14 +106,16 @@ const courseSlice = createSlice({
       .addCase(updateCourse.pending, (state) => {
         state.loading = true;
       })
+
       .addCase(updateCourse.fulfilled, (state, action) => {
         state.loading = false;
         state.error = null;
+        const updatedCourse = action.payload.data || action.payload;
         const index = state.courses.findIndex(
-          (course) => course._id === action.payload._id
+          (course) => course._id === updatedCourse._id
         );
         if (index !== -1) {
-          state.courses[index] = action.payload;
+          state.courses[index] = updatedCourse;
         }
       })
       .addCase(updateCourse.rejected, (state, action) => {

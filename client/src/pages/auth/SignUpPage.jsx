@@ -30,7 +30,6 @@ const SignUpPage = () => {
       name: form.name.value.trim(),
       email: form.email.value.trim(),
       password: form.password.value,
-      user_type: form.user_type.value,
     };
 
     if (
@@ -101,16 +100,6 @@ const SignUpPage = () => {
               className="w-full p-3 rounded bg-[#2D2F6B] text-white placeholder-gray-300 focus:outline-none"
               required
             />
-
-            <select
-              name="user_type"
-              className="w-full p-3 rounded bg-[#2D2F6B] text-white focus:outline-none"
-              required
-            >
-              <option value="">Select Role</option>
-              <option value="student">Student</option>
-              <option value="instructor">Instructor</option>
-            </select>
 
             <button
               type="submit"
