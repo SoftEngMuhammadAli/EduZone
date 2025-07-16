@@ -1,11 +1,11 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
+import axiosInstance from "../../services/axios";
 
 // Create comment
 export const createComment = createAsyncThunk(
   "comment/create",
   async (payload) => {
-    const res = await axios.post("/api/comments", payload);
+    const res = await axiosInstance.post("/api/comments", payload);
     return res.data.data;
   }
 );
@@ -13,7 +13,7 @@ export const createComment = createAsyncThunk(
 export const getComments = createAsyncThunk(
   "comment/getAll",
   async (courseId) => {
-    const res = await axios.get(`/api/comments?courseId=${courseId}`);
+    const res = await axiosInstance.get(`/api/comments/course/${courseId}`);
     return res.data.data;
   }
 );
@@ -41,8 +41,9 @@ const commentSlice = createSlice({
         state.list.push(action.payload);
       })
       .addCase(createComment.rejected, (state, action) => {
+        console.error("Comment failed:", action.error.message);
         state.loading = false;
-        state.error = action.payload;
+        state.error = action.error.message;
       })
       .addCase(getComments.pending, (state) => {
         state.loading = true;

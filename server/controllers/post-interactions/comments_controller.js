@@ -162,3 +162,18 @@ export const deleteComment = catchAsyncHandler(async (req, res) => {
     });
   }
 });
+
+export const getCommentsByCourse = catchAsyncHandler(async (req, res) => {
+  const { courseId } = req.params;
+
+  if (!courseId) {
+    return res.status(400).json({ message: "courseId is required in params." });
+  }
+
+  const comments = await Comment.find({ courseId }).populate("user", "name");
+
+  return res.status(200).json({
+    message: "Comments fetched",
+    data: comments,
+  });
+});

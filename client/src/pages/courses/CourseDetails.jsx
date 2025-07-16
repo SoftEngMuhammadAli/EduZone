@@ -30,7 +30,6 @@ const CourseDetail = () => {
   );
 
   const [comment, setComment] = useState("");
-  const [like, setLike] = useState("");
 
   const alreadyEnrolledError = error
     ?.toLowerCase()
@@ -41,22 +40,27 @@ const CourseDetail = () => {
   };
 
   const handleCommentSubmit = async () => {
-    if (comment.trim()) {
-      await dispatch(
+    if (typeof comment === "string" && comment.trim()) {
+      const result = await dispatch(
         createComment({
           user: user._id,
           commentOnPost: comment.trim(),
           courseId: course._id,
         })
       );
+      console.log("Comment result:", result);
       dispatch(getComments(course._id));
       setComment("");
     }
   };
+
   const handleLike = async () => {
     const alreadyLiked = likeList.some((l) => l.user._id === user._id);
     if (!alreadyLiked) {
-      await dispatch(createLike({ user: user._id, courseId: course._id }));
+      const result = await dispatch(
+        createLike({ user: user._id, courseId: course._id })
+      );
+      console.log("Like result:", result);
       dispatch(getLikesByCourse(course._id));
     }
   };

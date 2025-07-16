@@ -40,7 +40,7 @@ export const getAllLikes = catchAsyncHandler(async (req, res) => {
 
     const likes = await Like.find({ courseId }).populate("user", "name");
 
-i
+    i;
 
     return res.status(200).json({
       message: "Likes fetched",
@@ -129,4 +129,19 @@ export const deleteLike = catchAsyncHandler(async (req, res) => {
       error: error.message,
     });
   }
+});
+
+export const getLikesByCourse = catchAsyncHandler(async (req, res) => {
+  const { courseId } = req.params;
+
+  if (!courseId) {
+    return res.status(400).json({ message: "courseId is required in params." });
+  }
+
+  const likes = await Like.find({ courseId }).populate("user", "name");
+
+  return res.status(200).json({
+    message: "Likes fetched",
+    data: likes,
+  });
 });

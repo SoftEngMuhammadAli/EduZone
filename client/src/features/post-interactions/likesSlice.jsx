@@ -1,17 +1,26 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "../../services/axios";
+import axiosInstance from "../../services/axios";
 
 // Create Like
-export const createLike = createAsyncThunk("likes/create", async (payload) => {
-  const res = await axios.post("/api/likes", payload);
-  return res.data.data;
-});
+export const createLike = createAsyncThunk(
+  "likes/create",
+  async (payload, thunkAPI) => {
+    console.log("Payload sent to /api/likes:", payload);
 
+    try {
+      const response = await axiosInstance.post("/api/likes", payload);
+      return response.data;
+    } catch (error) {
+      console.error("Like failed:", error.response?.data || error.message);
+      return thunkAPI.rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
 // getLikesByCourse
 export const getLikesByCourse = createAsyncThunk(
   "likes/getByCourse",
   async (courseId) => {
-    const res = await axios.get(`/api/likes?courseId=${courseId}`);
+    const res = await axiosInstance.get(`/api/likes/course/${courseId}`);
     return res.data.data;
   }
 );
@@ -39,8 +48,9 @@ const likeSlice = createSlice({
         state.list.push(action.payload);
       })
       .addCase(createLike.rejected, (state, action) => {
+        console.error("failed:", action.error.message);
         state.loading = false;
-        state.error = action.payload;
+        state.error = action.error.message;
       })
 
       // Get Likes by Course
