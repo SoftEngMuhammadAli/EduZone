@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import Loader from "../../utils/Loader";
 
 const AdminSideBarNavigation = () => {
   const { user } = useSelector((state) => state.auth);
@@ -8,7 +9,11 @@ const AdminSideBarNavigation = () => {
   const navigate = useNavigate();
 
   if (!user || !userRole) {
-    return <div>Loading...</div>; // Replace with <Loader /> if you have a loader component
+    return (
+      <div>
+        <Loader />
+      </div>
+    );
   }
 
   return (
@@ -39,7 +44,7 @@ const AdminSideBarNavigation = () => {
           </div>
           <div
             onClick={() =>
-              navigate(`/${userRole}/courses-management/update-course`)
+              navigate(`/${userRole}/courses-management/update-course/:id`)
             }
             className="hover:text-yellow-400 cursor-pointer"
           >

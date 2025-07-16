@@ -41,6 +41,7 @@ router.put(
   "/:id",
   checkAuth,
   authorizeRoles("admin", "instructor"),
+  upload.single("image"),
   updateCourseById
 );
 router.delete(

@@ -44,7 +44,15 @@ export const getCourseById = catchAsyncHandler(async (req, res) => {
       return res.status(404).json({ error: "Course not found" });
     }
 
-    return res.status(200).json({ message: "Course found", data: course });
+    return res.status(200).json({
+      message: "Course found",
+      data: {
+        ...course.toObject(),
+        imageUrl: course.image
+          ? `${process.env.BASE_URL}/uploads/${course.image}`
+          : null,
+      },
+    });
   } catch (error) {
     return res
       .status(500)
@@ -112,7 +120,12 @@ export const createCourse = catchAsyncHandler(async (req, res) => {
 
     return res.status(201).json({
       message: "Course created successfully",
-      data: newCourse,
+      data: {
+        ...newCourse.toObject(),
+        imageUrl: newCourse.image
+          ? `${process.env.BASE_URL}/uploads/${newCourse.image}`
+          : null,
+      },
     });
   } catch (error) {
     return res
@@ -122,43 +135,43 @@ export const createCourse = catchAsyncHandler(async (req, res) => {
 });
 
 export const updateCourseById = catchAsyncHandler(async (req, res) => {
-  try {
-    const { id } = req.params;
-    const user = req.user?._id;
+  const { id } = req.params;
+  const user = req.user?._id;
 
-    if (!user) {
-      return res.status(401).json({ error: "Unauthorized access" });
-    }
-
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ error: "Invalid Course ID" });
-    }
-
-    const updatedCourse = await Course.findByIdAndUpdate(id, req.body, {
-      new: true,
-      runValidators: true,
-    });
-
-    if (!updatedCourse) {
-      return res.status(404).json({ error: "Course not found" });
-    }
-
-    await Notification.create({
-      userId: user,
-      message: `Course "${updatedCourse.title}" has been updated.`,
-      type: "course",
-      link: `/courses/${updatedCourse._id}`,
-    });
-
-    return res.status(200).json({
-      message: "Course updated successfully",
-      data: updatedCourse,
-    });
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ message: "Server error", error: error.message });
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ error: "Invalid Course ID" });
   }
+
+  const updateData = { ...req.body };
+  if (req.file?.filename) {
+    updateData.image = req.file.filename;
+  }
+
+  const updatedCourse = await Course.findByIdAndUpdate(id, updateData, {
+    new: true,
+    runValidators: true,
+  });
+
+  if (!updatedCourse) {
+    return res.status(404).json({ error: "Course not found" });
+  }
+
+  await Notification.create({
+    userId: user,
+    message: `Course "${updatedCourse.title}" has been updated.`,
+    type: "course",
+    link: `/courses/${updatedCourse._id}`,
+  });
+
+  return res.status(200).json({
+    message: "Course updated successfully",
+    data: {
+      ...updatedCourse.toObject(),
+      imageUrl: updatedCourse.image
+        ? `${process.env.BASE_URL}/uploads/${updatedCourse.image}`
+        : null,
+    },
+  });
 });
 
 export const deleteCourseById = catchAsyncHandler(async (req, res) => {

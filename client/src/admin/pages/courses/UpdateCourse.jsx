@@ -50,7 +50,16 @@ const UpdateCoursePage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(updateCourse({ id, courseData: formData })).then((res) => {
+
+    const dataToSend = {
+      title: formData.title,
+      description: formData.description,
+      duration: formData.duration,
+      level: formData.level,
+      category: formData.category,
+    };
+
+    dispatch(updateCourse({ id, courseData: dataToSend })).then((res) => {
       if (!res.error) navigate("/admin/dashboard-page");
     });
   };

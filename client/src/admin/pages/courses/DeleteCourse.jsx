@@ -29,6 +29,7 @@ const DeleteCoursePage = () => {
       <table className="w-full bg-white shadow-md rounded text-sm">
         <thead className="bg-gray-100 text-left">
           <tr>
+            <th className="p-4 font-medium">Course Image</th>
             <th className="p-4 font-medium">Course Title</th>
             <th className="p-4 font-medium text-center">Action</th>
           </tr>
@@ -37,6 +38,22 @@ const DeleteCoursePage = () => {
           {courses.length > 0
             ? courses.map((course) => (
                 <tr key={course._id} className="border-t hover:bg-gray-50">
+                  <td className="p-3">
+                    {course.image ? (
+                      <img
+                        src={
+                          course.imageUrl ||
+                          `${import.meta.env.VITE_BASE_URL}/uploads/${
+                            course.image
+                          }`
+                        }
+                        alt={course.title}
+                        className="w-10 h-10 rounded object-cover"
+                      />
+                    ) : (
+                      <span className="text-gray-400">No image</span>
+                    )}
+                  </td>
                   <td className="p-4">{course.title}</td>
                   <td className="p-4 text-center">
                     <button
