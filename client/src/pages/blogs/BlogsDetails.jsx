@@ -29,6 +29,22 @@ const BlogsDetails = () => {
     <>
       <section className="max-w-5xl mx-auto py-10 px-4">
         <h1 className="text-3xl font-bold mb-4">{selectedBlog.title}</h1>
+        <div className="h-56 bg-gray-100 overflow-hidden">
+          {selectedBlog.image ? (
+            <img
+              src={`${import.meta.env.VITE_BASE_URL}/uploads/${
+                selectedBlog.image
+              }`}
+              alt={selectedBlog.title}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-sm text-gray-500">
+              No Image
+            </div>
+          )}
+        </div>
+
         <p className="text-sm text-gray-500 mb-6">
           {new Date(selectedBlog.publish_date).toDateString()}
         </p>

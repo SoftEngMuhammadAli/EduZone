@@ -59,10 +59,10 @@ const ReadHomeBlogs = () => {
             >
               {/* Image */}
               <div className="w-full h-56 bg-gray-200 overflow-hidden rounded-t-lg">
-                {item.images?.[0] ? (
+                {item.image ? (
                   <img
                     src={`${import.meta.env.VITE_BASE_URL}/uploads/${
-                      item.images[0]
+                      item.image
                     }`}
                     alt={item.title}
                     className="w-full h-full object-cover"

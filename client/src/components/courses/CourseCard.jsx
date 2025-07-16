@@ -15,9 +15,9 @@ const CourseCard = ({ course, buttonText = "See More Details" }) => {
     >
       {/* Course Image */}
       <div className="h-48 sm:h-56 md:h-64 overflow-hidden flex items-center justify-center bg-gray-100">
-        {course.images?.length > 0 ? (
+        {course.image ? (
           <img
-            src={`${import.meta.env.VITE_BASE_URL}/uploads/${course.images[0]}`}
+            src={`${import.meta.env.VITE_BASE_URL}/uploads/${course.image}`}
             alt={course.title}
             className="w-full h-full object-cover"
           />

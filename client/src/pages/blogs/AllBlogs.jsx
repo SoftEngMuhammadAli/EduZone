@@ -56,10 +56,10 @@ const ReadAllBlogs = () => {
                 onClick={() => openModal(blog)}
               >
                 <div className="h-56 bg-gray-100 overflow-hidden">
-                  {blog.images?.[0] ? (
+                  {blog.image ? (
                     <img
                       src={`${import.meta.env.VITE_BASE_URL}/uploads/${
-                        blog.images[0]
+                        blog.image
                       }`}
                       alt={blog.title}
                       className="w-full h-full object-cover"
