@@ -26,10 +26,10 @@ const AdminDashboardBlogs = ({ blogs, loading, error }) => {
           {blogs.slice(0, 6).map((blog) => (
             <div key={blog._id} className="bg-white p-4 rounded-xl shadow-md">
               <div className="w-full h-40 bg-gray-200 rounded mb-3 overflow-hidden">
-                {blog.images?.[0] ? (
+                {blog.image ? (
                   <img
                     src={`${import.meta.env.VITE_BASE_URL}/uploads/${
-                      blog.images[0]
+                      blog.image
                     }`}
                     alt={blog.title}
                     className="w-full h-full object-cover"

@@ -1,3 +1,6 @@
+// -----------------------
+// features/admin/blogSlice.js
+// -----------------------
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axiosInstance from "../../services/axios";
 
@@ -7,16 +10,10 @@ export const createBlogThunk = createAsyncThunk(
   async (formData, thunkAPI) => {
     try {
       const response = await axiosInstance.post("/api/blogs", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+        headers: { "Content-Type": "multipart/form-data" },
       });
       return response.data;
     } catch (error) {
-      console.error(
-        "CREATE BLOG ERROR:",
-        error.response?.data || error.message
-      );
       return thunkAPI.rejectWithValue(
         error.response?.data?.message || "Error creating blog"
       );
@@ -38,52 +35,38 @@ export const fetchBlogs = createAsyncThunk(
   }
 );
 
-export const getAllBlogs = createAsyncThunk(
-  "blogs/get-blog-by-id",
-  async (id, thunkAPI) => {
-    try {
-      const response = await axiosInstance.get(`/api/blogs/`);
-      return response.data;
-    } catch (error) {
-      return thunkAPI.rejectWithValue(error.message);
-    }
-  }
-);
-
 export const getBlogById = createAsyncThunk(
   "blogs/getBlogById",
   async (id, thunkAPI) => {
     try {
-      const res = await axiosInstance.get(`/api/blogs/${id}`);
-      return res.data.data;
-    } catch (err) {
+      const response = await axiosInstance.get(`/api/blogs/${id}`);
+      return response.data.data;
+    } catch (error) {
       return thunkAPI.rejectWithValue(
-        err?.response?.data?.message || "Failed to fetch blog"
+        error.response?.data?.message || "Failed to fetch blog"
       );
     }
   }
 );
 
 export const updateBlog = createAsyncThunk(
-  "blog/updateBlog",
+  "blogs/updateBlog",
   async ({ id, blogData }, thunkAPI) => {
     try {
       const response = await axiosInstance.put(`/api/blogs/${id}`, blogData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+        headers: { "Content-Type": "multipart/form-data" },
       });
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
-        error?.response?.data?.message || "Failed to update blog"
+        error.response?.data?.message || "Failed to update blog"
       );
     }
   }
 );
 
 export const deleteBlog = createAsyncThunk(
-  "blog/deleteBlog",
+  "blogs/deleteBlog",
   async (id, thunkAPI) => {
     try {
       await axiosInstance.delete(`/api/blogs/${id}`);
@@ -94,25 +77,11 @@ export const deleteBlog = createAsyncThunk(
   }
 );
 
-export const fetchBlogCategories = createAsyncThunk(
-  "blogCategories/fetch",
-  async (_, thunkAPI) => {
-    try {
-      const res = await axiosInstance.get("/api/blog-categories");
-      return res.data.data;
-    } catch (err) {
-      return thunkAPI.rejectWithValue("Failed to fetch categories");
-    }
-  }
-);
-
-// SLICE
 const blogSlice = createSlice({
   name: "blogs",
   initialState: {
     blogs: [],
     selectedBlog: null,
-    createdBlog: null,
     loading: false,
     error: null,
   },
@@ -121,12 +90,10 @@ const blogSlice = createSlice({
     builder
       .addCase(createBlogThunk.pending, (state) => {
         state.loading = true;
-        state.error = null;
       })
       .addCase(createBlogThunk.fulfilled, (state, action) => {
         state.loading = false;
-        // state.createdBlog = action.payload;
-        state.blogs = [...state.blogs, action.payload];
+        state.blogs.push(action.payload);
       })
       .addCase(createBlogThunk.rejected, (state, action) => {
         state.loading = false;
@@ -141,18 +108,6 @@ const blogSlice = createSlice({
         state.blogs = action.payload;
       })
       .addCase(fetchBlogs.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      })
-
-      .addCase(getAllBlogs.pending, (state) => {
-        state.loading = true;
-      })
-      .addCase(getAllBlogs.fulfilled, (state, action) => {
-        state.loading = false;
-        state.selectedBlog = action.payload;
-      })
-      .addCase(getAllBlogs.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
@@ -175,11 +130,9 @@ const blogSlice = createSlice({
       .addCase(updateBlog.fulfilled, (state, action) => {
         state.loading = false;
         const index = state.blogs.findIndex(
-          (blog) => blog._id === action.payload._id
+          (b) => b._id === action.payload._id
         );
-        if (index !== -1) {
-          state.blogs[index] = action.payload;
-        }
+        if (index !== -1) state.blogs[index] = action.payload;
       })
       .addCase(updateBlog.rejected, (state, action) => {
         state.loading = false;
@@ -191,9 +144,7 @@ const blogSlice = createSlice({
       })
       .addCase(deleteBlog.fulfilled, (state, action) => {
         state.loading = false;
-        state.blogs = state.blogs.filter(
-          (blog) => blog._id !== action.payload._id
-        );
+        state.blogs = state.blogs.filter((b) => b._id !== action.payload._id);
       })
       .addCase(deleteBlog.rejected, (state, action) => {
         state.loading = false;
@@ -202,30 +153,4 @@ const blogSlice = createSlice({
   },
 });
 
-const blogCategorySlice = createSlice({
-  name: "blogCategories",
-  initialState: {
-    categories: [],
-    loading: false,
-    error: null,
-  },
-  reducers: {},
-  extraReducers: (builder) => {
-    builder
-      .addCase(fetchBlogCategories.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(fetchBlogCategories.fulfilled, (state, action) => {
-        state.loading = false;
-        state.categories = action.payload;
-      })
-      .addCase(fetchBlogCategories.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      });
-  },
-});
-
 export const blogReducer = blogSlice.reducer;
-export const blogCategoryReducer = blogCategorySlice.reducer;
