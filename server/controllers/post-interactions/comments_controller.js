@@ -1,31 +1,24 @@
 import { catchAsyncHandler } from "../../middlewares/error_middleware.js";
 import Comment from "../../models/post-interactions/comments_model.js";
 
+// Create Comment
 export const createComment = catchAsyncHandler(async (req, res) => {
+  console.log(`Create Comment Request Body: ${req.body}`);
+
   try {
-    console.log("Incoming body:", req.body);
+    const { user, commentOnPost, courseId } = req.body;
 
-    const { user, commentOnPost, lessonId, assignmentId } = req.body;
-
-    if (!user || !commentOnPost?.trim() || (!lessonId && !assignmentId)) {
+    if (!user || !commentOnPost?.trim() || !courseId) {
       return res.status(400).json({
-        message:
-          "User, commentOnPost text, and either lessonId or assignmentId are required.",
+        message: "User, comment text, and courseId are required.",
       });
     }
 
     const newComment = new Comment({
       user,
       commentOnPost: commentOnPost.trim(),
-      lessonId,
-      assignmentId,
+      courseId,
     });
-
-    if (!newComment) {
-      return res.status(400).json({
-        message: "Failed to create comment. Please check your input.",
-      });
-    }
 
     await newComment.save();
 
@@ -34,24 +27,22 @@ export const createComment = catchAsyncHandler(async (req, res) => {
       data: newComment,
     });
   } catch (error) {
-    return res
-      .status(500)
-      .json({ message: "Server error", error: error.message });
+    return res.status(500).json({
+      message: "Failed to create comment",
+      error: error.message,
+    });
   }
 });
 
+// Get All Comments
 export const getAllComments = catchAsyncHandler(async (req, res) => {
+  console.log("Get All Comments Query:", req.query);
   try {
-    const comments = await Comment.find()
-      .populate("user", "name email")
-      .populate("lessonId", "title")
-      .populate("assignmentId", "title");
+    const { courseId } = req.query;
+    const comments = await Comment.find({ courseId }).populate("user", "name");
 
-    if (!comments || comments.length === 0) {
-      return res.status(404).json({
-        message: "No comments found",
-        data: [],
-      });
+    if (!comments) {
+      return res.status(404).json({ message: "Unable to find!" });
     }
 
     return res.status(200).json({
@@ -59,12 +50,14 @@ export const getAllComments = catchAsyncHandler(async (req, res) => {
       data: comments,
     });
   } catch (error) {
-    return res
-      .status(500)
-      .json({ message: "Server error", error: error.message });
+    return res.status(500).json({
+      message: "Failed to fetch comments",
+      error: error.message,
+    });
   }
 });
 
+// Get Comment by ID
 export const getCommentById = catchAsyncHandler(async (req, res) => {
   try {
     const { id } = req.params;
@@ -77,13 +70,11 @@ export const getCommentById = catchAsyncHandler(async (req, res) => {
 
     const comment = await Comment.findById(id)
       .populate("user", "name email")
-      .populate("lessonId", "title")
-      .populate("assignmentId", "title");
+      .populate("courseId", "title");
 
     if (!comment) {
       return res.status(404).json({
         message: "Comment not found",
-        data: null,
       });
     }
 
@@ -92,15 +83,18 @@ export const getCommentById = catchAsyncHandler(async (req, res) => {
       data: comment,
     });
   } catch (error) {
-    return res
-      .status(500)
-      .json({ message: "Server error", error: error.message });
+    return res.status(500).json({
+      message: "Failed to fetch comment",
+      error: error.message,
+    });
   }
 });
 
+// Update Comment
 export const updateComment = catchAsyncHandler(async (req, res) => {
   try {
     const { id } = req.params;
+    const { commentOnPost } = req.body;
 
     if (!id) {
       return res.status(400).json({
@@ -108,33 +102,21 @@ export const updateComment = catchAsyncHandler(async (req, res) => {
       });
     }
 
-    const { commentOnPost } = req.body;
-
-    if (!commentOnPost) {
+    if (!commentOnPost || !commentOnPost.trim()) {
       return res.status(400).json({
-        message: "commentOnPost is required",
-      });
-    }
-
-    if (commentOnPost && !commentOnPost.trim()) {
-      return res.status(400).json({
-        message: "commentOnPost cannot be empty",
+        message: "Valid commentOnPost is required",
       });
     }
 
     const updated = await Comment.findByIdAndUpdate(
       id,
-      {
-        ...req.body,
-        ...(commentOnPost && { commentOnPost: commentOnPost.trim() }),
-      },
+      { commentOnPost: commentOnPost.trim() },
       { new: true }
     );
 
     if (!updated) {
       return res.status(404).json({
         message: "Comment not found",
-        data: null,
       });
     }
 
@@ -143,12 +125,14 @@ export const updateComment = catchAsyncHandler(async (req, res) => {
       data: updated,
     });
   } catch (error) {
-    return res
-      .status(500)
-      .json({ message: "Server error", error: error.message });
+    return res.status(500).json({
+      message: "Failed to update comment",
+      error: error.message,
+    });
   }
 });
 
+// Delete Comment
 export const deleteComment = catchAsyncHandler(async (req, res) => {
   try {
     const { id } = req.params;
@@ -164,7 +148,6 @@ export const deleteComment = catchAsyncHandler(async (req, res) => {
     if (!deleted) {
       return res.status(404).json({
         message: "Comment not found",
-        data: null,
       });
     }
 
@@ -173,8 +156,9 @@ export const deleteComment = catchAsyncHandler(async (req, res) => {
       data: deleted,
     });
   } catch (error) {
-    return res
-      .status(500)
-      .json({ message: "Server error", error: error.message });
+    return res.status(500).json({
+      message: "Failed to delete comment",
+      error: error.message,
+    });
   }
 });

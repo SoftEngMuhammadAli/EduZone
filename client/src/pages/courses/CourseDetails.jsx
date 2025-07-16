@@ -6,6 +6,14 @@ import {
 } from "../../features/course/enrollSlice";
 import { useLocation, useNavigate } from "react-router-dom";
 import { AppFooter } from "../../components/footer/Footer";
+import {
+  createComment,
+  getComments,
+} from "../../features/post-interactions/commentSlice";
+import {
+  createLike,
+  getLikesByCourse,
+} from "../../features/post-interactions/likesSlice";
 
 const CourseDetail = () => {
   const { state: course } = useLocation();
@@ -14,30 +22,49 @@ const CourseDetail = () => {
   const { user } = useSelector((state) => state.auth);
 
   const { status, error, data } = useSelector((state) => state.enroll);
-  const userId = user._id;
+  const { list: commentList, loading: commentLoading } = useSelector(
+    (state) => state.comment
+  );
+  const { list: likeList, loading: likeLoading } = useSelector(
+    (state) => state.likes
+  );
 
-  const [likes, setLikes] = useState(0);
   const [comment, setComment] = useState("");
-  const [commentList, setCommentList] = useState([]);
+  const [like, setLike] = useState("");
 
   const alreadyEnrolledError = error
     ?.toLowerCase()
     .includes("already enrolled");
 
   const handleEnroll = () => {
-    dispatch(enrollInCourse({ userId, courseId: course._id }));
+    dispatch(enrollInCourse({ userId: user._id, courseId: course._id }));
   };
 
-  const handleLike = () => {
-    setLikes((prev) => prev + 1);
-  };
-
-  const handleCommentSubmit = () => {
+  const handleCommentSubmit = async () => {
     if (comment.trim()) {
-      setCommentList((prev) => [...prev, comment]);
+      await dispatch(
+        createComment({
+          user: user._id,
+          commentOnPost: comment.trim(),
+          courseId: course._id,
+        })
+      );
+      dispatch(getComments(course._id));
       setComment("");
     }
   };
+  const handleLike = async () => {
+    const alreadyLiked = likeList.some((l) => l.user._id === user._id);
+    if (!alreadyLiked) {
+      await dispatch(createLike({ user: user._id, courseId: course._id }));
+      dispatch(getLikesByCourse(course._id));
+    }
+  };
+
+  useEffect(() => {
+    dispatch(getComments(course._id));
+    dispatch(getLikesByCourse(course._id));
+  }, [dispatch, course._id]);
 
   useEffect(() => {
     if (
@@ -108,11 +135,17 @@ const CourseDetail = () => {
             <div className="flex items-center gap-3 mb-6">
               <button
                 onClick={handleLike}
+                disabled={likeLoading}
                 className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition"
               >
                 👍 Like
               </button>
-              <span className="text-gray-700 font-medium">{likes} Likes</span>
+              <span className="text-gray-700 font-medium">
+                {likeList.length} Likes
+              </span>
+              {likeList.some((l) => l.user._id === user._id) && (
+                <span className="text-green-500 text-sm">You liked this</span>
+              )}
             </div>
 
             <div className="mb-4">
@@ -135,12 +168,18 @@ const CourseDetail = () => {
             {commentList.length > 0 && (
               <div className="mt-4 space-y-3">
                 <h3 className="font-medium text-gray-800 text-lg">Comments</h3>
-                {commentList.map((c, idx) => (
+                {commentList.map((c) => (
                   <div
-                    key={idx}
+                    key={c._id}
                     className="bg-gray-100 p-3 rounded-md text-sm text-gray-700"
                   >
-                    {c}
+                    <div className="font-semibold">
+                      {c.user?.name || "Anonymous"}
+                    </div>
+                    <div>{c.commentOnPost}</div>
+                    <div className="text-xs text-gray-500">
+                      {new Date(c.createdAt).toLocaleString()}
+                    </div>
                   </div>
                 ))}
               </div>

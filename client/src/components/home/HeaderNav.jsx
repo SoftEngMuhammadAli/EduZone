@@ -7,15 +7,17 @@ import { MoreVertical } from "lucide-react";
 const HeaderNav = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const user = useSelector((state) => state.auth.user);
 
   const handleLogout = () => {
-    dispatch(logout());
-    navigate("/login");
-    setShowDropdown(false);
-    setIsMenuOpen(false);
+    setLoggingOut(true);
+    dispatch(logout()).then(() => {
+      navigate("/login");
+      setLoggingOut(false);
+    });
   };
 
   const toggleDropdown = () => setShowDropdown((prev) => !prev);
@@ -80,7 +82,15 @@ const HeaderNav = () => {
             </>
           )}
 
-          {isInstructor && <>{/* Empry For Instructor NavItems */}</>}
+          {isInstructor && (
+            <>
+              <Link to="/instructor/instructor-dashboard-page">Dashboard</Link>
+              <Link to="/instructor/courses-management/get-all-courses">
+                Courses
+              </Link>
+              <Link onClick={handleLogout}>Sign Out</Link>
+            </>
+          )}
 
           {isStudent && (
             <>
@@ -100,16 +110,7 @@ const HeaderNav = () => {
               className="text-white hover:text-yellow-400"
             >
               {/* If teacher Then Show Only LogOut Button */}
-              {isInstructor ? (
-                <button
-                  onClick={handleLogout}
-                  className="bg-[white] rounded-lg w-full text-left px-4 py-2 hover:bg-red-100 text-black"
-                >
-                  Sign Out
-                </button>
-              ) : (
-                <MoreVertical />
-              )}
+              {isInstructor ? <>{""}</> : <MoreVertical />}
             </button>
             {showDropdown && (
               <div className="absolute right-0 mt-2 w-48 bg-white text-black rounded shadow-lg z-50">
@@ -168,7 +169,17 @@ const HeaderNav = () => {
               </>
             )}
 
-            {isInstructor && <>{/* Empry For Instructor NavItems */}</>}
+            {isInstructor && (
+              <>
+                {" "}
+                <Link to="/instructor/instructor-dashboard-page">
+                  Dashboard
+                </Link>
+                <Link to="/instructor/courses-management/get-all-courses">
+                  Courses
+                </Link>
+              </>
+            )}
 
             {isStudent && (
               <>

@@ -7,16 +7,14 @@ const commentsSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    lessonId: {
+    courseId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Lesson",
-    },
-    assignmentId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Assignment",
+      ref: "Course",
+      required: true,
     },
     commentOnPost: {
       type: String,
+      required: true,
     },
   },
   { timestamps: true }

@@ -1,42 +1,22 @@
 import { catchAsyncHandler } from "../../middlewares/error_middleware.js";
 import Like from "../../models/post-interactions/likes_model.js";
+import mongoose from "mongoose";
 
+// Create Like
 export const createLike = catchAsyncHandler(async (req, res) => {
   try {
-    console.log("Incoming body:", req.body);
-    const { user, lessonId, assignmentId } = req.body || {};
+    const { user, courseId } = req.body;
 
-    if (!user || (!lessonId && !assignmentId)) {
-      return res.status(400).json({
-        message:
-          "User and either lessonId or assignmentId are required to create a like.",
-      });
+    if (!user || !courseId) {
+      return res.status(400).json({ message: "User and courseId required." });
     }
 
-    const existingLike = await Like.findOne({
-      user,
-      // Check if either lessonId or assignmentId is provided
-      // If both are provided, it will check for both
-      ...(lessonId && { lessonId }),
-      ...(assignmentId && { assignmentId }),
-    });
-
+    const existingLike = await Like.findOne({ user, courseId });
     if (existingLike) {
       return res.status(409).json({ message: "Like already exists." });
     }
 
-    const newLike = new Like({
-      user,
-      lessonId: lessonId || undefined,
-      assignmentId: assignmentId || undefined,
-    });
-
-    if (!newLike) {
-      return res.status(400).json({
-        message: "Failed to create like. Please check your input.",
-      });
-    }
-
+    const newLike = new Like({ user, courseId });
     await newLike.save();
 
     return res.status(201).json({
@@ -44,102 +24,109 @@ export const createLike = catchAsyncHandler(async (req, res) => {
       data: newLike,
     });
   } catch (error) {
-    return res
-      .status(500)
-      .json({ message: "Server error", error: error.message });
+    return res.status(500).json({
+      message: "Server error while creating like",
+      error: error.message,
+    });
   }
 });
 
+// Get All Likes (Optional: filter by courseId)
 export const getAllLikes = catchAsyncHandler(async (req, res) => {
   try {
-    const likes = await Like.find()
-      .populate("user", "name email")
-      .populate("lessonId", "title")
-      .populate("assignmentId", "title");
+    const { courseId } = req.query;
 
-    if (!likes || likes.length === 0) {
-      return res.status(404).json({ message: "No likes found." });
-    }
+    const filter = courseId ? { courseId } : {};
+
+    const likes = await Like.find({ courseId }).populate("user", "name");
+
+i
 
     return res.status(200).json({
       message: "Likes fetched",
       data: likes,
     });
   } catch (error) {
-    return res
-      .status(500)
-      .json({ message: "Server error", error: error.message });
+    return res.status(500).json({
+      message: "Server error while fetching likes",
+      error: error.message,
+    });
   }
 });
 
+// Get Like by ID
 export const getLikeById = catchAsyncHandler(async (req, res) => {
   try {
     const { id } = req.params;
 
     const like = await Like.findById(id)
       .populate("user", "name email")
-      .populate("lessonId", "title")
-      .populate("assignmentId", "title");
+      .populate("courseId", "title");
 
     if (!like) {
-      return res.status(404).json({ message: "Like not found", data: null });
+      return res.status(404).json({ message: "Like not found" });
     }
 
     return res.status(200).json({ message: "Like fetched", data: like });
   } catch (error) {
-    return res
-      .status(500)
-      .json({ message: "Server error", error: error.message });
+    return res.status(500).json({
+      message: "Server error while fetching like",
+      error: error.message,
+    });
   }
 });
 
+// Update Like
 export const updateLike = catchAsyncHandler(async (req, res) => {
   try {
     const { id } = req.params;
-    const { lessonId, assignmentId } = req.body;
+    const { courseId } = req.body;
 
-    if (!lessonId && !assignmentId) {
+    if (!courseId) {
       return res.status(400).json({
-        message: "Either lessonId or assignmentId must be provided for update.",
+        message: "courseId is required for updating a like.",
       });
     }
 
     const updated = await Like.findByIdAndUpdate(
       id,
-      { lessonId, assignmentId },
+      { courseId },
       { new: true }
     );
 
     if (!updated) {
-      return res.status(404).json({ message: "Like not found", data: null });
+      return res.status(404).json({ message: "Like not found" });
     }
 
     return res.status(200).json({ message: "Like updated", data: updated });
   } catch (error) {
-    return res
-      .status(500)
-      .json({ message: "Server error", error: error.message });
+    return res.status(500).json({
+      message: "Server error while updating like",
+      error: error.message,
+    });
   }
 });
 
+// Delete Like
 export const deleteLike = catchAsyncHandler(async (req, res) => {
   try {
     const { id } = req.params;
 
     if (!id || !mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ message: "Like ID is required" });
+      return res.status(400).json({ message: "Valid Like ID is required" });
     }
 
     const deleted = await Like.findByIdAndDelete(id);
 
     if (!deleted) {
-      return res.status(404).json({ message: "Like not found", data: null });
+      return res.status(404).json({ message: "Like not found" });
     }
 
     return res.status(200).json({ message: "Like deleted", data: deleted });
   } catch (error) {
-    return res
-      .status(500)
-      .json({ message: "Server error", error: error.message });
+    return res.status(500).json({
+      message: "Server error while deleting like",
+      error: error.message,
+    });
   }
 });

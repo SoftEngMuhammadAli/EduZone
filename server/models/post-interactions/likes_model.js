@@ -7,13 +7,10 @@ const likesSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    lessonId: {
+    courseId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Lesson",
-    },
-    assignmentId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Assignment",
+      ref: "Course",
+      required: true,
     },
   },
   { timestamps: true }

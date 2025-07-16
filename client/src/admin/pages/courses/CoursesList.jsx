@@ -9,7 +9,9 @@ import { useNavigate } from "react-router-dom";
 const CoursesListPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
   const { courses, loading, error } = useSelector((state) => state.course);
+  const { user } = useSelector((state) => state.auth); // ✅ Get the logged-in user
 
   useEffect(() => {
     dispatch(fetchCourses());
@@ -21,17 +23,25 @@ const CoursesListPage = () => {
     }
   };
 
+  // ✅ Filter courses uploaded by the current user
+  const filteredCourses = courses?.filter((course) => {
+    if (typeof course.courseCreatedBy === "object") {
+      return course.courseCreatedBy?._id === user?._id;
+    }
+    return course.courseCreatedBy === user?._id;
+  });
+
   return (
     <div className="max-w-7xl mx-auto p-6">
-      <h1 className="text-2xl font-semibold mb-6">All Courses</h1>
+      <h1 className="text-2xl font-semibold mb-6">My Uploaded Courses</h1>
 
       {loading && <p>Loading courses...</p>}
       {error && <p className="text-red-600">{error}</p>}
-      {!loading && courses?.length === 0 && (
+      {!loading && filteredCourses?.length === 0 && (
         <p className="text-gray-500">No courses found.</p>
       )}
 
-      {!loading && courses?.length > 0 && (
+      {!loading && filteredCourses?.length > 0 && (
         <table className="min-w-full bg-white shadow rounded overflow-hidden text-sm">
           <thead className="bg-gray-100 text-left">
             <tr>
@@ -41,11 +51,12 @@ const CoursesListPage = () => {
               <th className="p-3">Level</th>
               <th className="p-3">Duration</th>
               <th className="p-3">Created By</th>
+              <th className="p-3"></th>
               <th className="p-3">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {courses.map((course) => (
+            {filteredCourses.map((course) => (
               <tr key={course._id} className="border-t">
                 <td className="p-3">
                   {course.image ? (
@@ -70,6 +81,15 @@ const CoursesListPage = () => {
                 <td className="p-3 text-sm text-gray-700">
                   {typeof course.courseCreatedBy === "object"
                     ? course.courseCreatedBy?.name || "Unknown"
+                    : course.courseCreatedBy || "Unknown"}
+                </td>
+                <td>
+                  {typeof course.courseCreatedBy === "object"
+                    ? (
+                        <strong>
+                          {course.courseCreatedBy?.user_type.toUpperCase()}
+                        </strong>
+                      ) || "Unknown"
                     : course.courseCreatedBy || "Unknown"}
                 </td>
                 <td className="p-3 space-x-2">

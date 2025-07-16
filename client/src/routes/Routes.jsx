@@ -227,7 +227,6 @@ export default AppRoutes;
 
 // import AboutUs from "../components/about/AboutUs";
 // import ContactUs from "../components/contact/ContactUs";
-// import CourseSuccess from "../components/courses/CourseSuccess";
 // import HeaderNav from "../components/home/HeaderNav";
 // import CourseDetail from "../pages/courses/CourseDetails";
 // import Help from "../pages/help/Help";
