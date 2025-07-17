@@ -4,13 +4,15 @@ import { useNavigate } from "react-router-dom";
 const CourseCard = ({ course, buttonText = "See More Details" }) => {
   const navigate = useNavigate();
 
-  const handleClick = () => {
-    navigate(`/course/${course.title}`, { state: course });
+  const handleNavigate = () => {
+    if (!course?._id) return console.error("Course ID is missing");
+
+    navigate(`/courses/course-details/course/${course._id}&${course.title}`);
   };
 
   return (
     <div
-      onClick={handleClick}
+      onClick={handleNavigate}
       className="flex flex-col h-full bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow overflow-hidden cursor-pointer"
     >
       {/* Course Image */}

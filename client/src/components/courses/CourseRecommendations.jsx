@@ -21,7 +21,7 @@ const CourseRecommendations = () => {
         <h2 className="text-3xl font-bold">Recommended Courses</h2>
         <div className="flex gap-4">
           <button
-            onClick={() => navigate("/SeeAllCourses")}
+            onClick={() => navigate("/courses/courses-list")}
             className="bg-[#FCD980] hover:bg-[#F4C44F] text-gray-800 py-2 px-6 rounded-md transition"
           >
             See All Courses

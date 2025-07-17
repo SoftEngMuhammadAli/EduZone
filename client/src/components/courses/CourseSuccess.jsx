@@ -32,7 +32,7 @@ const CourseSuccess = () => {
 
           <div className="flex flex-col sm:flex-row justify-center md:justify-start gap-4">
             <button
-              onClick={() => navigate("/seeAllCourses")}
+              onClick={() => navigate("/courses/courses-list")}
               className="bg-[#2D2F6B] text-white px-6 py-3 rounded-md hover:bg-[#1c1d4f] transition"
             >
               Explore More

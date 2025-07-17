@@ -2,71 +2,56 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axiosInstance from "../../services/axios";
 
 export const createComment = createAsyncThunk(
-  "comment/create",
-  async ({ courseId, commentOnPost }, thunkAPI) => {
+  "comments/createComment",
+  async ({ courseId, text }, { rejectWithValue }) => {
     try {
-      localStorage.getItem("token");
-      const res = await axiosInstance.post("/api/comments", {
-        courseId,
-        commentOnPost,
+      const res = await axiosInstance.post(`/api/comments/${courseId}`, {
+        text,
       });
-      return res.data.data;
+      return res.data;
     } catch (err) {
-      return thunkAPI.rejectWithValue(err.response?.data || err.message);
+      return rejectWithValue(err.response?.data || "Failed to create comment");
     }
   }
 );
 
 export const getComments = createAsyncThunk(
-  "comment/getByCourse",
-  async (courseId, thunkAPI) => {
+  "comments/getComments",
+  async (courseId, { rejectWithValue }) => {
     try {
-      const res = await axiosInstance.get(`/api/comments/course/${courseId}`);
-      return res.data.data;
-    } catch (error) {
-      return thunkAPI.rejectWithValue(error.response?.data || error.message);
+      const res = await axiosInstance.get(`/api/comments/${courseId}`);
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data || "Failed to fetch comments");
     }
   }
 );
 
-const commentSlice = createSlice({
-  name: "comment",
+const commentsSlice = createSlice({
+  name: "comments",
   initialState: {
-    list: [],
-    loading: false,
+    comments: [],
+    status: "idle",
     error: null,
   },
-  reducers: {
-    clearCommentError: (state) => {
-      state.error = null;
-    },
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(createComment.pending, (state) => {
-        state.loading = true;
-      })
       .addCase(createComment.fulfilled, (state, action) => {
-        state.loading = false;
-        state.list.unshift(action.payload);
-      })
-      .addCase(createComment.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload || action.error.message;
+        state.comments.unshift(action.payload);
       })
       .addCase(getComments.pending, (state) => {
-        state.loading = true;
+        state.status = "loading";
       })
       .addCase(getComments.fulfilled, (state, action) => {
-        state.loading = false;
-        state.list = action.payload;
+        state.status = "succeeded";
+        state.comments = action.payload;
       })
       .addCase(getComments.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload || action.error.message;
+        state.status = "failed";
+        state.error = action.payload;
       });
   },
 });
 
-export const { clearCommentError } = commentSlice.actions;
-export default commentSlice.reducer;
+export default commentsSlice.reducer;

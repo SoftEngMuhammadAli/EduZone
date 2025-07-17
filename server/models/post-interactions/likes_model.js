@@ -1,17 +1,21 @@
 import mongoose from "mongoose";
 
-const likeSchema = new mongoose.Schema(
+const LikeSchema = new mongoose.Schema(
   {
-    user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-    courseId: {
+    course: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Course",
+      required: true,
+    },
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
       required: true,
     },
   },
   { timestamps: true }
 );
 
-likeSchema.index({ user: 1, courseId: 1 }, { unique: true });
+LikeSchema.index({ course: 1, user: 1 }, { unique: true });
 
-export default mongoose.model("Like", likeSchema);
+export default mongoose.model("Like", LikeSchema);

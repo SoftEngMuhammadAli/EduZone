@@ -21,7 +21,7 @@ const HomeBanner = () => {
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <button
-            onClick={() => navigate("/SeeAllCourses")}
+            onClick={() => navigate("/courses/courses-list")}
             className="bg-[#FCD980] text-[#000000] font-medium py-2 px-6 rounded hover:bg-yellow-300 transition"
           >
             View Courses
@@ -52,7 +52,7 @@ const HomeBanner = () => {
 
           <div className="flex gap-4">
             <button
-              onClick={() => navigate("/SeeAllCourses")}
+              onClick={() => navigate("/courses/courses-list")}
               className="bg-[#FCD980] text-[#000000] font-medium py-2 px-6 rounded hover:bg-yellow-300 transition"
             >
               View Courses

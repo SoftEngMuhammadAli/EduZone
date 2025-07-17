@@ -95,7 +95,7 @@ const HeaderNav = () => {
           {isStudent && (
             <>
               <Link to="/home">Home</Link>
-              <Link to="/seeAllCourses">Courses</Link>
+              <Link to="/courses/courses-list">Courses</Link>
               <Link to="/user/learning-room">Learning Room</Link>
               <Link to="/contact">Contact</Link>
               <Link to="/about">About</Link>
@@ -186,7 +186,10 @@ const HeaderNav = () => {
                 <Link to="/home" onClick={() => setIsMenuOpen(false)}>
                   Home
                 </Link>
-                <Link to="/seeAllCourses" onClick={() => setIsMenuOpen(false)}>
+                <Link
+                  to="/courses/courses-list"
+                  onClick={() => setIsMenuOpen(false)}
+                >
                   Courses
                 </Link>
                 <Link

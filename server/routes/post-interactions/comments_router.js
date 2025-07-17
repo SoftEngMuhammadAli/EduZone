@@ -7,7 +7,7 @@ import { checkAuth } from "../../middlewares/auth/auth_middleware.js";
 
 const router = express.Router();
 
-router.post("/", checkAuth, createComment);
-router.get("/course/:courseId", checkAuth, getCommentsByCourse);
+router.post("/:courseId", checkAuth, createComment);
+router.get("/:courseId", checkAuth, getCommentsByCourse);
 
 export default router;

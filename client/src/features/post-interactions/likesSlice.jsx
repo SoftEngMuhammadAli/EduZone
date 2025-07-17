@@ -3,65 +3,54 @@ import axiosInstance from "../../services/axios";
 
 export const toggleLike = createAsyncThunk(
   "likes/toggleLike",
-  async (courseId, thunkAPI) => {
+  async (courseId, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.put(`/api/likes/toggle/${courseId}`);
-      return response.data;
-    } catch (error) {
-      return thunkAPI.rejectWithValue(error.response?.data || error.message);
+      const res = await axiosInstance.post(`/api/likes/${courseId}`);
+      return { courseId, message: res.data.message };
+    } catch (err) {
+      return rejectWithValue(err.response?.data || "Failed to toggle like");
     }
   }
 );
 
 export const getLikesByCourse = createAsyncThunk(
-  "likes/getByCourse",
-  async (courseId, thunkAPI) => {
+  "likes/getLikesByCourse",
+  async (courseId, { rejectWithValue }) => {
     try {
-      const res = await axiosInstance.get(`/api/likes/course/${courseId}`);
-      return res.data.data;
-    } catch (error) {
-      return thunkAPI.rejectWithValue(error.response?.data || error.message);
+      const res = await axiosInstance.get(`/api/likes/${courseId}`);
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data || "Failed to fetch likes");
     }
   }
 );
 
-const likeSlice = createSlice({
+const likesSlice = createSlice({
   name: "likes",
   initialState: {
-    list: [],
-    loading: false,
+    likes: [],
+    status: "idle",
     error: null,
   },
-  reducers: {
-    clearLikeError: (state) => {
-      state.error = null;
-    },
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(toggleLike.pending, (state) => {
-        state.loading = true;
-      })
       .addCase(toggleLike.fulfilled, (state, action) => {
-        state.loading = false;
-      })
-      .addCase(toggleLike.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload || action.error.message;
+        const { courseId } = action.payload;
+        state.likes = action.payload;
       })
       .addCase(getLikesByCourse.pending, (state) => {
-        state.loading = true;
+        state.status = "loading";
       })
       .addCase(getLikesByCourse.fulfilled, (state, action) => {
-        state.loading = false;
-        state.list = action.payload;
+        state.status = "succeeded";
+        state.likes = action.payload;
       })
       .addCase(getLikesByCourse.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload || action.error.message;
+        state.status = "failed";
+        state.error = action.payload;
       });
   },
 });
 
-export const { clearLikeError } = likeSlice.actions;
-export default likeSlice.reducer;
+export default likesSlice.reducer;
