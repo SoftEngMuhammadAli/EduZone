@@ -39,39 +39,30 @@ const CourseDetail = () => {
     .includes("already enrolled");
   const userLiked = likes?.some((l) => l.user?._id === user?._id);
 
-  // Fetch course by ID
   useEffect(() => {
-    const fetchCourse = async () => {
+    if (!courseId) return;
+
+    const fetchData = async () => {
+      setLoading(true);
       try {
-        const response = await axiosInstance.get(`/api/courses/${courseId}`);
-        setCourse(response.data?.data);
+        // 1. Get course data
+        const { data } = await axiosInstance.get(`/api/courses/${courseId}`);
+        setCourse(data?.data);
+
+        // 2. Parallel load likes and comments
+        await Promise.all([
+          dispatch(getLikesByCourse(courseId)).unwrap(),
+          dispatch(getComments(courseId)).unwrap(),
+        ]);
       } catch (err) {
-        console.error("Failed to fetch course:", err);
+        console.error("Error fetching course or interactions:", err);
       } finally {
         setLoading(false);
       }
     };
 
-    if (courseId) fetchCourse();
-  }, [courseId]);
-
-  useEffect(() => {
-    if (courseId) {
-      dispatch(getLikesByCourse(courseId));
-      dispatch(getComments(courseId));
-    }
-  }, [dispatch, courseId]);
-
-  useEffect(() => {
-    if (
-      status === "succeeded" &&
-      user?.user_type === "student" &&
-      !alreadyEnrolledError
-    ) {
-      navigate("/coursesuccess");
-      dispatch(clearEnrollmentStatus());
-    }
-  }, [status, user, alreadyEnrolledError, dispatch, navigate]);
+    fetchData();
+  }, [courseId, dispatch]);
 
   const handleEnroll = () => {
     dispatch(enrollInCourse({ userId: user._id, courseId }));
@@ -79,7 +70,6 @@ const CourseDetail = () => {
 
   const handleLike = async () => {
     await dispatch(toggleLike(courseId));
-    dispatch(getLikesByCourse(courseId));
   };
 
   const handleCommentSubmit = async (e) => {
@@ -92,7 +82,14 @@ const CourseDetail = () => {
   };
 
   if (loading)
-    return <div className="text-center py-20">Loading course details...</div>;
+    return (
+      <div className="py-20 text-center">
+        <div className="animate-pulse text-gray-400">
+          Loading course details...
+        </div>
+      </div>
+    );
+
   if (!course)
     return (
       <div className="text-center text-red-600 py-20">Course not found.</div>

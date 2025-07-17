@@ -8,11 +8,11 @@ const NotFound = () => {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-[#f9fafb] px-6 py-12 text-center">
       {/* Illustration */}
-      <div className="w-64 h-64 mb-8">
+      <div className="w-56 h-56 mb-8">
         <img
           src={notFoundImage}
           alt="Page not found"
-          className="w-full h-full object-contain animate-pulse"
+          className="w-full h-full rounded-xl object-contain animate-pulse"
         />
       </div>
 

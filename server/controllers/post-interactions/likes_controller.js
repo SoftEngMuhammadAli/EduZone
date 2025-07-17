@@ -12,8 +12,9 @@ export const toggleLike = async (req, res) => {
       return res.status(200).json({ message: "Like removed" });
     } else {
       const like = new Like({ course: courseId, user: userId });
-      await like.save();
-      return res.status(201).json({ message: "Liked successfully" });
+      const saved = await like.save();
+      await saved.populate("user", "name");
+      return res.status(201).json(saved);
     }
   } catch (err) {
     res.status(500).json({ error: "Something went wrong" });

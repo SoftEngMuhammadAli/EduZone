@@ -74,7 +74,7 @@ const MainLayout = () => {
   const HIDE_NAVBAR_PATHS = [
     "/login",
     "/signup",
-    "/coursesuccess",
+    "/course-purchase-status",
     "/notfound",
   ];
   const hideNavbar = HIDE_NAVBAR_PATHS.includes(location.pathname);
@@ -91,11 +91,13 @@ const MainLayout = () => {
           path="/login"
           element={
             isAuthenticated ? (
-              <Navigate
-                to={`/${
-                  user_type === "student" ? "user" : user_type
-                }/dashboard-page`}
-              />
+              user_type === "admin" ? (
+                <Navigate to="/admin/dashboard-page" />
+              ) : user_type === "instructor" ? (
+                <Navigate to="/instructor/instructor-dashboard-page" />
+              ) : (
+                <Navigate to="/user/learning-room" />
+              )
             ) : (
               <LoginPage />
             )
@@ -105,11 +107,13 @@ const MainLayout = () => {
           path="/signup"
           element={
             isAuthenticated ? (
-              <Navigate
-                to={`/${
-                  user_type === "student" ? "user" : user_type
-                }/dashboard-page`}
-              />
+              user_type === "admin" ? (
+                <Navigate to="/admin/dashboard-page" />
+              ) : user_type === "instructor" ? (
+                <Navigate to="/instructor/instructor-dashboard-page" />
+              ) : (
+                <Navigate to="/user/learning-room" />
+              )
             ) : (
               <SignUpPage />
             )
@@ -122,12 +126,11 @@ const MainLayout = () => {
         <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/allblogs" element={<ReadAllBlogs />} />
-
         <Route
           path="/courses/course-details/course/:id"
           element={<CourseDetail />}
         />
-        <Route path="/coursesuccess" element={<CourseSuccess />} />
+        <Route path="/course-purchase-status" element={<CourseSuccess />} />
 
         {/* Protected Routes */}
         <Route element={<ProtectedRouteWrapper />}>

@@ -36,8 +36,16 @@ const likesSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(toggleLike.fulfilled, (state, action) => {
-        const { courseId } = action.payload;
-        state.likes = action.payload;
+        const like = action.payload;
+        const existingIndex = state.likes.findIndex(
+          (l) => l.user._id === like.user._id
+        );
+
+        if (existingIndex !== -1) {
+          state.likes.splice(existingIndex, 1);
+        } else {
+          state.likes.push(like);
+        }
       })
       .addCase(getLikesByCourse.pending, (state) => {
         state.status = "loading";

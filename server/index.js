@@ -32,7 +32,15 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use(
+  "/uploads",
+  express.static(path.join(__dirname, "uploads"), {
+    maxAge: "7d",
+    setHeaders: (res) => {
+      res.setHeader("Cache-Control", "public, max-age=604800");
+    },
+  })
+);
 app.set("json spaces", 2);
 
 app.get("/", (req, res) => {

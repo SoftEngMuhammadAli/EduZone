@@ -12,14 +12,19 @@ const HeaderNav = () => {
   const navigate = useNavigate();
   const user = useSelector((state) => state.auth.user);
 
-  const handleLogout = () => {
-    setLoggingOut(true);
-    dispatch(logout()).then(() => {
-      navigate("/login");
+  const handleLogout = async () => {
+    try {
+      setLoggingOut(true);
+      await dispatch(logout());
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      navigate("/login", { replace: true });
+    } catch (error) {
+      console.error("Logout failed:", error);
+    } finally {
       setLoggingOut(false);
-    });
+    }
   };
-
   const toggleDropdown = () => setShowDropdown((prev) => !prev);
 
   const isAdmin = user?.user_type === "admin";
