@@ -22,12 +22,11 @@ const CourseDetail = () => {
   const { user } = useSelector((state) => state.auth);
 
   const { status, error, data } = useSelector((state) => state.enroll);
-  const { list: commentList, loading: commentLoading } = useSelector(
-    (state) => state.comment
-  );
-  const { list: likeList, loading: likeLoading } = useSelector(
-    (state) => state.likes
-  );
+
+  const [commentList, setCommentList] = useState([]);
+  const [likeList, setLikeList] = useState([]);
+  const [likeLoading, setLikeLoading] = useState(false);
+  const [commentLoading, setCommentLoading] = useState(false);
 
   const [comment, setComment] = useState("");
 
@@ -41,30 +40,68 @@ const CourseDetail = () => {
 
   const handleCommentSubmit = async () => {
     if (comment.trim()) {
-      await dispatch(
+      setCommentLoading(true);
+
+      const res = await dispatch(
         createComment({
-          user: user._id,
-          commentOnPost: comment.trim(),
           courseId: course._id,
+          commentOnPost: comment.trim(),
         })
       );
-      dispatch(getComments(course._id));
-      setComment("");
+
+      if (res.meta.requestStatus === "fulfilled") {
+        const refreshed = await dispatch(getComments(course._id));
+        if (refreshed.meta.requestStatus === "fulfilled") {
+          setCommentList(refreshed.payload);
+        }
+        setComment("");
+      } else {
+        console.error("Comment error:", res.payload || res.error);
+      }
+
+      setCommentLoading(false);
     }
   };
 
   const handleLike = async () => {
     if (!user?._id || !course?._id) return;
 
-    const alreadyLiked = likeList.some((l) => l.user._id === user._id);
+    setLikeLoading(true);
 
-    await dispatch(toggleLike(course._id));
-    dispatch(getLikesByCourse(course._id));
+    const userLiked = likeList.some((like) => like.user._id === user._id);
+    const updatedLikes = userLiked
+      ? likeList.filter((like) => like.user._id !== user._id)
+      : [...likeList, { user: { _id: user._id } }];
+
+    setLikeList(updatedLikes);
+
+    const res = await dispatch(toggleLike(course._id));
+    if (res.meta.requestStatus === "fulfilled") {
+      const refreshed = await dispatch(getLikesByCourse(course._id));
+      setLikeList(refreshed.payload || []);
+    }
+
+    setLikeLoading(false);
   };
 
   useEffect(() => {
-    dispatch(getComments(course._id));
-    dispatch(getLikesByCourse(course._id));
+    dispatch(getComments(course._id)).then((res) => {
+      if (res.meta.requestStatus === "fulfilled") {
+        setCommentList(res.payload || []);
+      } else {
+        console.error("Error loading comments:", res.payload || res.error);
+        setCommentList([]);
+      }
+    });
+
+    dispatch(getLikesByCourse(course._id)).then((res) => {
+      if (res.meta.requestStatus === "fulfilled") {
+        setLikeList(res.payload || []);
+      } else {
+        console.error("Error loading likes:", res.payload || res.error);
+        setLikeList([]);
+      }
+    });
   }, [dispatch, course._id]);
 
   useEffect(() => {
@@ -166,7 +203,7 @@ const CourseDetail = () => {
               </button>
             </div>
 
-            {commentList.length > 0 && (
+            {Array.isArray(commentList) && commentList.length > 0 && (
               <div className="mt-4 space-y-3">
                 <h3 className="font-medium text-gray-800 text-lg">Comments</h3>
                 {commentList.map((c) => (

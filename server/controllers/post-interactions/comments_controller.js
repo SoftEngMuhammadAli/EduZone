@@ -12,7 +12,7 @@ export const createComment = catchAsyncHandler(async (req, res) => {
     commentOnPost,
   });
 
-  const populatedComment = await Comment.findById(comment._id).populate(
+  const populatedComment = await Comment.findById(comment.user_id).populate(
     "user",
     "name"
   );
@@ -149,17 +149,16 @@ export const deleteComment = catchAsyncHandler(async (req, res) => {
   }
 });
 
-export const getCommentsByCourse = catchAsyncHandler(async (req, res) => {
-  const { courseId } = req.params;
+export const getCommentsByCourse = async (req, res) => {
+  try {
+    const courseId = req.params.courseId;
+    const comments = await Comment.find({ courseId }).populate("user", "name");
 
-  if (!courseId) {
-    return res.status(400).json({ message: "courseId is required in params." });
+    return res.status(200).json({
+      success: true,
+      data: comments, // always an array, even if empty
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
   }
-
-  const comments = await Comment.find({ courseId }).populate("user", "name");
-
-  return res.status(200).json({
-    message: "Comments fetched",
-    data: comments,
-  });
-});
+};

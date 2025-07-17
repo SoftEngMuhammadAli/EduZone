@@ -1,16 +1,27 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axiosInstance from "../../services/axios";
 
-export const toggleLike = createAsyncThunk("likes/toggle", async (courseId) => {
-  const res = await axiosInstance.put(`/api/likes/toggle/${courseId}`);
-  return res.data;
-});
+export const toggleLike = createAsyncThunk(
+  "likes/toggleLike",
+  async (courseId, thunkAPI) => {
+    try {
+      const response = await axiosInstance.put(`/api/likes/toggle/${courseId}`);
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
 
 export const getLikesByCourse = createAsyncThunk(
   "likes/getByCourse",
-  async (courseId) => {
-    const res = await axiosInstance.get(`/api/likes/course/${courseId}`);
-    return res.data.data;
+  async (courseId, thunkAPI) => {
+    try {
+      const res = await axiosInstance.get(`/api/likes/course/${courseId}`);
+      return res.data.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response?.data || error.message);
+    }
   }
 );
 
@@ -33,14 +44,21 @@ const likeSlice = createSlice({
       })
       .addCase(toggleLike.fulfilled, (state, action) => {
         state.loading = false;
-        // Re-fetch or update local state if needed
       })
       .addCase(toggleLike.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message;
+        state.error = action.payload || action.error.message;
+      })
+      .addCase(getLikesByCourse.pending, (state) => {
+        state.loading = true;
       })
       .addCase(getLikesByCourse.fulfilled, (state, action) => {
+        state.loading = false;
         state.list = action.payload;
+      })
+      .addCase(getLikesByCourse.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || action.error.message;
       });
   },
 });

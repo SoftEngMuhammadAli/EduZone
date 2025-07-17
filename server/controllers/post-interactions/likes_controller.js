@@ -131,13 +131,20 @@ export const deleteLike = catchAsyncHandler(async (req, res) => {
   }
 });
 
-export const getLikesByCourse = catchAsyncHandler(async (req, res) => {
-  const { courseId } = req.params;
-  const likes = await Like.find({ courseId });
-  res
-    .status(200)
-    .json({ message: "Likes fetched", count: likes.length, data: likes });
-});
+// likeController.js
+export const getLikesByCourse = async (req, res) => {
+  try {
+    const courseId = req.params.courseId;
+    const likes = await Like.find({ courseId }).populate("user", "name");
+
+    return res.status(200).json({
+      success: true,
+      data: likes,
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
 
 // Toggle Like
 export const toggleLike = catchAsyncHandler(async (req, res) => {
