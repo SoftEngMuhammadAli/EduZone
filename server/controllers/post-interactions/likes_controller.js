@@ -133,15 +133,30 @@ export const deleteLike = catchAsyncHandler(async (req, res) => {
 
 export const getLikesByCourse = catchAsyncHandler(async (req, res) => {
   const { courseId } = req.params;
+  const likes = await Like.find({ courseId });
+  res
+    .status(200)
+    .json({ message: "Likes fetched", count: likes.length, data: likes });
+});
 
-  if (!courseId) {
-    return res.status(400).json({ message: "courseId is required in params." });
+// Toggle Like
+export const toggleLike = catchAsyncHandler(async (req, res) => {
+  const userId = req.user._id;
+  const { courseId } = req.params;
+
+  if (!courseId)
+    return res.status(400).json({ message: "courseId is required." });
+
+  const existing = await Like.findOne({ user: userId, courseId });
+
+  if (existing) {
+    await Like.deleteOne({ _id: existing._id });
+    return res
+      .status(200)
+      .json({ message: "Unliked successfully", liked: false });
   }
 
-  const likes = await Like.find({ courseId }).populate("user", "name");
-
-  return res.status(200).json({
-    message: "Likes fetched",
-    data: likes,
-  });
+  const newLike = new Like({ user: userId, courseId });
+  await newLike.save();
+  return res.status(201).json({ message: "Liked successfully", liked: true });
 });

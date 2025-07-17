@@ -3,35 +3,21 @@ import Comment from "../../models/post-interactions/comments_model.js";
 
 // Create Comment
 export const createComment = catchAsyncHandler(async (req, res) => {
-  console.log(`Create Comment Request Body: ${req.body}`);
+  const userId = req.user._id;
+  const { courseId, commentOnPost } = req.body;
 
-  try {
-    const { user, commentOnPost, courseId } = req.body;
+  const comment = await Comment.create({
+    user: userId,
+    courseId,
+    commentOnPost,
+  });
 
-    if (!user || !commentOnPost?.trim() || !courseId) {
-      return res.status(400).json({
-        message: "User, comment text, and courseId are required.",
-      });
-    }
+  const populatedComment = await Comment.findById(comment._id).populate(
+    "user",
+    "name"
+  );
 
-    const newComment = new Comment({
-      user,
-      commentOnPost: commentOnPost.trim(),
-      courseId,
-    });
-
-    await newComment.save();
-
-    return res.status(201).json({
-      message: "Comment created",
-      data: newComment,
-    });
-  } catch (error) {
-    return res.status(500).json({
-      message: "Failed to create comment",
-      error: error.message,
-    });
-  }
+  res.status(201).json({ message: "Comment added", data: populatedComment });
 });
 
 // Get All Comments

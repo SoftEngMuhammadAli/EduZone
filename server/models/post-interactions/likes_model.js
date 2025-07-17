@@ -1,12 +1,8 @@
 import mongoose from "mongoose";
 
-const likesSchema = new mongoose.Schema(
+const likeSchema = new mongoose.Schema(
   {
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
+    user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     courseId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Course",
@@ -16,4 +12,6 @@ const likesSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.model("Like", likesSchema);
+likeSchema.index({ user: 1, courseId: 1 }, { unique: true });
+
+export default mongoose.model("Like", likeSchema);

@@ -11,7 +11,7 @@ import {
   getComments,
 } from "../../features/post-interactions/commentSlice";
 import {
-  createLike,
+  toggleLike,
   getLikesByCourse,
 } from "../../features/post-interactions/likesSlice";
 
@@ -40,29 +40,26 @@ const CourseDetail = () => {
   };
 
   const handleCommentSubmit = async () => {
-    if (typeof comment === "string" && comment.trim()) {
-      const result = await dispatch(
+    if (comment.trim()) {
+      await dispatch(
         createComment({
           user: user._id,
           commentOnPost: comment.trim(),
           courseId: course._id,
         })
       );
-      console.log("Comment result:", result);
       dispatch(getComments(course._id));
       setComment("");
     }
   };
 
   const handleLike = async () => {
+    if (!user?._id || !course?._id) return;
+
     const alreadyLiked = likeList.some((l) => l.user._id === user._id);
-    if (!alreadyLiked) {
-      const result = await dispatch(
-        createLike({ user: user._id, courseId: course._id })
-      );
-      console.log("Like result:", result);
-      dispatch(getLikesByCourse(course._id));
-    }
+
+    await dispatch(toggleLike(course._id));
+    dispatch(getLikesByCourse(course._id));
   };
 
   useEffect(() => {

@@ -1,22 +1,11 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axiosInstance from "../../services/axios";
 
-// Create Like
-export const createLike = createAsyncThunk(
-  "likes/create",
-  async (payload, thunkAPI) => {
-    console.log("Payload sent to /api/likes:", payload);
+export const toggleLike = createAsyncThunk("likes/toggle", async (courseId) => {
+  const res = await axiosInstance.put(`/api/likes/toggle/${courseId}`);
+  return res.data;
+});
 
-    try {
-      const response = await axiosInstance.post("/api/likes", payload);
-      return response.data;
-    } catch (error) {
-      console.error("Like failed:", error.response?.data || error.message);
-      return thunkAPI.rejectWithValue(error.response?.data || error.message);
-    }
-  }
-);
-// getLikesByCourse
 export const getLikesByCourse = createAsyncThunk(
   "likes/getByCourse",
   async (courseId) => {
@@ -39,35 +28,22 @@ const likeSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Create Like
-      .addCase(createLike.pending, (state) => {
+      .addCase(toggleLike.pending, (state) => {
         state.loading = true;
       })
-      .addCase(createLike.fulfilled, (state, action) => {
+      .addCase(toggleLike.fulfilled, (state, action) => {
         state.loading = false;
-        state.list.push(action.payload);
+        // Re-fetch or update local state if needed
       })
-      .addCase(createLike.rejected, (state, action) => {
-        console.error("failed:", action.error.message);
+      .addCase(toggleLike.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
       })
-
-      // Get Likes by Course
-      .addCase(getLikesByCourse.pending, (state) => {
-        state.loading = true;
-      })
       .addCase(getLikesByCourse.fulfilled, (state, action) => {
-        state.loading = false;
         state.list = action.payload;
-      })
-      .addCase(getLikesByCourse.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
       });
   },
 });
 
 export const { clearLikeError } = likeSlice.actions;
-
 export default likeSlice.reducer;
