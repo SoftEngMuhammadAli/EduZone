@@ -12,9 +12,9 @@ const HeaderNav = () => {
   const navigate = useNavigate();
   const user = useSelector((state) => state.auth.user);
 
-  const handleLogout = async () => {
+  const handleLogout = () => {
     setLoggingOut(true);
-    await dispatch(logout()).then(() => {
+    dispatch(logout()).then(() => {
       navigate("/login");
       setLoggingOut(false);
     });

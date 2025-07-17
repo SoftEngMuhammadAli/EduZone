@@ -3,6 +3,9 @@ import { BASE_URL } from "../utils/constants";
 
 const axiosInstance = axios.create({
   baseURL: BASE_URL,
+  headers: {
+    Authorization: `Bearer ${localStorage.getItem("token")}`,
+  },
   withCredentials: true,
 });
 

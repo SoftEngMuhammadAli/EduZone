@@ -31,16 +31,11 @@ export const createLike = catchAsyncHandler(async (req, res) => {
   }
 });
 
-// Get All Likes (Optional: filter by courseId)
 export const getAllLikes = catchAsyncHandler(async (req, res) => {
   try {
     const { courseId } = req.query;
 
-    const filter = courseId ? { courseId } : {};
-
     const likes = await Like.find({ courseId }).populate("user", "name");
-
-    i;
 
     return res.status(200).json({
       message: "Likes fetched",
