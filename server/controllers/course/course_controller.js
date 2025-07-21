@@ -2,21 +2,9 @@ import mongoose from "mongoose";
 import Course from "../../models/course/course_model.js";
 import { catchAsyncHandler } from "../../middlewares/error_middleware.js";
 import Notification from "../../models/notifications/notification_model.js";
-import redisClient from "../../config/redis.js";
 
 // 1. GET ALL COURSES
 export const getAllCourses = catchAsyncHandler(async (req, res) => {
-  const cacheKey = "courses:all";
-
-  const cached = await redisClient.get(cacheKey);
-  if (cached) {
-    console.log("🔁 Courses from cache");
-    return res.status(200).json({
-      message: "Courses fetched successfully! (from cache)",
-      data: JSON.parse(cached),
-    });
-  }
-
   const courses = await Course.find({}).populate(
     "courseCreatedBy",
     "name email user_type"
@@ -25,8 +13,6 @@ export const getAllCourses = catchAsyncHandler(async (req, res) => {
   if (!courses || courses.length === 0) {
     return res.status(404).json({ message: "No courses found." });
   }
-
-  await redisClient.setEx(cacheKey, 3600, JSON.stringify(courses)); // 1 hour cache
 
   return res.status(200).json({
     message: "Courses fetched successfully!",
@@ -40,16 +26,6 @@ export const getCourseById = catchAsyncHandler(async (req, res) => {
 
   if (!id || !mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).json({ error: "Invalid Course ID" });
-  }
-
-  const cacheKey = `course:${id}`;
-  const cached = await redisClient.get(cacheKey);
-  if (cached) {
-    console.log("🔁 Course from cache");
-    return res.status(200).json({
-      message: "Course found (from cache)",
-      data: JSON.parse(cached),
-    });
   }
 
   const course = await Course.findById(id).populate(
@@ -67,8 +43,6 @@ export const getCourseById = catchAsyncHandler(async (req, res) => {
       ? `${process.env.BASE_URL}/uploads/${course.image}`
       : null,
   };
-
-  await redisClient.setEx(cacheKey, 3600, JSON.stringify(courseData));
 
   return res.status(200).json({
     message: "Course found",
@@ -130,9 +104,6 @@ export const createCourse = catchAsyncHandler(async (req, res) => {
     link: `/courses/${newCourse._id}`,
   });
 
-  // 🔄 Invalidate cache
-  await redisClient.del("courses:all");
-
   return res.status(201).json({
     message: "Course created successfully",
     data: {
@@ -174,10 +145,6 @@ export const updateCourseById = catchAsyncHandler(async (req, res) => {
     link: `/courses/${updatedCourse._id}`,
   });
 
-  // 🔄 Invalidate cache
-  await redisClient.del("courses:all");
-  await redisClient.del(`course:${id}`);
-
   return res.status(200).json({
     message: "Course updated successfully",
     data: {
@@ -209,10 +176,6 @@ export const deleteCourseById = catchAsyncHandler(async (req, res) => {
     type: "course",
     link: `/courses/${deletedCourse._id}`,
   });
-
-  // 🔄 Invalidate cache
-  await redisClient.del("courses:all");
-  await redisClient.del(`course:${id}`);
 
   return res.status(200).json({
     message: "Course deleted successfully",

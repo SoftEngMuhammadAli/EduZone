@@ -4,10 +4,23 @@ import axiosInstance from "../../services/axios";
 export const toggleLike = createAsyncThunk(
   "likes/toggleLike",
   async (courseId, { rejectWithValue }) => {
+    console.log("toggleLike dispatched with courseId:", courseId);
+
     try {
       const res = await axiosInstance.post(`/api/likes/${courseId}`);
-      return { courseId, message: res.data.message };
+      console.log("toggleLike response:", res.data);
+      return res.data;
     } catch (err) {
+      const isHTML =
+        err.response?.headers["content-type"]?.includes("text/html");
+      if (isHTML) {
+        console.error(
+          "Received HTML instead of JSON. Likely an auth or route issue."
+        );
+      }
+
+      return rejectWithValue(err.response?.data || "Failed to toggle like");
+      console.error("toggleLike error:", err.response?.data || err.message);
       return rejectWithValue(err.response?.data || "Failed to toggle like");
     }
   }
@@ -16,10 +29,26 @@ export const toggleLike = createAsyncThunk(
 export const getLikesByCourse = createAsyncThunk(
   "likes/getLikesByCourse",
   async (courseId, { rejectWithValue }) => {
+    console.log("getLikesByCourse dispatched with courseId:", courseId);
+
     try {
       const res = await axiosInstance.get(`/api/likes/${courseId}`);
+      console.log("getLikesByCourse response:", res.data);
       return res.data;
     } catch (err) {
+      const isHTML =
+        err.response?.headers["content-type"]?.includes("text/html");
+      if (isHTML) {
+        console.error(
+          "Received HTML instead of JSON. Likely an auth or route issue."
+        );
+      }
+
+      return rejectWithValue(err.response?.data || "Failed to toggle like");
+      console.error(
+        "getLikesByCourse error:",
+        err.response?.data || err.message
+      );
       return rejectWithValue(err.response?.data || "Failed to fetch likes");
     }
   }
@@ -36,27 +65,30 @@ const likesSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(toggleLike.fulfilled, (state, action) => {
-        const like = action.payload;
-        const existingIndex = state.likes.findIndex(
-          (l) => l.user._id === like.user._id
-        );
+        const { user } = action.payload;
+        const index = state.likes.findIndex((l) => l.user._id === user._id);
 
-        if (existingIndex !== -1) {
-          state.likes.splice(existingIndex, 1);
+        if (index !== -1) {
+          state.likes.splice(index, 1);
+          console.log("Removed like for user:", user._id);
         } else {
-          state.likes.push(like);
+          state.likes.push(action.payload);
+          console.log("Added like for user:", user._id);
         }
       })
       .addCase(getLikesByCourse.pending, (state) => {
         state.status = "loading";
+        console.log("Fetching likes...");
       })
       .addCase(getLikesByCourse.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.likes = action.payload;
+        console.log("Likes fetched:", action.payload);
       })
       .addCase(getLikesByCourse.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
+        console.error("Failed to fetch likes:", action.payload);
       });
   },
 });

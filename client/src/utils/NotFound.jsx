@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import notFoundImage from "../../assets/images/main/error-page-svgrepo-com.svg";
+import notFoundImage from "../assets/images/main/error-page-svgrepo-com.svg";
 
 const NotFound = () => {
   const navigate = useNavigate();

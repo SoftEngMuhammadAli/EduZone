@@ -24,7 +24,7 @@ import SeeAllCoursesList from "../pages/courses/AllCourses";
 import CourseDetail from "../pages/courses/CourseDetails";
 import ReadAllBlogs from "../pages/blogs/AllBlogs";
 import Help from "../pages/help/Help";
-import NotFound from "../pages/home/NotFound";
+import NotFound from "../utils/NotFound";
 import TermsAndConditions from "../components/terms-and-conditions/TermsAndConditions";
 import PrivacyPolicy from "../components/privacy-policy/PrivacyPolicy";
 import SeeAllEduZoneBenefits from "../components/home/AllBenefits";
@@ -120,12 +120,17 @@ const MainLayout = () => {
           }
         />
         <Route path="/about" element={<AboutUs />} />
+
+        {/* All Courses List */}
         <Route path="/courses/courses-list" element={<SeeAllCoursesList />} />
+
         <Route path="/see-all-benefits" element={<SeeAllEduZoneBenefits />} />
         <Route path="/help" element={<Help />} />
         <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/allblogs" element={<ReadAllBlogs />} />
+
+        {/* Courses Details */}
         <Route
           path="/courses/course-details/course/:id"
           element={<CourseDetail />}

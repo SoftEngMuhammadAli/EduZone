@@ -6,6 +6,7 @@ const CourseCard = ({ course, buttonText = "See More Details" }) => {
 
   const handleNavigate = () => {
     if (!course?._id) return console.error("Course ID is missing");
+    console.log(course._id, "Frmo Card");
 
     navigate(`/courses/course-details/course/${course._id}`);
   };

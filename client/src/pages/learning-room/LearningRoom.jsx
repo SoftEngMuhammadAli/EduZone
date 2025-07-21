@@ -1,8 +1,5 @@
 import React, { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchEnrolledCourses } from "../../features/course/enrollSlice";
 import UserProfileCard from "../../admin/components/UserProfileCard";
-import { useNavigate } from "react-router-dom";
 import EnrolledCoursesCard from "../../components/learning-room/EnrolledCoursesCard";
 
 const LearningRoom = () => {
