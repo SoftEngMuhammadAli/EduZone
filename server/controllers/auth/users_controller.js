@@ -147,6 +147,7 @@ export const handleUpdateUserById = catchAsyncHandler(async (req, res) => {
   try {
     const id = req.params.id;
     const updateData = req.body;
+    const currentUser = req.user;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ message: "Invalid _id format" });
@@ -154,6 +155,15 @@ export const handleUpdateUserById = catchAsyncHandler(async (req, res) => {
 
     if (!updateData || Object.keys(updateData).length === 0) {
       return res.status(400).json({ message: "Update data is required" });
+    }
+
+    if (
+      currentUser._id.toString() !== id &&
+      currentUser.user_type !== "admin"
+    ) {
+      return res.status(403).json({
+        message: "Unauthorized: You can only update your own profile.",
+      });
     }
 
     delete updateData.password;
