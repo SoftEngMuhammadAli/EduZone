@@ -25,8 +25,8 @@ import CourseDetail from "../pages/courses/CourseDetails";
 import ReadAllBlogs from "../pages/blogs/AllBlogs";
 import Help from "../pages/help/Help";
 import NotFound from "../utils/NotFound";
-import TermsAndConditions from "../components/terms-and-conditions/TermsAndConditions";
-import PrivacyPolicy from "../components/privacy-policy/PrivacyPolicy";
+import TermsAndConditions from "../pages/terms-and-conditions/TermsAndConditions";
+import PrivacyPolicy from "../pages/privacy-policy/PrivacyPolicy";
 import SeeAllEduZoneBenefits from "../components/home/AllBenefits";
 
 // Admin Pages
@@ -54,6 +54,7 @@ import ContinueLearning from "../components/learning-room/ContinueLearning";
 // Route Protection
 import ProtectedRouteWrapper from "../routes/ProtectedRoutes";
 import RoleProtectedRouteWrapper from "../routes/RoleProtectedRoutes";
+import BlogsDetails from "../pages/blogs/BlogsDetails";
 
 const AppRoutes = () => {
   return (
@@ -128,7 +129,8 @@ const MainLayout = () => {
         <Route path="/help" element={<Help />} />
         <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-        <Route path="/allblogs" element={<ReadAllBlogs />} />
+        <Route path="/view-all-blogs" element={<ReadAllBlogs />} />
+        <Route path="/view-blog-details/:id" element={<BlogsDetails />} />
 
         {/* Courses Details */}
         <Route

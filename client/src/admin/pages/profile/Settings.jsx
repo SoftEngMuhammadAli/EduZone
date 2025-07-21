@@ -64,7 +64,6 @@ const CogIcon = () => (
   </svg>
 );
 
-// Tab config using icons
 const tabs = [
   { id: "profile", label: "Profile", icon: UserIcon },
   { id: "password", label: "Password", icon: LockClosedIcon },

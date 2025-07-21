@@ -41,12 +41,13 @@ app.use(
     },
   })
 );
+
 app.set("json spaces", 2);
+app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "template", "custom"));
 
 app.get("/", (req, res) => {
-  res.status(200).json({
-    success: true,
-    message: "EduZone API is up and running!",
+  res.render("documentation", {
     data: {
       greeting: "Hello World!",
       environment: process.env.NODE_ENV || "development",
@@ -63,5 +64,5 @@ registeredRouters(app);
 connectToDatabase(process.env.DB_CONFIGURATION);
 
 app.listen(PORT, () => {
-  console.log(`Server running on port: ${PORT}`);
+  console.log(`Server running on port: http://localhost:${PORT}`);
 });

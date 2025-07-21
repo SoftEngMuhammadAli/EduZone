@@ -8,10 +8,6 @@ export const toggleLike = catchAsyncHandler(async (req, res) => {
 
     const existing = await Like.findOne({ course: courseId, user: userId });
 
-    if (!existing) {
-      return res.status(404).json({ error: "Like not found" });
-    }
-
     if (existing) {
       await existing.deleteOne();
       return res.status(200).json({ message: "Like removed" });
@@ -34,9 +30,6 @@ export const getLikesByCourse = catchAsyncHandler(async (req, res) => {
       "user",
       "name"
     );
-    if (!likes || likes.length === 0) {
-      return res.status(404).json({ error: "No likes found for this course" });
-    }
 
     return res
       .status(200)

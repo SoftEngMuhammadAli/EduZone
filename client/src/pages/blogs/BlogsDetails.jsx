@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getBlogById } from "../../redux/blog/blogSlice";
+import { getBlogById } from "../../features/admin/blogSlice";
 import { useParams } from "react-router-dom";
 import { AppFooter } from "../../components/footer/Footer";
 
@@ -13,6 +13,28 @@ const BlogsDetails = () => {
   useEffect(() => {
     if (id) dispatch(getBlogById(id));
   }, [dispatch, id]);
+
+  const handleShare = async () => {
+    const shareData = {
+      title: selectedBlog?.title,
+      text: selectedBlog?.title,
+      url: window.location.href,
+    };
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch (err) {
+        alert("Could not share this blog.");
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        alert("Link copied to clipboard!");
+      } catch (err) {
+        alert("Could not copy link.");
+      }
+    }
+  };
 
   if (loading)
     return (
@@ -27,8 +49,9 @@ const BlogsDetails = () => {
 
   return (
     <>
-      <section className="max-w-5xl mx-auto py-10 px-4">
+      <section className="max-w-5xl shadow mx-auto py-10 px-4">
         <h1 className="text-3xl font-bold mb-4">{selectedBlog.title}</h1>
+
         <div className="h-56 bg-gray-100 overflow-hidden">
           {selectedBlog.image ? (
             <img
@@ -45,11 +68,19 @@ const BlogsDetails = () => {
           )}
         </div>
 
-        <p className="text-sm text-gray-500 mb-6">
+        <p className="text-sm text-gray-500 mb-6 mt-3">
           {new Date(selectedBlog.publish_date).toDateString()}
         </p>
         <div className="text-base text-gray-800 leading-relaxed">
           {selectedBlog.content}
+        </div>
+        <div className="flex justify-end mt-6">
+          <button
+            onClick={handleShare}
+            className="mb-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+          >
+            Share Blog
+          </button>
         </div>
       </section>
       <AppFooter />

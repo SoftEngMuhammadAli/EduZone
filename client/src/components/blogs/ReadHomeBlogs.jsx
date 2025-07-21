@@ -45,7 +45,7 @@ const ReadHomeBlogs = () => {
             Blog, News and Events
           </h2>
           <button
-            onClick={() => navigate("/allblogs")}
+            onClick={() => navigate("/view-all-blogs")}
             className="bg-[#FCD980] hover:bg-[#F4C44F] text-gray-800 font-medium py-2 px-6 rounded-md transition-colors whitespace-nowrap"
           >
             See All Blogs

@@ -1,27 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchBlogs } from "../../features/admin/blogSlice";
+import { useNavigate } from "react-router-dom";
 import { AppFooter } from "../../components/footer/Footer";
 
 const ReadAllBlogs = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { blogs, loading, error } = useSelector((state) => state.blogs);
-  const [selectedBlog, setSelectedBlog] = useState(null);
-  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     dispatch(fetchBlogs());
   }, [dispatch]);
-
-  const openModal = (blog) => {
-    setSelectedBlog(blog);
-    setShowModal(true);
-  };
-
-  const closeModal = () => {
-    setSelectedBlog(null);
-    setShowModal(false);
-  };
 
   if (loading)
     return (
@@ -33,6 +23,10 @@ const ReadAllBlogs = () => {
     return (
       <div className="text-center py-8 text-[#1C1E53]">No blogs found.</div>
     );
+
+  const handleBlogClick = (blog) => {
+    navigate(`/view-blog-details/${blog._id}`, { state: { blog } });
+  };
 
   return (
     <>
@@ -53,7 +47,7 @@ const ReadAllBlogs = () => {
               <div
                 key={blog._id}
                 className="flex flex-col bg-white rounded-lg shadow hover:shadow-md transition overflow-hidden cursor-pointer"
-                onClick={() => openModal(blog)}
+                onClick={() => handleBlogClick(blog)}
               >
                 <div className="h-56 bg-gray-100 overflow-hidden">
                   {blog.image ? (
@@ -90,41 +84,6 @@ const ReadAllBlogs = () => {
           </div>
         </div>
       </section>
-
-      {/* Blog Modal */}
-      {showModal && selectedBlog && (
-        <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white w-[50%] max-h-[90vh] overflow-y-auto rounded-lg p-6 relative">
-            <button
-              onClick={closeModal}
-              className="absolute top-4 right-4 text-gray-600 hover:text-black text-xl font-bold"
-            >
-              &times;
-            </button>
-
-            {/* Blog Modal Content */}
-            <h2 className="text-2xl font-bold mb-4">{selectedBlog.title}</h2>
-
-            {selectedBlog.images?.[0] && (
-              <img
-                src={`${import.meta.env.VITE_BASE_URL}/uploads/${
-                  selectedBlog.images[0]
-                }`}
-                alt={selectedBlog.title}
-                className="w-full h-80 object-cover rounded mb-4"
-              />
-            )}
-
-            <p className="text-sm text-gray-500 mb-2">
-              Published: {new Date(selectedBlog.publish_date).toDateString()}
-            </p>
-            <p className="text-base text-gray-800 leading-relaxed whitespace-pre-line">
-              {selectedBlog.content}
-            </p>
-          </div>
-        </div>
-      )}
-
       <AppFooter />
     </>
   );

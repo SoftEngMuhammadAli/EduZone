@@ -59,13 +59,15 @@ const likesSlice = createSlice({
     builder
       .addCase(toggleLike.fulfilled, (state, action) => {
         const { user } = action.payload;
-        const index = state.likes.findIndex((l) => l.user._id === user._id);
+        const existingIndex = state.likes.findIndex(
+          (l) => l.user._id === user._id
+        );
 
-        if (index !== -1) {
-          state.likes.splice(index, 1);
+        if (existingIndex !== -1) {
+          state.likes.splice(existingIndex, 1);
           console.log("Removed like for user:", user._id);
         } else {
-          state.likes.push(action.payload);
+          state.likes.push({ user });
           console.log("Added like for user:", user._id);
         }
       })
@@ -75,7 +77,7 @@ const likesSlice = createSlice({
       })
       .addCase(getLikesByCourse.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.likes = action.payload;
+        state.likes = action.payload.likes || [];
         console.log("Likes fetched:", action.payload);
       })
       .addCase(getLikesByCourse.rejected, (state, action) => {
