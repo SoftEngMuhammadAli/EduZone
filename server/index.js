@@ -44,12 +44,17 @@ app.use(
 app.set("json spaces", 2);
 
 app.get("/", (req, res) => {
-  return res.status(200).json({
+  res.status(200).json({
     success: true,
-    message: "Server is up and running!",
-    data: "Hello World!",
-    timestamp: new Date().toISOString(),
-    documentation: "https://www.link.com",
+    message: "EduZone API is up and running!",
+    data: {
+      greeting: "Hello World!",
+      environment: process.env.NODE_ENV || "development",
+      serverTime: new Date().toISOString(),
+      version: process.env.npm_package_version || "1.0.0",
+    },
+    documentation: "https://documenter.getpostman.com/view/32471550/2sB34kEzEc",
+    uptime: process.uptime(),
   });
 });
 
