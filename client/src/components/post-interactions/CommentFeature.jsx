@@ -10,6 +10,7 @@ const CommentFeature = () => {
   const dispatch = useDispatch();
   const { id } = useParams();
   const [commentText, setCommentText] = useState("");
+  const [isAdding, setIsAdding] = useState(false);
 
   const { comments } = useSelector((state) => state.comment);
 
@@ -20,9 +21,11 @@ const CommentFeature = () => {
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
     if (!commentText.trim()) return;
-    await dispatch(createComment({ id, text: commentText.trim() }));
+    setIsAdding(true);
+    await dispatch(createComment({ courseId: id, text: commentText.trim() }));
     setCommentText("");
-    dispatch(getComments(id)); // Refresh after posting
+    dispatch(getComments(id));
+    setIsAdding(false);
   };
 
   return (
@@ -34,13 +37,15 @@ const CommentFeature = () => {
           placeholder="Write your comment..."
           className="w-full p-3 border rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-blue-300"
           rows={3}
+          disabled={isAdding}
         ></textarea>
 
         <button
           type="submit"
           className="mt-2 px-6 py-2 bg-[#1C1E53] text-white rounded-md hover:bg-[#FCD980] hover:text-[#1C1E53] transition"
+          disabled={isAdding}
         >
-          Post Comment
+          {isAdding ? "Posting..." : "Post Comment"}
         </button>
       </form>
 

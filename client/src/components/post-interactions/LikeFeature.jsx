@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import {
@@ -12,15 +12,29 @@ const LikeFeature = () => {
 
   const { user } = useSelector((state) => state.auth);
   const { likes, status: likeStatus } = useSelector((state) => state.likes);
-  const userLiked = likes?.some((l) => l.user?._id === user?._id);
+
+  const [localLikes, setLocalLikes] = useState([]);
+  const [localUserLiked, setLocalUserLiked] = useState(false);
 
   useEffect(() => {
     if (id) dispatch(getLikesByCourse(id));
   }, [id, dispatch]);
 
+  useEffect(() => {
+    setLocalLikes(likes);
+    setLocalUserLiked(likes?.some((l) => l.user?._id === user?._id));
+  }, [likes, user]);
+
   const handleLike = async () => {
+    if (localUserLiked) {
+      setLocalLikes(localLikes.filter((l) => l.user?._id !== user?._id));
+      setLocalUserLiked(false);
+    } else {
+      setLocalLikes([...localLikes, { user: { _id: user._id } }]);
+      setLocalUserLiked(true);
+    }
     await dispatch(toggleLike(id));
-    dispatch(getLikesByCourse(id)); // Refresh after toggle
+    dispatch(getLikesByCourse(id));
   };
 
   return (
@@ -30,10 +44,12 @@ const LikeFeature = () => {
         disabled={likeStatus === "loading"}
         className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition"
       >
-        👍 Like
+        {localUserLiked ? "👎 Unlike" : "👍 Like"}
       </button>
-      <span className="text-gray-700 font-medium">{likes.length} Likes</span>
-      {userLiked && (
+      <span className="text-gray-700 font-medium">
+        {localLikes.length} Likes
+      </span>
+      {localUserLiked && (
         <span className="text-green-500 text-sm">You liked this</span>
       )}
     </div>
