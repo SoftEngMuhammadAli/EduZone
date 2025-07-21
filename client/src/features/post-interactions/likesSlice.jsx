@@ -20,8 +20,6 @@ export const toggleLike = createAsyncThunk(
       }
 
       return rejectWithValue(err.response?.data || "Failed to toggle like");
-      console.error("toggleLike error:", err.response?.data || err.message);
-      return rejectWithValue(err.response?.data || "Failed to toggle like");
     }
   }
 );
@@ -45,11 +43,6 @@ export const getLikesByCourse = createAsyncThunk(
       }
 
       return rejectWithValue(err.response?.data || "Failed to toggle like");
-      console.error(
-        "getLikesByCourse error:",
-        err.response?.data || err.message
-      );
-      return rejectWithValue(err.response?.data || "Failed to fetch likes");
     }
   }
 );
