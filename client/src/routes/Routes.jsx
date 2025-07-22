@@ -11,50 +11,50 @@ import { useSelector } from "react-redux";
 import useAuth from "../hooks/useAuth";
 
 // Layouts and Navigation
-import HeaderNav from "../components/home/HeaderNav";
+import HeaderNav from "../components/app/home/HeaderNav";
 
 // Public Pages
-import Home from "../pages/home/Home";
+import Home from "../pages/app/home/Home";
 import LoginPage from "../pages/auth/LoginPage";
 import SignUpPage from "../pages/auth/SignUpPage";
-import AboutUs from "../components/about/AboutUs";
-import ContactUs from "../components/contact/ContactUs";
-import CourseSuccess from "../components/courses/CourseSuccess";
-import SeeAllCoursesList from "../pages/courses/AllCourses";
-import CourseDetail from "../pages/courses/CourseDetails";
-import ReadAllBlogs from "../pages/blogs/AllBlogs";
-import Help from "../pages/help/Help";
+import AboutUs from "../components/app/about/AboutUs";
+import ContactUs from "../components/app/contact/ContactUs";
+import CourseSuccess from "../components/app/courses/CourseSuccess";
+import SeeAllCoursesList from "../pages/app/courses/AllCourses";
+import CourseDetail from "../pages/app/courses/CourseDetails";
+import ReadAllBlogs from "../pages/app/blogs/AllBlogs";
+import Help from "../pages/app/help/Help";
 import NotFound from "../utils/NotFound";
-import TermsAndConditions from "../pages/terms-and-conditions/TermsAndConditions";
-import PrivacyPolicy from "../pages/privacy-policy/PrivacyPolicy";
-import SeeAllEduZoneBenefits from "../components/home/AllBenefits";
+import TermsAndConditions from "../pages/app/terms-and-conditions/TermsAndConditions";
+import PrivacyPolicy from "../pages/app/privacy-policy/PrivacyPolicy";
+import SeeAllEduZoneBenefits from "../components/app/home/AllBenefits";
 
 // Admin Pages
-import AdminDashboard from "../admin/dashboard/Dashboard";
-import StudentsListPage from "../admin/pages/students/StudentsList";
-import TeachersListPage from "../admin/pages/instructors/Instructors";
-import AdminSettingsPage from "../admin/pages/profile/Settings";
-import CreateBlogPage from "../admin/pages/blog/CreateBlog";
-import UpdateBlogPage from "../admin/pages/blog/UpdateBlog";
-import DeleteBlogPage from "../admin/pages/blog/DeleteBlog";
-import BlogListPage from "../admin/pages/blog/BlogsList";
-import CreateCoursePage from "../admin/pages/courses/CreateCourse";
-import UpdateCoursePage from "../admin/pages/courses/UpdateCourse";
-import DeleteCoursePage from "../admin/pages/courses/DeleteCourse";
-import CoursesListPage from "../admin/pages/courses/CoursesList";
-import UserProfilePage from "../admin/components/shared/UserProfilePage";
+import AdminDashboard from "../pages/admin/Dashboard";
+import StudentsListPage from "../pages/admin/students/StudentsList";
+import TeachersListPage from "../pages/admin/instructors/Instructors";
+import AdminSettingsPage from "../pages/admin/profile/Settings";
+import CreateBlogPage from "../pages/admin/blog/CreateBlog";
+import UpdateBlogPage from "../pages/admin/blog/UpdateBlog";
+import DeleteBlogPage from "../pages/admin/blog/DeleteBlog";
+import BlogListPage from "../pages/admin/blog/BlogsList";
+import CreateCoursePage from "../pages/admin/courses/CreateCourse";
+import UpdateCoursePage from "../pages/admin/courses/UpdateCourse";
+import DeleteCoursePage from "../pages/admin/courses/DeleteCourse";
+import CoursesListPage from "../pages/admin/courses/CoursesList";
+import UserProfilePage from "../components/admin/shared/UserProfilePage";
 
 // Instructor Pages
-import InstructorDashboard from "../instructor/dashboard/Dashboard";
+import InstructorDashboard from "../pages/instructor/Dashboard";
 
 // Student Pages
-import LearningRoom from "../pages/learning-room/LearningRoom";
-import ContinueLearning from "../components/learning-room/ContinueLearning";
+import LearningRoom from "../pages/app/learning-room/LearningRoom";
+import ContinueLearning from "../components/app/learning-room/ContinueLearning";
 
 // Route Protection
 import ProtectedRouteWrapper from "../routes/ProtectedRoutes";
 import RoleProtectedRouteWrapper from "../routes/RoleProtectedRoutes";
-import BlogsDetails from "../pages/blogs/BlogsDetails";
+import BlogsDetails from "../pages/app/blogs/BlogsDetails";
 
 const AppRoutes = () => {
   return (
