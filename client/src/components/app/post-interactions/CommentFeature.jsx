@@ -12,7 +12,7 @@ const CommentFeature = () => {
   const [commentText, setCommentText] = useState("");
   const [isAdding, setIsAdding] = useState(false);
 
-  const { comments } = useSelector((state) => state.comment);
+  const { comments, status, error } = useSelector((state) => state.comment);
 
   useEffect(() => {
     if (id) dispatch(getComments(id));
@@ -24,7 +24,7 @@ const CommentFeature = () => {
     setIsAdding(true);
     await dispatch(createComment({ courseId: id, text: commentText.trim() }));
     setCommentText("");
-    dispatch(getComments(id));
+    dispatch(getComments(id)); // re-fetch updated comments
     setIsAdding(false);
   };
 
@@ -49,12 +49,21 @@ const CommentFeature = () => {
         </button>
       </form>
 
-      {Array.isArray(comments) && comments.length > 0 && (
+      {/* Feedback UI */}
+      {status === "loading" && (
+        <p className="text-gray-500 text-sm">Loading comments...</p>
+      )}
+      {status === "failed" && (
+        <p className="text-red-500 text-sm">Failed to load comments: {error}</p>
+      )}
+
+      {/* Comments List */}
+      {Array.isArray(comments) && comments.length > 0 ? (
         <div className="mt-4 space-y-3">
           <h3 className="font-medium text-gray-800 text-lg">Comments</h3>
-          {comments.map((c) => (
+          {comments.map((c, index) => (
             <div
-              key={c._id}
+              key={c._id || `comment-${index}`}
               className="bg-gray-100 p-3 rounded-md text-sm text-gray-700"
             >
               <div className="font-semibold">{c.user?.name || "Anonymous"}</div>
@@ -65,6 +74,10 @@ const CommentFeature = () => {
             </div>
           ))}
         </div>
+      ) : (
+        status === "succeeded" && (
+          <p className="text-gray-500 text-sm mt-4">No comments yet.</p>
+        )
       )}
     </>
   );

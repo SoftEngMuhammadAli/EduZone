@@ -68,7 +68,7 @@ const ContinueLearning = () => {
             src={currentLesson.videoUrl}
             title={currentLesson.title}
             allowFullScreen
-            className="w-full h-full"
+            className="md:min-h-screen w-full h-full"
           />
         </div>
 

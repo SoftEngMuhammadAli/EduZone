@@ -6,8 +6,6 @@ const CourseCard = ({ course, buttonText = "See More Details" }) => {
 
   const handleNavigate = () => {
     if (!course?._id) return console.error("Course ID is missing");
-    console.log(course._id, "Frmo Card");
-
     navigate(`/courses/course-details/course/${course._id}`);
   };
 
@@ -30,26 +28,34 @@ const CourseCard = ({ course, buttonText = "See More Details" }) => {
       </div>
 
       {/* Content */}
-      <div className="p-6 flex flex-col flex-grow">
-        <span className="inline-block px-3 py-1 text-xs font-semibold text-[#2405F2] bg-[#2405F2]/10 rounded-full mb-2">
-          {course.category?.name || course.category || "Uncategorized"}
-        </span>
+      <div className="p-6 flex flex-col justify-between flex-1">
+        {/* Top Meta and Title */}
+        <div>
+          <span className="inline-block px-3 py-1 text-xs font-semibold text-[#2405F2] bg-[#2405F2]/10 rounded-full mb-2">
+            {course.category?.name || course.category || "Uncategorized"}
+          </span>
 
-        <h3 className="text-lg sm:text-xl font-semibold mb-2 line-clamp-1">
-          {course.title}
-        </h3>
+          <h3 className="text-lg sm:text-xl font-semibold mb-2 line-clamp-1">
+            {course.title}
+          </h3>
 
-        <p className="text-gray-600 mb-4 line-clamp-3">{course.description}</p>
+          <p className="text-gray-600 mb-4 line-clamp-3">
+            {course.description}
+          </p>
 
-        <div className="flex flex-wrap gap-4 text-sm text-gray-500 mb-4">
-          <span>⏱ {course.duration}</span>
-          <span>🎬 {course.videos || "N/A"} Videos</span>
-          <span>👨‍🎓 {course.students || 0} Students</span>
+          <div className="flex flex-wrap gap-4 text-sm text-gray-500">
+            <span>⏱ {course.duration}</span>
+            <span>🎬 {course.videos || "N/A"} Videos</span>
+            <span>👨‍🎓 {course.students || 0} Students</span>
+          </div>
         </div>
 
-        <button className="w-full bg-[#2405F2] hover:bg-[#1a04c4] text-white py-2 rounded-md transition">
-          {buttonText}
-        </button>
+        {/* Button */}
+        <div className="mt-6">
+          <button className="w-full bg-[#2405F2] hover:bg-[#1a04c4] text-white py-2 rounded-md transition">
+            {buttonText}
+          </button>
+        </div>
       </div>
     </div>
   );

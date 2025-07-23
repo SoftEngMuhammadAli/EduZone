@@ -42,7 +42,7 @@ const EnrolledCoursesCard = () => {
             return (
               <div
                 key={enroll._id}
-                className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition"
+                className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition flex flex-col"
               >
                 {/* Course Image */}
                 <div className="h-40 bg-gray-100">
@@ -61,62 +61,61 @@ const EnrolledCoursesCard = () => {
                   )}
                 </div>
 
-                {/* Course Info */}
-                <div className="p-4">
-                  <h3 className="text-lg font-semibold text-[#1C1E53]">
-                    {course?.title || "Untitled Course"}
-                  </h3>
-                  <p className="text-sm text-gray-600 mt-2 line-clamp-3">
-                    {course?.description || "No description provided."}
-                  </p>
-                  {/* Meta Info */}
-                  <div className="flex gap-2 mt-3 flex-wrap">
-                    {course?.level && (
-                      <span className="px-2 py-1 text-xs bg-gray-200 rounded-full">
-                        {course.level}
-                      </span>
-                    )}
-                    {course?.duration && (
-                      <span className="px-2 py-1 text-xs bg-yellow-100 text-yellow-800 rounded-full">
-                        {course.duration}
-                      </span>
-                    )}
-                  </div>
-                  {/* Progress */}
-                  <div className="mt-4">
-                    <div className="text-sm text-gray-600 mb-1">
-                      Progress: {enroll.progress}%
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div
-                        className="bg-blue-500 h-2 rounded-full"
-                        style={{ width: `${enroll.progress}%` }}
-                      ></div>
-                    </div>
-                  </div>
-                  {/* Actions */}
-                  {/* onClick=
-                  {() =>
-                    navigate(`/learning/course/${enroll.courseId?._id}`, {
-                      state: { course: enroll.courseId },
-                    })
-                  } */}
-                  <button
-                    onClick={() =>
-                      navigate("/user/continue-learning", {
-                        state: { course: enroll.courseId },
-                      })
-                    }
-                    className="mt-3 px-4 py-2 bg-[#1C1E53] text-white rounded hover:bg-[#FCD980] hover:text-[#1C1E53]"
-                  >
-                    Continue Learning
-                  </button>
+                {/* Card Body with flex column */}
+                <div className="p-4 flex flex-col justify-between flex-1">
+                  <div>
+                    <h3 className="text-lg font-semibold text-[#1C1E53]">
+                      {course?.title || "Untitled Course"}
+                    </h3>
+                    <p className="text-sm text-gray-600 mt-2 line-clamp-3">
+                      {course?.description || "No description provided."}
+                    </p>
 
-                  {/* Enrolled Info */}
-                  <p className="text-xs text-gray-400 text-right mt-2">
-                    Enrolled on:{" "}
-                    {new Date(enroll.enrollmentDate).toLocaleDateString()}
-                  </p>
+                    {/* Meta Info */}
+                    <div className="flex gap-2 mt-3 flex-wrap">
+                      {course?.level && (
+                        <span className="px-2 py-1 text-xs bg-gray-200 rounded-full">
+                          {course.level}
+                        </span>
+                      )}
+                      {course?.duration && (
+                        <span className="px-2 py-1 text-xs bg-yellow-100 text-yellow-800 rounded-full">
+                          {course.duration}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Progress */}
+                    <div className="mt-4">
+                      <div className="text-sm text-gray-600 mb-1">
+                        Progress: {enroll.progress}%
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div
+                          className="bg-blue-500 h-2 rounded-full"
+                          style={{ width: `${enroll.progress}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Fixed Bottom Section */}
+                  <div className="mt-4">
+                    <button
+                      onClick={() =>
+                        navigate("/user/continue-learning", {
+                          state: { course: enroll.courseId },
+                        })
+                      }
+                      className="w-full px-4 py-2 bg-[#1C1E53] text-white rounded hover:bg-[#FCD980] hover:text-[#1C1E53]"
+                    >
+                      Continue Learning
+                    </button>
+                    <p className="text-xs text-gray-400 text-right mt-2">
+                      Enrolled on:{" "}
+                      {new Date(enroll.enrollmentDate).toLocaleDateString()}
+                    </p>
+                  </div>
                 </div>
               </div>
             );

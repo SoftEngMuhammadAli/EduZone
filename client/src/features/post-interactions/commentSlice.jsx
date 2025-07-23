@@ -30,7 +30,7 @@ export const getComments = createAsyncThunk(
     try {
       const res = await axiosInstance.get(`/api/comments/${courseId}`);
       console.log("Comments fetched:", res.data);
-      return res.data;
+      return res.data.comments;
     } catch (err) {
       console.error(
         "Error fetching comments:",
@@ -54,7 +54,11 @@ const commentsSlice = createSlice({
     builder
       .addCase(createComment.fulfilled, (state, action) => {
         console.log("Adding new comment to store:", action.payload);
-        state.comments.unshift(action.payload);
+        if (Array.isArray(state.comments)) {
+          state.comments.unshift(action.payload);
+        } else {
+          state.comments = [action.payload];
+        }
       })
       .addCase(getComments.pending, (state) => {
         state.status = "loading";
