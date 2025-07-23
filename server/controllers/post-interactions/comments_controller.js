@@ -43,3 +43,19 @@ export const getCommentsByCourse = catchAsyncHandler(async (req, res) => {
     return res.status(500).json({ error: "Failed to fetch comments" });
   }
 });
+
+export const getAllComments = catchAsyncHandler(async (req, res) => {
+  try {
+    const comments = await Comment.find({})
+      .populate("user", "name email")
+      .populate("course", "title _id")
+      .sort({ createdAt: -1 });
+
+    return res
+      .status(200)
+      .json({ message: "All comments fetched successfully", comments });
+  } catch (err) {
+    console.error("Error fetching all comments:", err);
+    return res.status(500).json({ error: "Failed to fetch all comments" });
+  }
+});

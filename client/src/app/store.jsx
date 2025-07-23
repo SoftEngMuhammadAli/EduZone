@@ -6,6 +6,7 @@ import courseReducer from "../features/admin/courseSlice";
 import enrollReducer from "../features/course/enrollSlice";
 import commentReducer from "../features/post-interactions/commentSlice";
 import likeReducer from "../features/post-interactions/likesSlice";
+import userReducer from "../features/auth/userApiSlice";
 
 const store = configureStore({
   reducer: {
@@ -16,6 +17,7 @@ const store = configureStore({
     enroll: enrollReducer,
     comment: commentReducer,
     likes: likeReducer,
+    user: userReducer,
   },
 });
 

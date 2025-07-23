@@ -11,6 +11,7 @@ import AdminDashboardBlogs from "../../components/admin/AdminDashboardBlogs";
 
 const AdminDashboard = () => {
   const dispatch = useDispatch();
+
   const { courses, loading, error } = useSelector((state) => state.course);
 
   useEffect(() => {

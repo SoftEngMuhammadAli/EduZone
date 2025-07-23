@@ -34,12 +34,7 @@ router.post(
   createUser
 );
 
-router.put(
-  "/:id",
-  checkAuth,
-  authorizeRoles(["admin", "instrcutor", "student"]),
-  handleUpdateUserById
-);
+router.put("/:id", checkAuth, handleUpdateUserById);
 
 router.delete("/:id", checkAuth, authorizeRoles("admin"), handleDeleteUserById);
 

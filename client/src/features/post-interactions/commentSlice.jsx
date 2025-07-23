@@ -6,8 +6,6 @@ export const createComment = createAsyncThunk(
   "comments/createComment",
   async ({ courseId, text }, { rejectWithValue }) => {
     try {
-      console.log("Course Id From Slice", courseId);
-
       const res = await axiosInstance.post(`/api/comments/${courseId}`, {
         text,
       });
@@ -23,7 +21,7 @@ export const createComment = createAsyncThunk(
   }
 );
 
-// GET COMMENTS
+// GET COMMENTS by Course
 export const getComments = createAsyncThunk(
   "comments/getComments",
   async (courseId, { rejectWithValue }) => {
@@ -41,6 +39,26 @@ export const getComments = createAsyncThunk(
   }
 );
 
+// GET ALL COMMENTS (Admin/Instructor)
+export const getAllComments = createAsyncThunk(
+  "comments/getAllComments",
+  async (_, { rejectWithValue }) => {
+    try {
+      const res = await axiosInstance.get("/api/comments/all");
+      console.log("All comments fetched:", res.data);
+      return res.data.comments;
+    } catch (err) {
+      console.error(
+        "Error fetching all comments:",
+        err.response?.data || err.message
+      );
+      return rejectWithValue(
+        err.response?.data || "Failed to fetch all comments"
+      );
+    }
+  }
+);
+
 // SLICE
 const commentsSlice = createSlice({
   name: "comments",
@@ -53,21 +71,34 @@ const commentsSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(createComment.fulfilled, (state, action) => {
-        console.log("Adding new comment to store:", action.payload);
+        const newComment = action.payload.comment;
         if (Array.isArray(state.comments)) {
-          state.comments.unshift(action.payload);
+          state.comments.unshift(newComment);
         } else {
-          state.comments = [action.payload];
+          state.comments = [newComment];
         }
       })
       .addCase(getComments.pending, (state) => {
         state.status = "loading";
+        state.error = null;
       })
       .addCase(getComments.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.comments = action.payload;
       })
       .addCase(getComments.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      })
+      .addCase(getAllComments.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(getAllComments.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.comments = action.payload; // ✅ fixed
+      })
+      .addCase(getAllComments.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
       });
