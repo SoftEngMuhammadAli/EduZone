@@ -5,7 +5,7 @@ import {
   updateProfile,
   setUser,
 } from "../../features/auth/userApiSlice";
-import { tabs } from "../../components/settings/shared/TabData";
+import Sidebar from "../../components/settings/shared/Sidebar";
 
 const StudentProfileSettings = () => {
   const dispatch = useDispatch();
@@ -53,42 +53,24 @@ const StudentProfileSettings = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex flex-col md:flex-row min-h-screen bg-gray-50">
       {/* Sidebar */}
-      <aside className="w-64 bg-white border-r px-4 py-6">
-        <h2 className="text-xl font-semibold mb-6 text-[#1C1E53]">Settings</h2>
-        <nav className="space-y-2">
-          {tabs.map(({ id, label, icon: Icon }) => (
-            <button
-              key={id}
-              onClick={() => setActiveTab(id)}
-              className={`flex items-center w-full px-3 py-2 rounded-md text-left hover:bg-blue-100 ${
-                activeTab === id
-                  ? "bg-blue-100 text-blue-600 font-medium"
-                  : "text-gray-700"
-              }`}
-            >
-              <Icon className="mr-2" />
-              {label}
-            </button>
-          ))}
-        </nav>
-      </aside>
+      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
 
-      {/* Main */}
-      <main className="flex-1 p-8">
+      {/* Main Content */}
+      <main className="flex-1 p-4 sm:p-6 md:p-8">
         {activeTab === "profile" && (
-          <div className="space-y-6 max-w-3xl bg-white p-6 rounded-xl shadow">
+          <div className="space-y-6 max-w-4xl bg-white p-4 sm:p-6 rounded-xl shadow">
             <h1 className="text-2xl font-bold text-[#1C1E53]">
               Student Profile
             </h1>
-            <div className="flex items-center gap-6">
+            <div className="flex flex-col sm:flex-row items-center gap-6">
               <img
                 src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
                 alt="Student Avatar"
                 className="w-20 h-20 rounded-full border"
               />
-              <div>
+              <div className="text-center sm:text-left">
                 <h2 className="text-xl font-semibold">{formData.name}</h2>
                 <p className="text-gray-500">{formData.email}</p>
               </div>
@@ -133,7 +115,7 @@ const StudentProfileSettings = () => {
               </div>
             </div>
 
-            <div className="flex gap-4 mt-4">
+            <div className="flex flex-wrap gap-4 mt-4">
               {isEditing ? (
                 <>
                   <button

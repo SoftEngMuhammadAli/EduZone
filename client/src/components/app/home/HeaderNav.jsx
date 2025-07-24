@@ -184,6 +184,12 @@ const HeaderNav = () => {
                 <Link to="/instructor/courses-management/get-all-courses">
                   Courses
                 </Link>
+                <Link
+                  to="/instructor/settings"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Settings
+                </Link>
               </>
             )}
 

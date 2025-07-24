@@ -4,7 +4,7 @@ import { UserIcon } from "./TabIcons";
 const tabs = [{ id: "profile", label: "Profile", icon: UserIcon }];
 
 const Sidebar = ({ activeTab, setActiveTab }) => (
-  <aside className="w-64 bg-white border-r px-4 py-6">
+  <aside className="w-full md:w-64 bg-white border-r px-4 py-6">
     <h2 className="text-xl font-semibold mb-6 text-[#1C1E53]">Settings</h2>
     <nav className="space-y-2">
       {tabs.map(({ id, label, icon: Icon }) => (
