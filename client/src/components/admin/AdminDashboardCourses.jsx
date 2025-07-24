@@ -13,7 +13,7 @@ const AdminCoursesGrid = ({ courses = [] }) => {
             navigate("/admin/courses");
           }}
         >
-          See All
+          See All Details
         </p>
       </div>
 

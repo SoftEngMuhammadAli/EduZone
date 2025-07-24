@@ -93,6 +93,7 @@ const HeaderNav = () => {
               <Link to="/instructor/courses-management/get-all-courses">
                 Courses
               </Link>
+              <Link to="/instructor/settings">Settings</Link>
               <Link onClick={handleLogout}>Sign Out</Link>
             </>
           )}
@@ -124,13 +125,13 @@ const HeaderNav = () => {
                     isAdmin
                       ? "/admin/settings"
                       : isInstructor
-                      ? "/instructor/profile"
-                      : "/user/learning-room"
+                      ? "/instructor/settings"
+                      : "/user/settings"
                   }
                   onClick={() => setShowDropdown(false)}
                   className="block px-4 py-2 hover:bg-gray-100"
                 >
-                  {isAdmin ? "Settings" : "Profile"}
+                  Settings
                 </Link>
                 <button
                   onClick={handleLogout}
@@ -191,6 +192,7 @@ const HeaderNav = () => {
                 <Link to="/home" onClick={() => setIsMenuOpen(false)}>
                   Home
                 </Link>
+
                 <Link
                   to="/courses/courses-list"
                   onClick={() => setIsMenuOpen(false)}
@@ -208,6 +210,9 @@ const HeaderNav = () => {
                 </Link>
                 <Link to="/about" onClick={() => setIsMenuOpen(false)}>
                   About
+                </Link>
+                <Link to="/user/settings" onClick={() => setIsMenuOpen(false)}>
+                  Settings
                 </Link>
                 <Link to="/help" onClick={() => setIsMenuOpen(false)}>
                   Help

@@ -1,26 +1,57 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  getUserProfile,
+  updateProfile,
+  setUser,
+} from "../../features/auth/userApiSlice";
+import { tabs } from "../../components/settings/shared/TabData";
 
 const InstructorProfileSettings = () => {
-  const [activeTab, setActiveTab] = useState("profile");
-  const [formData, setFormData] = useState({
-    name: "Instructor Joe",
-    email: "instructor@example.com",
-    bio: "Expert in React, Node, and course creation.",
-  });
+  const dispatch = useDispatch();
+  const { user, status, error } = useSelector((state) => state.auth);
 
+  const [activeTab, setActiveTab] = useState("profile");
+  const [formData, setFormData] = useState({ name: "", email: "", bio: "" });
   const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
 
+  // Fetch user data
+  useEffect(() => {
+    if (user && user._id) {
+      dispatch(getUserProfile(user._id));
+    }
+  }, [dispatch, user?._id]);
+
+  // Sync with user state
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        name: user.name || "",
+        email: user.email || "",
+        bio: user.bio || "",
+      });
+    }
+  }, [user]);
+
   const handleChange = (e) =>
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
 
   const handleSave = () => {
+    if (!user?._id) return;
+
     setSaving(true);
-    setTimeout(() => {
-      setSaving(false);
-      setIsEditing(false);
-      alert("Profile updated!");
-    }, 1000);
+    dispatch(updateProfile({ userId: user._id, formData }))
+      .unwrap()
+      .then((updatedUser) => {
+        dispatch(setUser(updatedUser));
+        setIsEditing(false);
+        alert("Profile updated!");
+      })
+      .catch((err) => {
+        alert("Update failed: " + err);
+      })
+      .finally(() => setSaving(false));
   };
 
   return (
@@ -39,14 +70,14 @@ const InstructorProfileSettings = () => {
                   : "text-gray-700"
               }`}
             >
-              <Icon />
+              <Icon className="mr-2" />
               {label}
             </button>
           ))}
         </nav>
       </aside>
 
-      {/* Main Content */}
+      {/* Main */}
       <main className="flex-1 p-8">
         {activeTab === "profile" && (
           <div className="space-y-6 max-w-3xl bg-white p-6 rounded-xl shadow">
@@ -64,6 +95,7 @@ const InstructorProfileSettings = () => {
                 <p className="text-gray-500">{formData.email}</p>
               </div>
             </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block mb-1 font-medium">Full Name</label>
@@ -129,30 +161,19 @@ const InstructorProfileSettings = () => {
                 </button>
               )}
             </div>
+
+            {status === "failed" && (
+              <p className="text-red-500 mt-2">Error: {error}</p>
+            )}
           </div>
         )}
 
-        {activeTab === "password" && (
+        {/* Stub Tabs */}
+        {["password", "notifications", "preferences"].includes(activeTab) && (
           <div>
-            <h2 className="text-xl font-semibold">Change Password</h2>
-            <p className="text-sm text-gray-500 mt-1 mb-4">
-              Feature not implemented yet.
-            </p>
-          </div>
-        )}
-
-        {activeTab === "notifications" && (
-          <div>
-            <h2 className="text-xl font-semibold">Notification Settings</h2>
-            <p className="text-sm text-gray-500 mt-1 mb-4">
-              Feature not implemented yet.
-            </p>
-          </div>
-        )}
-
-        {activeTab === "preferences" && (
-          <div>
-            <h2 className="text-xl font-semibold">Preferences</h2>
+            <h2 className="text-xl font-semibold capitalize">
+              {activeTab} Settings
+            </h2>
             <p className="text-sm text-gray-500 mt-1 mb-4">
               Feature not implemented yet.
             </p>

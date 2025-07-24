@@ -149,8 +149,18 @@ export const handleUpdateUserById = catchAsyncHandler(async (req, res) => {
     const updateData = req.body;
     const currentUser = req.user;
 
-    if (!mongoose.Types.ObjectId.isValid(id)) {
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ message: "Invalid _id format" });
+    }
+
+    if (req.user._id.toString() !== id && req.user.user_type !== "admin") {
+      return res.status(403).json({ message: "Forbidden: Not your profile." });
+    }
+
+    const user = await User.findById(id).select("-password");
+
+    if (!user) {
+      return res.status(404).json({ message: `No user found with _id: ${id}` });
     }
 
     if (!updateData || Object.keys(updateData).length === 0) {

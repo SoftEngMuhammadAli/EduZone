@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   updateProfile,
   getUserProfile,
+  setUser,
 } from "../../features/auth/userApiSlice";
 import Sidebar from "../../components/settings/shared/Sidebar";
 import ProfileForm from "../../components/settings/shared/ProfileForm";
@@ -19,14 +20,16 @@ const AdminProfileSettings = () => {
 
   const [isEditing, setIsEditing] = useState(false);
 
+  // Fetch user profile on mount
   useEffect(() => {
-    if (user && user._id) {
+    if (user?._id) {
       dispatch(getUserProfile(user._id));
     }
-  }, [dispatch, user._id]);
+  }, [dispatch, user?._id]);
 
+  // Sync form fields with user data
   useEffect(() => {
-    if (user?.name || user?.email || user?.bio) {
+    if (user) {
       setFormData({
         name: user.name || "",
         email: user.email || "",
@@ -43,16 +46,13 @@ const AdminProfileSettings = () => {
   const handleSave = () => {
     dispatch(updateProfile({ userId: user._id, formData }))
       .unwrap()
-      .then(() => {
-        useEffect(() => {
-          dispatch(getUserProfile(user._id));
-          return () => {};
-        }, []);
-        alert("Profile updated!");
+      .then((updatedUser) => {
+        dispatch(setUser(updatedUser));
         setIsEditing(false);
+        alert("Profile updated successfully!");
       })
       .catch((err) => {
-        alert("Error: " + err);
+        alert("Update failed: " + err);
       });
   };
 

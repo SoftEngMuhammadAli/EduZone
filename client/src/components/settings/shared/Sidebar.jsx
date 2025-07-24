@@ -1,12 +1,7 @@
 import React from "react";
-import { UserIcon, LockClosedIcon, BellIcon, SettingsIcon } from "./TabIcons";
+import { UserIcon } from "./TabIcons";
 
-const tabs = [
-  { id: "profile", label: "Profile", icon: UserIcon },
-  { id: "password", label: "Password", icon: LockClosedIcon },
-  { id: "notifications", label: "Notifications", icon: BellIcon },
-  { id: "preferences", label: "Preferences", icon: SettingsIcon },
-];
+const tabs = [{ id: "profile", label: "Profile", icon: UserIcon }];
 
 const Sidebar = ({ activeTab, setActiveTab }) => (
   <aside className="w-64 bg-white border-r px-4 py-6">

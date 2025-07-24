@@ -32,12 +32,7 @@ const SignUpPage = () => {
       password: form.password.value,
     };
 
-    if (
-      !userData.name ||
-      !userData.email ||
-      !userData.password ||
-      !userData.user_type
-    ) {
+    if (!userData.name || !userData.email || !userData.password) {
       console.error("All fields including role are required");
       return;
     }
