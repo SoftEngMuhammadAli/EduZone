@@ -18,7 +18,7 @@ export const enrollInCourse = createAsyncThunk(
         }
       );
 
-      return response.data;
+      return response.data.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
         error.response?.data?.message || "Enrollment failed"
@@ -76,7 +76,7 @@ const enrollSlice = createSlice({
       })
       .addCase(enrollInCourse.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.data = action.payload;
+        state.data = action.payload.data;
         state.error = null;
       })
       .addCase(enrollInCourse.rejected, (state, action) => {
@@ -93,7 +93,7 @@ const enrollSlice = createSlice({
       })
       .addCase(fetchEnrolledCourses.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.courses = action.payload;
+        state.courses = action.payload.data;
       })
       .addCase(fetchEnrolledCourses.rejected, (state, action) => {
         state.status = "failed";

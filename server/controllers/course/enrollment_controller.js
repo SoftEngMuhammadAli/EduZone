@@ -8,6 +8,8 @@ export const enrollInCourse = catchAsyncHandler(async (req, res) => {
     console.log("Incoming payload:", req.body);
     const { userId, courseId } = req.body;
 
+    console.log("Result After Enrolling in Course", req.body);
+
     if (!userId || !courseId) {
       return res
         .status(400)
@@ -15,6 +17,7 @@ export const enrollInCourse = catchAsyncHandler(async (req, res) => {
     }
 
     const existing = await EnrollmentCourse.findOne({ userId, courseId });
+
     if (existing) {
       return res
         .status(409)
@@ -22,6 +25,7 @@ export const enrollInCourse = catchAsyncHandler(async (req, res) => {
     }
 
     const enrollment = new EnrollmentCourse({ userId, courseId });
+
     console.log(`Enrollment Process: ${enrollment}`);
 
     await enrollment.save();
@@ -38,7 +42,7 @@ export const enrollInCourse = catchAsyncHandler(async (req, res) => {
         error: "Enrollment saved, but course data not found during population",
       });
     }
-    // Notification for successful enrollment
+
     await Notification.create({
       userId,
       message: `You have enrolled in "${populatedEnrollment.courseId.title}".`,

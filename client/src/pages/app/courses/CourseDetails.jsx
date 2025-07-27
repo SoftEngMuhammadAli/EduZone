@@ -3,7 +3,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import axiosInstance from "../../../services/axios";
 
-import { enrollInCourse } from "../../../features/course/enrollSlice";
+import {
+  enrollInCourse,
+  fetchEnrolledCourses,
+} from "../../../features/course/enrollSlice";
 
 import { AppFooter } from "../../../components/app/footer/Footer";
 import LikeFeature from "../../../components/app/post-interactions/LikeFeature";
@@ -18,10 +21,7 @@ const CourseDetail = () => {
 
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
-
-  const alreadyEnrolledError = error
-    ?.toLowerCase()
-    .includes("already enrolled");
+  const [enrolled, setEnrolled] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -39,9 +39,33 @@ const CourseDetail = () => {
     fetchData();
   }, [id]);
 
+  useEffect(() => {
+    if (user?._id) {
+      dispatch(fetchEnrolledCourses(user._id)).then((res) => {
+        const enrolledCourses = res.payload?.data || [];
+        console.log("Fetched enrolled courses:", enrolledCourses);
+
+        const isEnrolled = enrolledCourses.some((enroll) => {
+          const enrolledCourseId = enroll.courseId?._id || enroll.courseId;
+          ID;
+          return enrolledCourseId === id;
+        });
+
+        setEnrolled(isEnrolled);
+      });
+    }
+  }, [user, id, dispatch]);
+
   const handleEnroll = () => {
     if (user && id) {
-      dispatch(enrollInCourse({ userId: user._id, id }));
+      dispatch(enrollInCourse({ userId: user._id, courseId: id })).then(
+        (res) => {
+          if (!res.error) {
+            alert(`You have enrolled in Course: ${course.title}`);
+            setEnrolled(true);
+          }
+        }
+      );
     }
   };
 
@@ -87,21 +111,21 @@ const CourseDetail = () => {
           <div className="mt-10 text-center">
             <button
               onClick={handleEnroll}
-              disabled={status === "loading" || alreadyEnrolledError}
+              disabled={status === "loading" || enrolled}
               className={`px-8 py-3 rounded-md transition font-medium text-base sm:text-lg ${
-                alreadyEnrolledError
+                enrolled
                   ? "bg-gray-300 text-gray-600 cursor-not-allowed"
                   : "bg-[#1C1E53] text-white hover:bg-[#FCD980] hover:text-[#1C1E53]"
               }`}
             >
-              {alreadyEnrolledError
-                ? "Already Enrolled"
+              {enrolled
+                ? "You're Enrolled in this Course!"
                 : status === "loading"
                 ? "Enrolling..."
                 : "Join Course"}
             </button>
 
-            {error && !alreadyEnrolledError && (
+            {error && !enrolled && (
               <p className="text-red-500 text-sm mt-2">{error}</p>
             )}
             {data?.message && (

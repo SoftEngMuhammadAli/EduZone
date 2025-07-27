@@ -18,4 +18,4 @@ const eduZoneBenefitsSchema = mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.model("EduZoneBenefitModel", eduZoneBenefitsSchema);
+export default mongoose.model("EduZoneBenefit", eduZoneBenefitsSchema);

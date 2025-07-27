@@ -64,12 +64,32 @@ const CommentFeature = () => {
           {comments.map((c, index) => (
             <div
               key={c._id || `comment-${index}`}
-              className="bg-gray-100 p-3 rounded-md text-sm text-gray-700"
+              className="bg-gray-100 p-3 rounded-md text-sm text-gray-700 relative"
             >
               <div className="font-semibold">{c.user?.name || "Anonymous"}</div>
               <div>{c.text}</div>
               <div className="text-xs text-gray-500">
                 {new Date(c.createdAt).toLocaleString()}
+              </div>
+
+              {/* Buttons: Update / Delete */}
+              <div className="mt-2 flex gap-2">
+                <button
+                  onClick={() => {
+                    alert("This feature is not implemented yet!");
+                  }}
+                  className="text-blue-600 hover:underline text-xs"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => {
+                    alert("This feature is not implemented yet!");
+                  }}
+                  className="text-red-600 hover:underline text-xs"
+                >
+                  Delete
+                </button>
               </div>
             </div>
           ))}
