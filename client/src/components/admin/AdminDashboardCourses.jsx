@@ -43,9 +43,11 @@ const AdminCoursesGrid = ({ courses = [] }) => {
             </div>
           ))
         ) : (
-          <p className="text-gray-500 col-span-full text-center">
-            No courses available.
-          </p>
+          <div className="flex items-center justify-center col-span-full hover:bg-gray-100 p-4 rounded-lg cursor-pointer">
+            <p className="text-gray-500 col-span-full text-center">
+              No Courses available.
+            </p>
+          </div>
         )}
       </div>
     </>
