@@ -46,7 +46,7 @@ const UserProfileView = ({ user }) => {
     try {
       await axiosInstance.delete(`/api/users/${user._id}`);
       alert("User deleted successfully!");
-      navigate(-1); // Go back to previous page
+      navigate(-1);
     } catch (error) {
       console.error(error);
       alert(error.response?.data?.message || "Failed to delete user.");
@@ -103,9 +103,9 @@ const UserProfileView = ({ user }) => {
             </>
           ) : (
             <>
-              <h2 className="text-2xl font-semibold">{user.name}</h2>
-              <p className="text-gray-500 capitalize">{user.user_type}</p>
-              <p className="text-sm text-gray-600">{user.email}</p>
+              <h2 className="text-2xl font-semibold"><span className="font-semibold">Name:</span> {user.name}</h2>
+              <p className="text-gray-500 capitalize"><span className="font-semibold text-[blue]">Role:</span> {user.user_type}</p>
+              <p className="text-sm text-gray-600"><span className="font-semibold text-[blue]">Email:</span> {user.email}</p>
             </>
           )}
           <p className="text-sm text-gray-400 mt-1">
