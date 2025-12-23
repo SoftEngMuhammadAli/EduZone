@@ -60,7 +60,7 @@ const likesSlice = createSlice({
       .addCase(toggleLike.fulfilled, (state, action) => {
         const { user } = action.payload;
         const existingIndex = state.likes.findIndex(
-          (l) => l.user._id === user._id
+          (value) => value.user._id === user._id
         );
 
         if (existingIndex !== -1) {

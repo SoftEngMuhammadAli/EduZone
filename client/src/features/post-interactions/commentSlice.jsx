@@ -67,6 +67,8 @@ const commentsSlice = createSlice({
     status: "idle",
     error: null,
   },
+  // this is for local state management
+  // it will not affect the global state
   reducers: {},
   extraReducers: (builder) => {
     builder

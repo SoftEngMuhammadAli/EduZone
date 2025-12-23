@@ -60,10 +60,16 @@ const CourseDetail = () => {
     if (user && id && !enrolled) {
       dispatch(enrollInCourse({ userId: user._id, courseId: id })).then(
         (res) => {
+          // what this code will do?
+          console.log("Enrollment response:", res);
           if (res.meta.requestStatus === "fulfilled") {
             alert(`You have enrolled in Course: ${course.title}`);
             setEnrolled(true);
-          } else if (res.meta.requestStatus === "rejected") {
+          }
+          else if (res.status === 409) {
+            alert("You are already enrolled in this course.");
+          }
+          else if (res.meta.requestStatus === "rejected") {
             if (res.payload?.statusCode === 409) {
               alert("You are already enrolled in this course.");
               setEnrolled(true);
