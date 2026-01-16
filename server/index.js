@@ -21,18 +21,20 @@ app.use(
   cors({
     origin: (origin, callback) => {
       const allowedOrigins = getHostsList();
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
+
+      // allow server-to-server, Postman, mobile apps
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
       }
+
+      return callback(new Error(`CORS blocked: ${origin}`));
     },
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
     credentials: true,
-    exposedHeaders: ["set-cookie"],
-    optionsSuccessStatus: 200,
-  }),
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
 );
 
 app.use(express.json());

@@ -80,6 +80,6 @@ export const getHostsList = () => {
     "http://localhost:5174",
     "http://localhost:5175",
     "http://localhost:5176",
-    "https://eduzone-web.vercel.app/",
+    "https://eduzone-web.vercel.app",
   ];
 };
