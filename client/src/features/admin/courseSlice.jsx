@@ -28,9 +28,13 @@ export const createCourse = createAsyncThunk(
   "course/createCourse",
   async (courseData, thunkAPI) => {
     try {
-      const response = await axiosInstance.post("/api/courses", courseData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      const response = await axiosInstance.post(
+        "/api/courses/create-course",
+        courseData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        },
+      );
       return response.data.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(

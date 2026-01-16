@@ -73,3 +73,13 @@ const bios = [
 export const getRandomBio = () => {
   return bios[Math.floor(Math.random() * bios.length)];
 };
+
+export const getHostsList = () => {
+  return [
+    "http://localhost:5173",
+    "http://localhost:5174",
+    "http://localhost:5175",
+    "http://localhost:5176",
+    "https://eduzone-web.vercel.app/",
+  ];
+};

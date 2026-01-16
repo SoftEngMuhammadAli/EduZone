@@ -8,6 +8,8 @@ import connectToDatabase from "./src/shared/config/server.js";
 import registeredRouters from "./src/modules/index.js";
 import path from "path";
 import { fileURLToPath } from "url";
+import { getHostsList } from "./src/shared/utils/constants.js";
+import { globalErrorHandler } from "./src/shared/middlewares/global_error_handler.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -18,14 +20,7 @@ const __dirname = path.dirname(__filename);
 app.use(
   cors({
     origin: (origin, callback) => {
-      const allowedOrigins = [
-        "http://localhost:5173",
-        "http://localhost:5174",
-        "http://localhost:5175",
-        "http://localhost:5176",
-        "https://edu-zone-kappa.vercel.app",
-        "https://eduzone-jscm.onrender.com",
-      ];
+      const allowedOrigins = getHostsList();
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
@@ -71,6 +66,8 @@ app.get("/", (req, res) => {
 });
 
 registeredRouters(app);
+
+app.use(globalErrorHandler);
 
 connectToDatabase(process.env.DB_CONFIGURATION);
 

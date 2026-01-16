@@ -31,7 +31,7 @@ import { upload } from "../../shared/middlewares/multer.js";
 router.get("/", checkAuth, getAllCourses);
 router.get("/:id", checkAuth, getCourseById);
 router.post(
-  "/",
+  "/create-course",
   checkAuth,
   authorizeRoles("admin", "instructor"),
   upload.single("image"),

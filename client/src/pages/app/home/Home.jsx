@@ -9,53 +9,45 @@ import AskedQuestions from "../frequently-asked-questions/AskedQuestions";
 import ReadHomeBlogs from "../../../components/app/blogs/ReadHomeBlogs";
 import ContactUs from "../../../components/app/contact/ContactUs";
 import { AppFooter } from "../../../components/layout/Footer";
-import TermsAndConditions from "../terms-and-conditions/TermsAndConditions";
-import PrivacyPolicy from "../privacy-policy/PrivacyPolicy";
 import TrustedBySection from "../../../components/app/about/TrusterBy";
 
-const Home = () => {
+const HomePage = () => {
   return (
     <>
-      {/* Home Banner */}
+      {/* Banner Section */}
       <HomeBanner />
 
-      {/* Statisctics Partners */}
-      <StatisticPartners />
-
-      {/* Benefits of Joining EDUZONE E-Learning */}
-      <EduZoneBenefits />
-
-      {/* About Us */}
-      <AboutUs />
-
-      {/* Recommended Courses For You */}
-      <CourseRecommendations />
-
-      {/* What they say about our courses */}
-      <CoursesFeedBack />
-
-      {/* Frequently asked questions */}
-      <AskedQuestions />
-
-      {/* Trusted By */}
+      {/* Trusted By Section */}
       <TrustedBySection />
 
-      {/* Blogs */}
+      {/* Statistics Partners Section */}
+      <StatisticPartners />
+
+      {/* Benefits Section */}
+      <EduZoneBenefits />
+
+      {/* About Us Section */}
+      <AboutUs />
+
+      {/* Course Section Group */}
+      <CourseRecommendations />
+
+      {/* Courses Feed Back Section */}
+      <CoursesFeedBack />
+
+      {/* Asked Questions Section */}
+      <AskedQuestions />
+
+      {/* Blogs Section */}
       <ReadHomeBlogs />
 
-      {/* Contact Us */}
+      {/* Contact Us Section */}
       <ContactUs />
 
-      {/* Terms and Conditions */}
-      <TermsAndConditions />
-
-      {/* Privacy Policy */}
-      <PrivacyPolicy />
-
-      {/* Footer */}
+      {/* Footer Section */}
       <AppFooter />
     </>
   );
 };
 
-export default Home;
+export default HomePage;

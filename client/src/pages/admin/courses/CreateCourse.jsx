@@ -45,7 +45,7 @@ const CreateCoursePage = () => {
         navigate(
           type === "admin"
             ? "/admin/dashboard-page"
-            : "/instructor/instructor-dashboard-page"
+            : "/instructor/instructor-dashboard-page",
         );
       }
     });
@@ -60,6 +60,8 @@ const CreateCoursePage = () => {
           <input
             type="text"
             value={title}
+            autoComplete="text"
+            name="text"
             onChange={(e) => setTitle(e.target.value)}
             required
             className="w-full px-4 py-2 border rounded"
@@ -70,6 +72,8 @@ const CreateCoursePage = () => {
           <label className="block text-sm font-medium">Description *</label>
           <textarea
             value={description}
+            autoComplete="description"
+            name="description"
             onChange={(e) => setDescription(e.target.value)}
             rows="5"
             required
@@ -82,6 +86,8 @@ const CreateCoursePage = () => {
           <input
             type="text"
             value={category}
+            autoComplete="category"
+            name="category"
             onChange={(e) => setCategory(e.target.value)}
             required
             placeholder="e.g. Programming, Design"
@@ -94,6 +100,8 @@ const CreateCoursePage = () => {
           <input
             type="text"
             value={duration}
+            autoComplete="duration"
+            name="duration"
             onChange={(e) => setDuration(e.target.value)}
             required
             placeholder="e.g. 4 weeks"
@@ -105,6 +113,8 @@ const CreateCoursePage = () => {
           <label className="block text-sm font-medium">Level *</label>
           <select
             value={level}
+            autoComplete="level"
+            name="level"
             onChange={(e) => setLevel(e.target.value)}
             required
             className="w-full px-4 py-2 border rounded"
@@ -120,6 +130,8 @@ const CreateCoursePage = () => {
           <input
             type="file"
             accept="image/*"
+            autoComplete="image"
+            name="image"
             onChange={handleImageChange}
             className="w-full border mt-2 p-2 rounded"
           />
