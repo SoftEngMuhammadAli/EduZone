@@ -21,7 +21,9 @@ export const enrollInCourse = catchAsyncHandler(async (req, res) => {
     if (existing) {
       return res
         .status(409)
-        .json({ error: "User already enrolled in this course" });
+        .json({
+          message: "User already enrolled in this course",
+        });
     }
 
     const enrollment = new EnrollmentCourse({ userId, courseId });

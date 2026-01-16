@@ -12,47 +12,58 @@ const CourseCard = ({ course, buttonText = "See More Details" }) => {
   return (
     <div
       onClick={handleNavigate}
-      className="flex flex-col h-full bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow overflow-hidden cursor-pointer"
+      className="group flex flex-col h-full bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer border border-gray-100"
     >
       {/* Course Image */}
-      <div className="h-48 sm:h-56 md:h-64 overflow-hidden flex items-center justify-center bg-gray-100">
+      <div className="h-52 overflow-hidden relative bg-gray-50">
         {course.image ? (
           <img
             src={`${import.meta.env.VITE_BASE_URL}/uploads/${course.image}`}
             alt={course.title}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
           />
         ) : (
-          <span className="text-gray-500">No Image</span>
+          <div className="flex items-center justify-center h-full text-gray-400">
+            <span className="text-sm font-medium">No Image Available</span>
+          </div>
         )}
+        <div className="absolute top-3 left-3">
+          <span className="inline-block px-3 py-1 text-[10px] font-bold text-[#1C1E53] bg-white/90 backdrop-blur-sm rounded-full shadow-sm tracking-wider uppercase">
+            {course.category?.name || course.category || "Uncategorized"}
+          </span>
+        </div>
       </div>
 
       {/* Content */}
       <div className="p-6 flex flex-col justify-between flex-1">
-        {/* Top Meta and Title */}
         <div>
-          <span className="inline-block px-3 py-1 text-xs font-semibold text-[#2405F2] bg-[#2405F2]/10 rounded-full mb-2">
-            {course.category?.name || course.category || "Uncategorized"}
-          </span>
-
-          <h3 className="text-lg sm:text-xl font-semibold mb-2 line-clamp-1">
+          <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2 leading-tight group-hover:text-[#1C1E53] transition-colors">
             {course.title}
           </h3>
 
-          <p className="text-gray-600 mb-4 line-clamp-3">
+          <p className="text-gray-600 text-sm mb-5 line-clamp-2 leading-relaxed">
             {course.description}
           </p>
 
-          <div className="flex flex-wrap gap-4 text-sm text-gray-500">
-            <span>⏱ {course.duration}</span>
-            <span>🎬 {course.videos || "N/A"} Videos</span>
-            <span>👨‍🎓 {course.students || 0} Students</span>
+          <div className="flex items-center gap-4 text-xs font-medium text-gray-500 mb-4">
+            <div className="flex items-center gap-1">
+              <span>⏱</span>
+              <span>{course.duration}</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <span>🎬</span>
+              <span>{course.videos || "N/A"} Videos</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <span>👨‍🎓</span>
+              <span>{course.students || 0} Students</span>
+            </div>
           </div>
         </div>
 
         {/* Button */}
-        <div className="mt-6">
-          <button className="w-full bg-[#2405F2] hover:bg-[#1a04c4] text-white py-2 rounded-md transition">
+        <div>
+          <button className="w-full bg-gray-50 hover:bg-[#1C1E53] text-[#1C1E53] hover:text-white font-semibold py-2.5 rounded-lg transition-all duration-300 text-sm border border-gray-200 hover:border-[#1C1E53]">
             {buttonText}
           </button>
         </div>

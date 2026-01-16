@@ -42,43 +42,41 @@ const CourseDetail = () => {
   useEffect(() => {
     if (user?._id) {
       dispatch(fetchEnrolledCourses(user._id)).then((res) => {
-        const enrolledCourses = res.payload?.data || [];
-        console.log("Fetched enrolled courses:", enrolledCourses);
+        if (fetchEnrolledCourses.fulfilled.match(res)) {
+          const enrolledCourses = res.payload || [];
+          console.log("Fetched enrolled courses:", enrolledCourses);
 
-        const isEnrolled = enrolledCourses.some((enroll) => {
-          const enrolledCourseId = enroll.courseId?._id || enroll.courseId;
-          ID;
-          return enrolledCourseId === id;
-        });
+          const isEnrolled = enrolledCourses.some((enroll) => {
+            const enrolledCourseId = enroll.courseId?._id || enroll.courseId;
+            return enrolledCourseId === id;
+          });
 
-        setEnrolled(isEnrolled);
+          setEnrolled(isEnrolled);
+        }
       });
     }
   }, [user, id, dispatch]);
 
-  const handleEnroll = () => {
+  const handleEnroll = async () => {
     if (user && id && !enrolled) {
-      dispatch(enrollInCourse({ userId: user._id, courseId: id })).then(
-        (res) => {
-          // what this code will do?
-          console.log("Enrollment response:", res);
-          if (res.meta.requestStatus === "fulfilled") {
-            alert(`You have enrolled in Course: ${course.title}`);
-            setEnrolled(true);
-          }
-          else if (res.status === 409) {
-            alert("You are already enrolled in this course.");
-          }
-          else if (res.meta.requestStatus === "rejected") {
-            if (res.payload?.statusCode === 409) {
-              alert("You are already enrolled in this course.");
-              setEnrolled(true);
-            } else {
-              alert(`Enrollment failed: ${res.payload?.message || "Unknown error"}`);
-            }
-          }
-        }
+      const res = await dispatch(
+        enrollInCourse({ userId: user._id, courseId: id }),
       );
+
+      if (enrollInCourse.fulfilled.match(res)) {
+        alert(`You have successfully enrolled in: ${course.title}`);
+        setEnrolled(true);
+      } else if (enrollInCourse.rejected.match(res)) {
+        const payload = res.payload;
+        if (payload?.statusCode === 409) {
+          alert(payload.message || "You are already enrolled in this course.");
+          setEnrolled(true);
+        } else {
+          alert(
+            `Enrollment failed: ${payload?.message || "Unknown error occurred"}`,
+          );
+        }
+      }
     } else if (enrolled) {
       alert("You are already enrolled in this course.");
     }
@@ -127,10 +125,11 @@ const CourseDetail = () => {
             <button
               onClick={handleEnroll}
               disabled={status === "loading" || enrolled}
-              className={`px-8 py-3 rounded-md transition font-medium text-base sm:text-lg ${enrolled
-                ? "bg-gray-300 text-gray-600 cursor-not-allowed"
-                : "bg-[#1C1E53] text-white hover:bg-[#FCD980] hover:text-[#1C1E53]"
-                }`}
+              className={`px-8 py-3 rounded-md transition font-medium text-base sm:text-lg ${
+                enrolled
+                  ? "bg-gray-300 text-gray-600 cursor-not-allowed"
+                  : "bg-[#1C1E53] text-white hover:bg-[#FCD980] hover:text-[#1C1E53]"
+              }`}
             >
               {enrolled
                 ? "You're Enrolled in this Course!"

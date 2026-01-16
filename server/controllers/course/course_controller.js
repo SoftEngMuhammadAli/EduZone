@@ -7,11 +7,11 @@ import Notification from "../../models/notifications/notification_model.js";
 export const getAllCourses = catchAsyncHandler(async (req, res) => {
   const courses = await Course.find({}).populate(
     "courseCreatedBy",
-    "name email user_type"
+    "name email user_type",
   );
 
   if (!courses || courses.length === 0) {
-    return res.status(404).json({ message: "No courses found." });
+    return res.status(404).json({ message: "Course not found" });
   }
 
   return res.status(200).json({
@@ -25,16 +25,16 @@ export const getCourseById = catchAsyncHandler(async (req, res) => {
   const { id } = req.params;
 
   if (!id || !mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(400).json({ error: "Invalid Course ID" });
+    return res.status(400).json({ message: "Invalid Course ID" });
   }
 
   const course = await Course.findById(id).populate(
     "courseCreatedBy",
-    "name email user_type"
+    "name email user_type",
   );
 
   if (!course) {
-    return res.status(404).json({ error: "Course not found" });
+    return res.status(404).json({ message: "Course not found" });
   }
 
   const courseData = {
@@ -121,7 +121,7 @@ export const updateCourseById = catchAsyncHandler(async (req, res) => {
   const user = req.user?._id;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(400).json({ error: "Invalid Course ID" });
+    return res.status(400).json({ message: "Invalid Course ID" });
   }
 
   const updateData = { ...req.body };
@@ -135,7 +135,7 @@ export const updateCourseById = catchAsyncHandler(async (req, res) => {
   });
 
   if (!updatedCourse) {
-    return res.status(404).json({ error: "Course not found" });
+    return res.status(404).json({ message: "Course not found" });
   }
 
   await Notification.create({
@@ -161,13 +161,13 @@ export const deleteCourseById = catchAsyncHandler(async (req, res) => {
   const { id } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(400).json({ error: "Invalid Course ID" });
+    return res.status(400).json({ message: "Invalid Course ID" });
   }
 
   const deletedCourse = await Course.findByIdAndDelete(id);
 
   if (!deletedCourse) {
-    return res.status(404).json({ error: "Course not found" });
+    return res.status(404).json({ message: "Course not found" });
   }
 
   await Notification.create({

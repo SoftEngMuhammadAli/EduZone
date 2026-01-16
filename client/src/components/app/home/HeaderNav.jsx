@@ -31,19 +31,32 @@ const HeaderNav = () => {
   const isInstructor = user?.user_type === "instructor";
   const isStudent = user?.user_type === "student";
 
+  // Scroll effect for header
+  const [scrolled, setScrolled] = React.useState(false);
+
+  React.useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
-    <header className="bg-[#1C1E53] text-white relative z-50">
-      <div className="flex items-center justify-between px-6 py-4">
+    <header
+      className={`fixed top-0 w-full z-50 transition-all duration-300 ${
+        scrolled ? "glass-nav py-3 shadow-lg" : "bg-[#1C1E53] py-4"
+      }`}
+    >
+      <div className="flex items-center justify-between px-6 lg:px-12">
         {/* Logo */}
         <Link
           to={
             isAdmin
               ? "/admin/dashboard-page"
               : isInstructor
-              ? "/instructor/instructor-dashboard-page"
-              : "/home"
+                ? "/instructor/instructor-dashboard-page"
+                : "/home"
           }
-          className="text-2xl font-semibold underline"
+          className="text-2xl font-bold tracking-tight text-white hover:text-yellow-400 transition-colors"
         >
           EduZone
         </Link>
@@ -51,7 +64,7 @@ const HeaderNav = () => {
         {/* Hamburger */}
         <button
           onClick={() => setIsMenuOpen(!isMenuOpen)}
-          className="md:hidden focus:outline-none"
+          className="md:hidden focus:outline-none text-white hover:scale-110 transition-transform"
         >
           <svg
             className="w-6 h-6"
@@ -78,64 +91,122 @@ const HeaderNav = () => {
         </button>
 
         {/* Desktop Nav */}
-        <nav className="hidden md:flex gap-6 text-white text-base items-center">
+        <nav className="hidden md:flex gap-8 text-white/90 font-medium items-center">
           {isAdmin && (
             <>
-              <Link to="/admin/dashboard-page">Dashboard</Link>
-              <Link to="/admin/get-all-students">Manage Students</Link>
-              <Link to="/admin/get-all-instructors">Manage Instructors</Link>
+              <Link
+                to="/admin/dashboard-page"
+                className="hover:text-yellow-400 transition-colors"
+              >
+                Dashboard
+              </Link>
+              <Link
+                to="/admin/get-all-students"
+                className="hover:text-yellow-400 transition-colors"
+              >
+                Students
+              </Link>
+              <Link
+                to="/admin/get-all-instructors"
+                className="hover:text-yellow-400 transition-colors"
+              >
+                Instructors
+              </Link>
             </>
           )}
 
           {isInstructor && (
             <>
-              <Link to="/instructor/instructor-dashboard-page">Dashboard</Link>
-              <Link to="/instructor/courses-management/get-all-courses">
+              <Link
+                to="/instructor/instructor-dashboard-page"
+                className="hover:text-yellow-400 transition-colors"
+              >
+                Dashboard
+              </Link>
+              <Link
+                to="/instructor/courses-management/get-all-courses"
+                className="hover:text-yellow-400 transition-colors"
+              >
                 Courses
               </Link>
-              <Link to="/instructor/settings">Settings</Link>
-              <Link onClick={handleLogout}>Sign Out</Link>
+              <Link
+                to="/instructor/settings"
+                className="hover:text-yellow-400 transition-colors"
+              >
+                Settings
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="hover:text-red-400 transition-colors"
+              >
+                Sign Out
+              </button>
             </>
           )}
 
           {isStudent && (
             <>
-              <Link to="/home">Home</Link>
-              <Link to="/courses/courses-list">Courses</Link>
-              <Link to="/user/learning-room">Learning Room</Link>
-              <Link to="/contact">Contact</Link>
-              <Link to="/about">About</Link>
-              <Link to="/help">Help</Link>
+              <Link
+                to="/home"
+                className="hover:text-yellow-400 transition-colors"
+              >
+                Home
+              </Link>
+              <Link
+                to="/courses/courses-list"
+                className="hover:text-yellow-400 transition-colors"
+              >
+                Courses
+              </Link>
+              <Link
+                to="/user/learning-room"
+                className="hover:text-yellow-400 transition-colors"
+              >
+                Learning
+              </Link>
+              <Link
+                to="/contact"
+                className="hover:text-yellow-400 transition-colors"
+              >
+                Contact
+              </Link>
+              <Link
+                to="/about"
+                className="hover:text-yellow-400 transition-colors"
+              >
+                About
+              </Link>
             </>
           )}
 
           {/* Dropdown */}
-          <div className="relative">
+          <div className="relative group">
             <button
               onClick={toggleDropdown}
-              className="text-white hover:text-yellow-400"
+              className="text-white hover:text-yellow-400 transition-colors p-1"
             >
               {/* If teacher Then Show Only LogOut Button */}
-              {isInstructor ? <>{""}</> : <MoreVertical />}
+              {isInstructor ? null : <MoreVertical size={20} />}
             </button>
-            {showDropdown && (
-              <div className="absolute right-0 mt-2 w-48 bg-white text-black rounded shadow-lg z-50">
+
+            {(showDropdown || false /* group-hover logic could go here */) && (
+              <div className="absolute right-0 mt-2 w-48 bg-white text-gray-800 rounded-lg shadow-xl overflow-hidden animate-fade-in border border-gray-100 z-50">
                 <Link
                   to={
                     isAdmin
                       ? "/admin/settings"
                       : isInstructor
-                      ? "/instructor/settings"
-                      : "/user/settings"
+                        ? "/instructor/settings"
+                        : "/user/settings"
                   }
                   onClick={() => setShowDropdown(false)}
-                  className="block px-4 py-2 hover:bg-gray-100"
+                  className="block px-4 py-3 hover:bg-gray-50 transition-colors"
                 >
                   Settings
                 </Link>
                 <button
                   onClick={handleLogout}
-                  className="w-full text-left px-4 py-2 hover:bg-red-100 text-red-600"
+                  className="w-full text-left px-4 py-3 hover:bg-red-50 text-red-600 transition-colors"
                 >
                   Logout
                 </button>

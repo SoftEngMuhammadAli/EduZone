@@ -15,16 +15,20 @@ export const enrollInCourse = createAsyncThunk(
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
-      return response.data.data;
+      return response.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(
-        error.response?.data?.message || "Enrollment failed"
-      );
+      const message =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        "Enrollment failed";
+      const statusCode = error.response?.status;
+
+      return thunkAPI.rejectWithValue({ message, statusCode });
     }
-  }
+  },
 );
 
 // fetch enroll courses by user id
@@ -41,15 +45,15 @@ export const fetchEnrolledCourses = createAsyncThunk(
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
       return res.data.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
-        error.response?.data?.message || "Failed to fetch"
+        error.response?.data?.message || "Failed to fetch",
       );
     }
-  }
+  },
 );
 
 const enrollSlice = createSlice({
@@ -81,7 +85,7 @@ const enrollSlice = createSlice({
       })
       .addCase(enrollInCourse.rejected, (state, action) => {
         state.status = "failed";
-        state.error = action.payload;
+        state.error = action.payload?.message || "Enrollment failed";
         state.data = null;
       })
 
@@ -93,7 +97,7 @@ const enrollSlice = createSlice({
       })
       .addCase(fetchEnrolledCourses.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.courses = action.payload.data;
+        state.courses = action.payload;
       })
       .addCase(fetchEnrolledCourses.rejected, (state, action) => {
         state.status = "failed";

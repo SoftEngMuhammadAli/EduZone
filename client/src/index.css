@@ -1,1 +1,14 @@
 @import "tailwindcss";
+
+@layer base {
+  body {
+    font-family: "Inter", sans-serif;
+    @apply bg-gray-50 text-gray-900 antialiased;
+  }
+}
+
+@layer utilities {
+  .glass-nav {
+    @apply bg-[#1C1E53]/90 backdrop-blur-md border-b border-white/10;
+  }
+}
