@@ -4,8 +4,14 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineConfig({
   plugins: [tailwindcss()],
   server: {
+    port: 5173,
+    strictPort: true,
     proxy: {
-      "/api": "https://eduzone-jscm.onrender.com",
+      "/api": {
+        target: "https://eduzone-jscm.onrender.com",
+        changeOrigin: true,
+        secure: true,
+      },
     },
   },
 });

@@ -122,14 +122,15 @@ export const loginUser = catchAsyncHandler(async (req, res) => {
 });
 
 export const logoutUser = catchAsyncHandler(async (_, res) => {
-  res.cookie("token", "", {
+  res.clearCookie("token", {
     httpOnly: true,
-    sameSite: "None",
     secure: true,
-    maxAge: 0,
+    sameSite: "none",
   });
 
-  return res.status(200).json({ message: "User logged out successfully!" });
+  return res.status(200).json({
+    message: "User logged out successfully!",
+  });
 });
 
 export const getUserProfile = catchAsyncHandler(async (req, res) => {
