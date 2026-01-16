@@ -8,7 +8,7 @@ import CoursesFeedBack from "../../../components/app/courses/CoursesFeedBack";
 import AskedQuestions from "../frequently-asked-questions/AskedQuestions";
 import ReadHomeBlogs from "../../../components/app/blogs/ReadHomeBlogs";
 import ContactUs from "../../../components/app/contact/ContactUs";
-import { AppFooter } from "../../../components/app/footer/Footer";
+import { AppFooter } from "../../../components/layout/Footer";
 import TermsAndConditions from "../terms-and-conditions/TermsAndConditions";
 import PrivacyPolicy from "../privacy-policy/PrivacyPolicy";
 import TrustedBySection from "../../../components/app/about/TrusterBy";

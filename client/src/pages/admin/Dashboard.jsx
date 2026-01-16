@@ -8,6 +8,7 @@ import UserProfileCard from "../../components/admin/UserProfileCard";
 import AdminDashboardStatsCards from "../../components/admin/AdminStatsCards";
 import AdminDashboardCourses from "../../components/admin/AdminDashboardCourses";
 import AdminDashboardBlogs from "../../components/admin/AdminDashboardBlogs";
+import { DashboardCharts } from "../../components/admin/DashboardCharts";
 
 const AdminDashboard = () => {
   const dispatch = useDispatch();
@@ -20,17 +21,17 @@ const AdminDashboard = () => {
 
   const { data: studentsData, loading: studentsLoading } = useFetchData(
     `${BASE_URL}/api/users/role/student`,
-    "GET"
+    "GET",
   );
 
   const { data: adminsData, loading: adminLoading } = useFetchData(
     `${BASE_URL}/api/users/role/admin`,
-    "GET"
+    "GET",
   );
 
   const { data: instructorsData, loading: instructorsLoading } = useFetchData(
     `${BASE_URL}/api/users/role/instructor`,
-    "GET"
+    "GET",
   );
 
   const {
@@ -72,6 +73,8 @@ const AdminDashboard = () => {
             blogsCount={blogsCount}
             adminsCount={adminsCount}
           />
+
+          <DashboardCharts />
 
           <AdminDashboardCourses
             courses={courses}

@@ -7,6 +7,7 @@ import AdminSideBarNavigation from "../../components/admin/AdminSideBar";
 import UserProfileCard from "../../components/admin/UserProfileCard";
 import AdminDashboardStatsCards from "../../components/admin/AdminStatsCards";
 import AdminCoursesGrid from "../../components/admin/AdminDashboardCourses";
+import { DashboardCharts } from "../../components/admin/DashboardCharts";
 
 const InstrcutorDashboard = () => {
   const dispatch = useDispatch();
@@ -18,17 +19,17 @@ const InstrcutorDashboard = () => {
 
   const { data: studentsData, loading: studentsLoading } = useFetchData(
     `${BASE_URL}/api/users/role/student`,
-    "GET"
+    "GET",
   );
 
   const { data: adminsData, loading: adminLoading } = useFetchData(
     `${BASE_URL}/api/users/role/admin`,
-    "GET"
+    "GET",
   );
 
   const { data: instructorsData, loading: instructorsLoading } = useFetchData(
     `${BASE_URL}/api/users/role/instructor`,
-    "GET"
+    "GET",
   );
 
   const {
@@ -70,6 +71,8 @@ const InstrcutorDashboard = () => {
             blogsCount={blogsCount}
             adminsCount={adminsCount}
           />
+
+          <DashboardCharts />
 
           <AdminCoursesGrid courses={courses} loading={loading} error={error} />
         </main>

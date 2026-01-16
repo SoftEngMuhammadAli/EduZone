@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import useFetchData from "../../../hooks/useCustomHooks";
-import CourseCard from "../../../components/app/courses/CourseCard";
+import CourseCard from "../../common/CourseCard";
 
 const CourseRecommendations = () => {
   const navigate = useNavigate();

@@ -8,7 +8,7 @@ import {
   fetchEnrolledCourses,
 } from "../../../features/course/enrollSlice";
 
-import { AppFooter } from "../../../components/app/footer/Footer";
+import { AppFooter } from "../../../components/layout/Footer";
 import LikeFeature from "../../../components/app/post-interactions/LikeFeature";
 import CommentFeature from "../../../components/app/post-interactions/CommentFeature";
 

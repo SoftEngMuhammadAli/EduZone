@@ -4,8 +4,8 @@ dotenv.config();
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import connectToDatabase from "./config/server.js";
-import registeredRouters from "./routes/index.js";
+import connectToDatabase from "./src/shared/config/server.js";
+import registeredRouters from "./src/modules/index.js";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -17,16 +17,27 @@ const __dirname = path.dirname(__filename);
 
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "https://edu-zone-kappa.vercel.app",
-      "https://eduzone-jscm.onrender.com",
-    ],
-
+    origin: (origin, callback) => {
+      const allowedOrigins = [
+        "http://localhost:5173",
+        "http://localhost:5174",
+        "http://localhost:5175",
+        "http://localhost:5176",
+        "https://edu-zone-kappa.vercel.app",
+        "https://eduzone-jscm.onrender.com",
+      ];
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
     credentials: true,
-  })
+    exposedHeaders: ["set-cookie"],
+    optionsSuccessStatus: 200,
+  }),
 );
 
 app.use(express.json());
@@ -39,7 +50,7 @@ app.use(
     setHeaders: (res) => {
       res.setHeader("Cache-Control", "public, max-age=604800");
     },
-  })
+  }),
 );
 
 app.set("json spaces", 2);

@@ -78,6 +78,7 @@ const LoginPage = () => {
             <input
               name="email"
               type="email"
+              autoComplete="email"
               placeholder="Enter Your Email"
               className="w-full p-3 rounded bg-[#2D2F6B] text-white placeholder-gray-300 focus:outline-none"
               required
@@ -85,6 +86,7 @@ const LoginPage = () => {
             <input
               name="password"
               type="password"
+              autoComplete="current-password"
               placeholder="Enter Your Password"
               className="w-full p-3 rounded bg-[#2D2F6B] text-white placeholder-gray-300 focus:outline-none"
               required

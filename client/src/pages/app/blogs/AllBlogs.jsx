@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchBlogs } from "../../../features/admin/blogSlice";
 import { useNavigate } from "react-router-dom";
-import { AppFooter } from "../../../components/app/footer/Footer";
+import { AppFooter } from "../../../components/layout/Footer";
 
 const ReadAllBlogs = () => {
   const dispatch = useDispatch();

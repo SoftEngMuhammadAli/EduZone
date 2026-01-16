@@ -4,16 +4,24 @@ import axiosInstance from "../../services/axios";
 // Thunks
 export const fetchCourses = createAsyncThunk(
   "course/fetchCourses",
-  async (_, thunkAPI) => {
+  async (params = {}, thunkAPI) => {
     try {
-      const response = await axiosInstance.get("/api/courses/");
+      const { search, category, level } = params;
+      const query = new URLSearchParams();
+      if (search) query.append("search", search);
+      if (category) query.append("category", category);
+      if (level) query.append("level", level);
+
+      const response = await axiosInstance.get(
+        `/api/courses/?${query.toString()}`,
+      );
       return response.data.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
-        error?.response?.data?.message || "Failed to fetch courses"
+        error?.response?.data?.message || "Failed to fetch courses",
       );
     }
-  }
+  },
 );
 
 export const createCourse = createAsyncThunk(
@@ -26,10 +34,10 @@ export const createCourse = createAsyncThunk(
       return response.data.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
-        error?.response?.data?.message || "Failed to create course"
+        error?.response?.data?.message || "Failed to create course",
       );
     }
-  }
+  },
 );
 
 export const updateCourse = createAsyncThunk(
@@ -41,15 +49,15 @@ export const updateCourse = createAsyncThunk(
         courseData,
         {
           headers: { "Content-Type": "application/json" },
-        }
+        },
       );
       return response.data.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
-        error?.response?.data?.message || "Failed to update course"
+        error?.response?.data?.message || "Failed to update course",
       );
     }
-  }
+  },
 );
 
 export const deleteCourse = createAsyncThunk(
@@ -60,10 +68,10 @@ export const deleteCourse = createAsyncThunk(
       return id;
     } catch (error) {
       return thunkAPI.rejectWithValue(
-        error?.response?.data?.message || "Failed to delete course"
+        error?.response?.data?.message || "Failed to delete course",
       );
     }
-  }
+  },
 );
 
 // Slice
@@ -109,7 +117,7 @@ const courseSlice = createSlice({
       .addCase(updateCourse.fulfilled, (state, action) => {
         state.loading = false;
         const index = state.courses.findIndex(
-          (c) => c._id === action.payload._id
+          (c) => c._id === action.payload._id,
         );
         if (index !== -1) state.courses[index] = action.payload;
         state.error = null;
@@ -125,7 +133,7 @@ const courseSlice = createSlice({
       .addCase(deleteCourse.fulfilled, (state, action) => {
         state.loading = false;
         state.courses = state.courses.filter(
-          (course) => course._id !== action.payload
+          (course) => course._id !== action.payload,
         );
         state.error = null;
       })

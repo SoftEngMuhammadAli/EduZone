@@ -10,10 +10,10 @@ export const register = createAsyncThunk(
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
-        error?.response?.data?.message || "Registration failed"
+        error?.response?.data?.message || "Registration failed",
       );
     }
-  }
+  },
 );
 
 // LOGIN thunk
@@ -31,10 +31,10 @@ export const login = createAsyncThunk(
     } catch (error) {
       console.error("Login error:", error);
       return thunkAPI.rejectWithValue(
-        error?.response?.data?.message || "Login failed"
+        error?.response?.data?.message || "Login failed",
       );
     }
-  }
+  },
 );
 
 // SLICE

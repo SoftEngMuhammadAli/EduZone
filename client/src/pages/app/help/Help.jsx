@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { AppFooter } from "../../../components/app/footer/Footer";
+import { AppFooter } from "../../../components/layout/Footer";
 
 const Help = () => {
   return (

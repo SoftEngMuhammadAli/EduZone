@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getBlogById } from "../../../features/admin/blogSlice";
 import { useParams } from "react-router-dom";
-import { AppFooter } from "../../../components/app/footer/Footer";
+import { AppFooter } from "../../../components/layout/Footer";
 
 const BlogsDetails = () => {
   const dispatch = useDispatch();

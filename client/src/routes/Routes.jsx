@@ -9,7 +9,7 @@ import {
 import useAuth from "../hooks/useAuth";
 
 // Layouts and Navigation
-import HeaderNav from "../components/app/home/HeaderNav";
+import HeaderNav from "../components/layout/Header";
 
 // Public Pages
 import Home from "../pages/app/home/Home";

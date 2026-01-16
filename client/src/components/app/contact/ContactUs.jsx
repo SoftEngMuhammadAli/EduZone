@@ -1,6 +1,6 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
-import { AppFooter } from "../../../components/app/footer/Footer";
+import { AppFooter } from "../../../components/layout/Footer";
 import { useDispatch, useSelector } from "react-redux";
 import { contactUs } from "../../../features/contact-us/contactUsSlice";
 
