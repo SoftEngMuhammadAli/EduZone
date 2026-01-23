@@ -13,7 +13,7 @@ const LikeSchema = new mongoose.Schema(
       required: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 LikeSchema.index({ course: 1, user: 1 }, { unique: true });

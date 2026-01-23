@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 const CreateCoursePage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
   const { loading, error } = useSelector((state) => state.course);
   const { user } = useSelector((state) => state.auth);
 
@@ -17,33 +18,33 @@ const CreateCoursePage = () => {
   const [duration, setDuration] = useState("");
   const [level, setLevel] = useState("Beginner");
   const [category, setCategory] = useState("");
-  const [images, setImages] = useState([]);
-  const [previewImages, setPreviewImages] = useState([]);
+  const [image, setImage] = useState(null);
+  const [preview, setPreview] = useState(null);
 
   const handleImageChange = (e) => {
     const file = e.target.files?.[0];
-    if (file) {
-      setImages([file]);
-      setPreviewImages([URL.createObjectURL(file)]);
-    }
+    if (!file) return;
+
+    setImage(file);
+    setPreview(URL.createObjectURL(file));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
     const formData = new FormData();
     formData.append("title", title);
     formData.append("description", description);
     formData.append("duration", duration);
     formData.append("level", level);
     formData.append("category", category);
-    if (images[0]) formData.append("image", images[0]);
+    if (image) formData.append("image", image);
 
     dispatch(createCourse(formData)).then((res) => {
       if (!res.error) {
         dispatch(fetchCourses());
-        const type = user?.user_type;
         navigate(
-          type === "admin"
+          user?.user_type === "admin"
             ? "/admin/dashboard-page"
             : "/instructor/instructor-dashboard-page",
         );
@@ -52,113 +53,135 @@ const CreateCoursePage = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-md">
-      <h1 className="text-2xl font-semibold mb-6">Create New Course</h1>
-      <form className="space-y-4" onSubmit={handleSubmit}>
-        <div>
-          <label className="block text-sm font-medium">Title *</label>
-          <input
-            type="text"
-            value={title}
-            autoComplete="text"
-            name="text"
-            onChange={(e) => setTitle(e.target.value)}
-            required
-            className="w-full px-4 py-2 border rounded"
-          />
-        </div>
+    <div className="max-w-5xl mx-auto p-4 sm:p-6">
+      <div className="bg-white shadow-lg rounded-xl p-6">
+        <h1 className="text-2xl font-semibold mb-1">Create New Course</h1>
+        <p className="text-sm text-gray-500 mb-6">
+          Fill in the details below to publish a new course.
+        </p>
 
-        <div>
-          <label className="block text-sm font-medium">Description *</label>
-          <textarea
-            value={description}
-            autoComplete="description"
-            name="description"
-            onChange={(e) => setDescription(e.target.value)}
-            rows="5"
-            required
-            className="w-full px-4 py-2 border rounded"
-          ></textarea>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium">Category *</label>
-          <input
-            type="text"
-            value={category}
-            autoComplete="category"
-            name="category"
-            onChange={(e) => setCategory(e.target.value)}
-            required
-            placeholder="e.g. Programming, Design"
-            className="w-full px-4 py-2 border rounded"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium">Duration *</label>
-          <input
-            type="text"
-            value={duration}
-            autoComplete="duration"
-            name="duration"
-            onChange={(e) => setDuration(e.target.value)}
-            required
-            placeholder="e.g. 4 weeks"
-            className="w-full px-4 py-2 border rounded"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium">Level *</label>
-          <select
-            value={level}
-            autoComplete="level"
-            name="level"
-            onChange={(e) => setLevel(e.target.value)}
-            required
-            className="w-full px-4 py-2 border rounded"
-          >
-            <option>Beginner</option>
-            <option>Intermediate</option>
-            <option>Advanced</option>
-          </select>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium">Upload Image</label>
-          <input
-            type="file"
-            accept="image/*"
-            autoComplete="image"
-            name="image"
-            onChange={handleImageChange}
-            className="w-full border mt-2 p-2 rounded"
-          />
-          {previewImages.length > 0 && (
-            <div className="flex flex-wrap gap-4 mt-2">
-              {previewImages.map((src, i) => (
-                <img
-                  key={i}
-                  src={src}
-                  alt={`preview-${i}`}
-                  className="w-32 h-32 object-cover rounded border"
-                />
-              ))}
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* ====== GRID ====== */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Title */}
+            <div>
+              <label className="block text-sm font-medium mb-1">Title *</label>
+              <input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                required
+                placeholder="e.g. React for Beginners"
+                className="w-full px-4 py-2 border rounded focus:ring-2 focus:ring-blue-500"
+              />
             </div>
-          )}
-        </div>
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
-        >
-          {loading ? "Creating..." : "Create Course"}
-        </button>
+            {/* Category */}
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Category *
+              </label>
+              <input
+                type="text"
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                required
+                placeholder="Programming, Design..."
+                className="w-full px-4 py-2 border rounded focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
 
-        {error && <p className="text-red-600 text-sm pt-2">❌ {error}</p>}
-      </form>
+            {/* Duration */}
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Duration *
+              </label>
+              <input
+                type="text"
+                value={duration}
+                onChange={(e) => setDuration(e.target.value)}
+                required
+                placeholder="e.g. 4 weeks"
+                className="w-full px-4 py-2 border rounded focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            {/* Level */}
+            <div>
+              <label className="block text-sm font-medium mb-1">Level *</label>
+              <select
+                value={level}
+                onChange={(e) => setLevel(e.target.value)}
+                className="w-full px-4 py-2 border rounded focus:ring-2 focus:ring-blue-500"
+              >
+                <option>Beginner</option>
+                <option>Intermediate</option>
+                <option>Advanced</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Description */}
+          <div>
+            <label className="block text-sm font-medium mb-1">
+              Description *
+            </label>
+            <textarea
+              rows={5}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              required
+              placeholder="Briefly describe what students will learn..."
+              className="w-full px-4 py-2 border rounded resize-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          {/* Image Upload */}
+          <div>
+            <label className="block text-sm font-medium mb-2">
+              Course Thumbnail
+            </label>
+
+            <div className="flex items-center gap-4">
+              <label className="cursor-pointer px-4 py-2 border rounded bg-gray-50 hover:bg-gray-100">
+                Upload Image
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="hidden"
+                />
+              </label>
+
+              {preview && (
+                <img
+                  src={preview}
+                  alt="preview"
+                  className="w-24 h-24 object-cover rounded border"
+                />
+              )}
+            </div>
+
+            <p className="text-xs text-gray-500 mt-1">
+              Recommended size: 600×400px
+            </p>
+          </div>
+
+          {/* Submit */}
+          <div>
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-blue-600 text-white py-2.5 rounded font-medium
+                         hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {loading ? "Creating Course..." : "Create Course"}
+            </button>
+
+            {error && <p className="text-red-600 text-sm mt-3">❌ {error}</p>}
+          </div>
+        </form>
+      </div>
     </div>
   );
 };

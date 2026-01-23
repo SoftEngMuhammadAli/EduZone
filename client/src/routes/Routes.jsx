@@ -50,7 +50,6 @@ import ContinueLearning from "../components/app/learning-room/ContinueLearning";
 import ProtectedRouteWrapper from "../routes/ProtectedRoutes";
 import RoleProtectedRouteWrapper from "../routes/RoleProtectedRoutes";
 import BlogsDetails from "../pages/app/blogs/BlogsDetails";
-import AdminCourseDetailPage from "../pages/admin/AdminCourseDetail";
 import AdminProfileSettings from "../components/settings/AdminProfileSettings";
 import InstructorProfileSettings from "../components/settings/InstructorProfileSettings";
 import StudentProfileSettings from "../components/settings/StudentProfileSettings";
@@ -209,7 +208,7 @@ const MainLayout = () => {
               path="/admin/courses-management/delete-course"
               element={<DeleteCoursePage />}
             />
-            <Route path="/admin/courses" element={<AdminCourseDetailPage />} />
+            {/* <Route path="/admin/courses" element={<AdminCourseDetailPage />} /> */}
 
             {/* Instructor */}
             <Route
@@ -228,10 +227,10 @@ const MainLayout = () => {
               path="/instructor/courses-management/delete-course"
               element={<DeleteCoursePage />}
             />
-            <Route
+            {/* <Route
               path="/instructor/courses"
               element={<AdminCourseDetailPage />}
-            />
+            /> */}
           </Route>
 
           {/* Student Only */}

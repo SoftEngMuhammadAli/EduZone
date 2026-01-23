@@ -15,7 +15,7 @@ const privacyPolicySchema = new mongoose.Schema(
       default: Date.now,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 export default mongoose.model("PrivacyPolicy", privacyPolicySchema);

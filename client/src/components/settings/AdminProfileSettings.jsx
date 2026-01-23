@@ -17,7 +17,7 @@ const AdminProfileSettings = () => {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    if (user && user._id) dispatch(getUserProfile(user._id));
+    if (user?._id) dispatch(getUserProfile(user._id));
   }, [dispatch, user?._id]);
 
   useEffect(() => {
@@ -33,19 +33,22 @@ const AdminProfileSettings = () => {
   const handleChange = (e) =>
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!user?._id) return;
 
     setSaving(true);
-    dispatch(updateProfile({ userId: user._id, formData }))
-      .unwrap()
-      .then((updatedUser) => {
-        dispatch(setUser(updatedUser));
-        setIsEditing(false);
-        alert("Profile updated!");
-      })
-      .catch((err) => alert("Update failed: " + err))
-      .finally(() => setSaving(false));
+    try {
+      const updatedUser = await dispatch(
+        updateProfile({ userId: user._id, formData }),
+      ).unwrap();
+      dispatch(setUser(updatedUser));
+      setIsEditing(false);
+      alert("Profile updated successfully!");
+    } catch (err) {
+      alert("Update failed: " + err);
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -56,20 +59,50 @@ const AdminProfileSettings = () => {
       {/* Main Content */}
       <main className="flex-1 p-4 sm:p-6 md:p-8">
         {activeTab === "profile" && (
-          <div className="space-y-6 max-w-4xl bg-white p-4 sm:p-6 rounded-xl shadow">
-            <h1 className="text-2xl font-bold text-[#1C1E53]">Admin Profile</h1>
-            <div className="flex flex-col sm:flex-row items-center gap-6">
+          <div className="space-y-6 max-w-4xl bg-white p-6 rounded-xl shadow-md mx-auto">
+            <h1 className="text-2xl font-bold text-[#1C1E53] mb-4">
+              Admin Profile
+            </h1>
+
+            {/* Profile Info */}
+            <div className="flex flex-col sm:flex-row items-center gap-6 mb-6">
               <img
                 src="https://www.iconpacks.net/icons/2/free-user-icon-3296-thumb.png"
                 alt="Admin Avatar"
-                className="w-20 h-20 rounded-full border shadow-sm"
+                className="w-24 h-24 rounded-full border shadow-sm"
               />
-              <div className="text-center sm:text-left">
-                <h2 className="text-xl font-semibold">{formData.name}</h2>
-                <p className="text-gray-500">{formData.email}</p>
+              <div className="text-center sm:text-left flex-1">
+                {isEditing ? (
+                  <>
+                    <input
+                      type="text"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleChange}
+                      className="text-xl font-semibold w-full px-3 py-2 border rounded-md mb-2"
+                    />
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      disabled
+                      className="w-full px-3 py-2 border rounded-md bg-gray-100 text-gray-500"
+                    />
+                  </>
+                ) : (
+                  <>
+                    <h2 className="text-xl font-semibold">{formData.name}</h2>
+                    <p className="text-gray-500">{formData.email}</p>
+                  </>
+                )}
+                <p className="text-sm text-gray-400 mt-1">
+                  Registered:{" "}
+                  {new Date(user.registration_date).toLocaleDateString()}
+                </p>
               </div>
             </div>
 
+            {/* Editable Fields */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block mb-1 font-medium">Full Name</label>
@@ -109,6 +142,7 @@ const AdminProfileSettings = () => {
               </div>
             </div>
 
+            {/* Action Buttons */}
             <div className="flex flex-wrap gap-4 mt-4">
               {isEditing ? (
                 <>
@@ -143,11 +177,11 @@ const AdminProfileSettings = () => {
         )}
 
         {["password", "notifications", "preferences"].includes(activeTab) && (
-          <div>
+          <div className="max-w-4xl bg-white p-6 rounded-xl shadow-md mx-auto">
             <h2 className="text-xl font-semibold capitalize">
               {activeTab} Settings
             </h2>
-            <p className="text-sm text-gray-500 mt-1 mb-4">
+            <p className="text-sm text-gray-500 mt-2">
               Feature not implemented yet.
             </p>
           </div>

@@ -27,7 +27,7 @@ const enrollInCourse = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 export default mongoose.model("EnrolledCourses", enrollInCourse);

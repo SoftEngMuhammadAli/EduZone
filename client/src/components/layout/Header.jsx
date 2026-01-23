@@ -42,7 +42,7 @@ const HeaderNav = () => {
 
   return (
     <header
-      className={`fixed top-0 w-full z-50 transition-all duration-300 ${
+      className={`sticky top-0 w-full z-50 transition-all duration-300 ${
         scrolled ? "glass-nav py-3 shadow-lg" : "bg-[#1C1E53] py-4"
       }`}
     >

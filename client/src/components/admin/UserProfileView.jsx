@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 const UserProfileView = ({ user }) => {
   const navigate = useNavigate();
   const currentUser = useSelector((state) => state.auth.user);
+
   const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState({
     name: user?.name || "",
@@ -26,16 +27,12 @@ const UserProfileView = ({ user }) => {
   const handleSave = async () => {
     try {
       setLoading(true);
-      const response = await axiosInstance.put(
-        `/api/users/${user._id}`,
-        formData
-      );
+      await axiosInstance.put(`/api/users/${user._id}`, formData);
       setMsg("Profile updated successfully!");
       setErrorMsg("");
       setEditMode(false);
-    } catch (error) {
-      console.error(error);
-      setErrorMsg(error.response?.data?.message || "Failed to update profile");
+    } catch (err) {
+      setErrorMsg(err.response?.data?.message || "Failed to update profile");
     } finally {
       setLoading(false);
     }
@@ -47,21 +44,22 @@ const UserProfileView = ({ user }) => {
       await axiosInstance.delete(`/api/users/${user._id}`);
       alert("User deleted successfully!");
       navigate(-1);
-    } catch (error) {
-      console.error(error);
-      alert(error.response?.data?.message || "Failed to delete user.");
+    } catch (err) {
+      alert(err.response?.data?.message || "Failed to delete user.");
     }
   };
 
-  if (!user)
+  if (!user) {
     return (
       <p className="text-center mt-10 text-gray-500">
         User data not available.
       </p>
     );
+  }
 
   return (
-    <div className="bg-white rounded-xl p-6 shadow-md max-w-3xl mx-auto mt-6">
+    <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-md p-6 mt-6">
+      {/* Top Section: Avatar + Basic Info */}
       <div className="flex flex-col sm:flex-row items-center gap-6">
         <img
           src={
@@ -80,6 +78,7 @@ const UserProfileView = ({ user }) => {
                 value={formData.name}
                 onChange={handleInputChange}
                 className="text-2xl font-semibold border rounded px-2 py-1 w-full"
+                placeholder="Name"
               />
               <input
                 type="text"
@@ -87,13 +86,14 @@ const UserProfileView = ({ user }) => {
                 value={formData.email}
                 onChange={handleInputChange}
                 className="text-sm text-gray-600 mt-2 border rounded px-2 py-1 w-full"
+                placeholder="Email"
               />
               {currentUser?.user_type === "admin" && (
                 <select
                   name="user_type"
                   value={formData.user_type}
                   onChange={handleInputChange}
-                  className="mt-2 px-2 py-1 border rounded"
+                  className="mt-2 px-2 py-1 border rounded w-full"
                 >
                   <option value="student">Student</option>
                   <option value="instructor">Instructor</option>
@@ -103,9 +103,15 @@ const UserProfileView = ({ user }) => {
             </>
           ) : (
             <>
-              <h2 className="text-2xl font-semibold"><span className="font-semibold">Name:</span> {user.name}</h2>
-              <p className="text-gray-500 capitalize"><span className="font-semibold text-[blue]">Role:</span> {user.user_type}</p>
-              <p className="text-sm text-gray-600"><span className="font-semibold text-[blue]">Email:</span> {user.email}</p>
+              <h2 className="text-2xl font-semibold">{user.name}</h2>
+              <p className="text-gray-500 capitalize">
+                <span className="font-semibold text-blue-600">Role:</span>{" "}
+                {user.user_type}
+              </p>
+              <p className="text-sm text-gray-600">
+                <span className="font-semibold text-blue-600">Email:</span>{" "}
+                {user.email}
+              </p>
             </>
           )}
           <p className="text-sm text-gray-400 mt-1">
@@ -115,35 +121,37 @@ const UserProfileView = ({ user }) => {
         </div>
       </div>
 
-      <div className="mt-6 space-y-4 text-sm text-gray-800">
-        <div>
-          <h3 className="font-semibold text-gray-700 mb-1">Bio</h3>
-          {editMode ? (
-            <textarea
-              name="bio"
-              rows={4}
-              value={formData.bio}
-              onChange={handleInputChange}
-              className="bg-gray-50 p-3 rounded-md w-full border"
-            />
-          ) : (
-            <p className="bg-gray-50 p-3 rounded-md">
-              {user.bio || "No bio provided."}
-            </p>
-          )}
-        </div>
+      {/* Bio Section */}
+      <div className="mt-6">
+        <h3 className="font-semibold text-gray-700 mb-1">Bio</h3>
+        {editMode ? (
+          <textarea
+            name="bio"
+            rows={4}
+            value={formData.bio}
+            onChange={handleInputChange}
+            className="bg-gray-50 p-3 rounded-md w-full border"
+            placeholder="Write something about the user..."
+          />
+        ) : (
+          <p className="bg-gray-50 p-3 rounded-md">
+            {user.bio || "No bio provided."}
+          </p>
+        )}
       </div>
 
-      {msg && <p className="text-sm mt-3 text-green-600">{msg}</p>}
-      {errorMsg && <p className="text-sm mt-3 text-red-600">{errorMsg}</p>}
+      {/* Messages */}
+      {msg && <p className="text-green-600 text-sm mt-3">{msg}</p>}
+      {errorMsg && <p className="text-red-600 text-sm mt-3">{errorMsg}</p>}
 
+      {/* Action Buttons */}
       <div className="mt-5 flex flex-wrap gap-3">
         {editMode ? (
           <>
             <button
               onClick={handleSave}
-              className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
               disabled={loading}
+              className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
             >
               {loading ? "Saving..." : "Save"}
             </button>
@@ -163,7 +171,7 @@ const UserProfileView = ({ user }) => {
           </button>
         )}
 
-        {currentUser?.user_type === "admin" && (
+        {currentUser?.user_type === "admin" && !editMode && (
           <button
             onClick={handleDelete}
             className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"

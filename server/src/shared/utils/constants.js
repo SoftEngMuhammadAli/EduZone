@@ -70,6 +70,8 @@ const bios = [
   "Mastering the art of last-minute fixes.",
 ];
 
-export const getRandomBio = () => {
+const getRandomBio = () => {
   return bios[Math.floor(Math.random() * bios.length)];
 };
+
+export default getRandomBio;

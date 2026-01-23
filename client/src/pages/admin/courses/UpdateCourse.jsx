@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { updateCourse } from "../../../features/admin/courseSlice";
 import { useParams, useNavigate } from "react-router-dom";
@@ -8,6 +8,7 @@ const UpdateCoursePage = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
   const { loading, error } = useSelector((state) => state.course);
 
   const [formData, setFormData] = useState({
@@ -18,8 +19,11 @@ const UpdateCoursePage = () => {
     category: "",
   });
 
+  const [image, setImage] = useState(null);
+  const [preview, setPreview] = useState(null);
   const [loadingCourse, setLoadingCourse] = useState(true);
 
+  // ===== Fetch course =====
   useEffect(() => {
     const fetchCourse = async () => {
       try {
@@ -33,8 +37,15 @@ const UpdateCoursePage = () => {
           level: course.level || "Beginner",
           category: course.category || "",
         });
+
+        if (course.image) {
+          setPreview(
+            course.imageUrl ||
+              `${import.meta.env.VITE_BASE_URL}/uploads/${course.image}`,
+          );
+        }
       } catch (err) {
-        console.error("Failed to load course:", err);
+        console.error("Failed to load course", err);
       } finally {
         setLoadingCourse(false);
       }
@@ -43,108 +54,167 @@ const UpdateCoursePage = () => {
     fetchCourse();
   }, [id]);
 
+  // ===== Handlers =====
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setImage(file);
+    setPreview(URL.createObjectURL(file));
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const dataToSend = {
-      title: formData.title,
-      description: formData.description,
-      duration: formData.duration,
-      level: formData.level,
-      category: formData.category,
-    };
+    const data = new FormData();
+    Object.entries(formData).forEach(([key, value]) => data.append(key, value));
+    if (image) data.append("image", image);
 
-    dispatch(updateCourse({ id, courseData: dataToSend })).then((res) => {
+    dispatch(updateCourse({ id, courseData: data })).then((res) => {
       if (!res.error) navigate("/admin/dashboard-page");
     });
   };
 
-  if (loadingCourse)
-    return <p className="text-center p-4">Loading course...</p>;
+  if (loadingCourse) {
+    return <p className="text-center py-10 text-gray-500">Loading course...</p>;
+  }
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white shadow rounded">
-      <h1 className="text-2xl font-semibold mb-6">Update Course</h1>
-      <form className="space-y-4" onSubmit={handleSubmit}>
-        <div>
-          <label className="block text-sm font-medium">Title</label>
-          <input
-            type="text"
-            name="title"
-            value={formData.title}
-            onChange={handleChange}
-            className="w-full px-4 py-2 border rounded"
-            required
-          />
-        </div>
+    <div className="max-w-5xl mx-auto my-12 p-4 sm:p-6">
+      <div className="bg-white shadow-lg rounded-xl p-6">
+        <h1 className="text-2xl font-semibold mb-1">Update Course</h1>
+        <p className="text-sm text-gray-500 mb-6">
+          Modify course details and save changes.
+        </p>
 
-        <div>
-          <label className="block text-sm font-medium">Description</label>
-          <textarea
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            rows="4"
-            className="w-full px-4 py-2 border rounded"
-            required
-          ></textarea>
-        </div>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* ===== GRID ===== */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Title */}
+            <div>
+              <label className="block text-sm font-medium mb-1">Title *</label>
+              <input
+                type="text"
+                name="title"
+                value={formData.title}
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-2 border rounded focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
 
-        <div>
-          <label className="block text-sm font-medium">Duration</label>
-          <input
-            type="text"
-            name="duration"
-            value={formData.duration}
-            onChange={handleChange}
-            className="w-full px-4 py-2 border rounded"
-            required
-          />
-        </div>
+            {/* Category */}
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Category *
+              </label>
+              <input
+                type="text"
+                name="category"
+                value={formData.category}
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-2 border rounded focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
 
-        <div>
-          <label className="block text-sm font-medium">Category</label>
-          <input
-            type="text"
-            name="category"
-            value={formData.category}
-            onChange={handleChange}
-            className="w-full px-4 py-2 border rounded"
-            required
-            placeholder="e.g. Programming, Design"
-          />
-        </div>
+            {/* Duration */}
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Duration *
+              </label>
+              <input
+                type="text"
+                name="duration"
+                value={formData.duration}
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-2 border rounded focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
 
-        <div>
-          <label className="block text-sm font-medium">Level</label>
-          <select
-            name="level"
-            value={formData.level}
-            onChange={handleChange}
-            className="w-full px-4 py-2 border rounded"
-            required
-          >
-            <option value="Beginner">Beginner</option>
-            <option value="Intermediate">Intermediate</option>
-            <option value="Advanced">Advanced</option>
-          </select>
-        </div>
+            {/* Level */}
+            <div>
+              <label className="block text-sm font-medium mb-1">Level *</label>
+              <select
+                name="level"
+                value={formData.level}
+                onChange={handleChange}
+                className="w-full px-4 py-2 border rounded focus:ring-2 focus:ring-blue-500"
+              >
+                <option>Beginner</option>
+                <option>Intermediate</option>
+                <option>Advanced</option>
+              </select>
+            </div>
+          </div>
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700"
-        >
-          {loading ? "Updating..." : "Update Course"}
-        </button>
+          {/* Description */}
+          <div>
+            <label className="block text-sm font-medium mb-1">
+              Description *
+            </label>
+            <textarea
+              rows={5}
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              required
+              className="w-full px-4 py-2 border rounded resize-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
 
-        {error && <p className="text-red-600 text-sm pt-2">{error}</p>}
-      </form>
+          {/* Image Upload */}
+          <div>
+            <label className="block text-sm font-medium mb-2">
+              Course Thumbnail
+            </label>
+
+            <div className="flex items-center gap-4">
+              <label className="cursor-pointer px-4 py-2 border rounded bg-gray-50 hover:bg-gray-100">
+                Change Image
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="hidden"
+                />
+              </label>
+
+              {preview && (
+                <img
+                  src={preview}
+                  alt="preview"
+                  className="w-24 h-24 object-cover rounded border"
+                />
+              )}
+            </div>
+
+            <p className="text-xs text-gray-500 mt-1">
+              Leave unchanged to keep existing image
+            </p>
+          </div>
+
+          {/* Submit */}
+          <div>
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-blue-600 text-white py-2.5 rounded font-medium
+                         hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {loading ? "Updating Course..." : "Update Course"}
+            </button>
+
+            {error && <p className="text-red-600 text-sm mt-3">❌ {error}</p>}
+          </div>
+        </form>
+      </div>
     </div>
   );
 };

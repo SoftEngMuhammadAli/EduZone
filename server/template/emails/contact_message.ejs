@@ -2,53 +2,126 @@
 <html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>New Contact Message</title>
     <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
       body {
-        font-family: "Arial", sans-serif;
-        background: #f9f9f9;
+        font-family: "Segoe UI", "Arial", sans-serif;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
         padding: 20px;
         color: #333;
       }
       .container {
         background: white;
-        border-radius: 8px;
-        padding: 20px;
-        max-width: 600px;
+        border-radius: 12px;
+        padding: 40px;
+        max-width: 650px;
         margin: auto;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
       }
       .header {
-        border-bottom: 2px solid #fcd980;
-        padding-bottom: 10px;
+        border-left: 4px solid #fcd980;
+        padding-left: 20px;
+        margin-bottom: 30px;
+      }
+      .header h2 {
+        color: #1c1e53;
+        font-size: 28px;
+        margin-bottom: 5px;
+      }
+      .header p {
+        color: #666;
+        font-size: 14px;
+      }
+      .content-section {
+        margin-bottom: 25px;
+      }
+      .field {
         margin-bottom: 20px;
+      }
+      .label {
+        font-weight: 600;
+        color: #1c1e53;
+        display: block;
+        margin-bottom: 8px;
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .value {
+        color: #555;
+        line-height: 1.6;
+        padding: 10px;
+        background: #f9f9f9;
+        border-radius: 6px;
+      }
+      .message-box {
+        background: #fefaf0;
+        border-left: 3px solid #fcd980;
+        padding: 15px;
+        border-radius: 6px;
+        line-height: 1.7;
       }
       .footer {
         margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid #eee;
         font-size: 12px;
-        color: #888;
+        color: #999;
+        text-align: center;
       }
-      h2 {
-        color: #1c1e53;
-      }
-      .label {
-        font-weight: bold;
+      .logo {
+        color: #fcd980;
+        font-weight: 700;
+        font-size: 16px;
       }
     </style>
   </head>
   <body>
     <div class="container">
       <div class="header">
-        <h2><%= fullname %></h2>
+        <h2>New Contact Message</h2>
+        <p>From: <strong><%= fullname %></strong></p>
       </div>
-      <p><span class="label">Full Name:</span> <%= fullname %></p>
-      <p><span class="label">Email:</span> <%= email %></p>
-      <p><span class="label">Subject:</span> <%= subject %></p>
-      <p><span class="label">Message:</span></p>
-      <p><%= message %></p>
+
+      <div class="content-section">
+        <div class="field">
+          <span class="label">Full Name</span>
+          <div class="value"><%= fullname %></div>
+        </div>
+        <div class="field">
+          <span class="label">Email Address</span>
+          <div class="value">
+            <a
+              href="mailto:<%= email %>"
+              style="color: #0066cc; text-decoration: none"
+              ><%= email %></a
+            >
+          </div>
+        </div>
+        <div class="field">
+          <span class="label">Subject</span>
+          <div class="value"><%= subject %></div>
+        </div>
+        <div class="field">
+          <span class="label">Message</span>
+          <div class="message-box"><%= message %></div>
+        </div>
+      </div>
 
       <div class="footer">
-        You received this email from EduZone contact form.
+        <p>
+          You received this email from <span class="logo">EduZone</span> contact
+          form.
+        </p>
+        <p style="margin-top: 10px; color: #bbb">
+          © 2024 EduZone. All rights reserved.
+        </p>
       </div>
     </div>
   </body>

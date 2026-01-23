@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { getRandomBio } from "../../shared/utils/constants.js";
+import getRandomBio from "../../shared/utils/constants.js";
 
 const userSchema = new mongoose.Schema(
   {

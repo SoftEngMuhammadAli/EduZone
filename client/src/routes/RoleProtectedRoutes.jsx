@@ -3,13 +3,11 @@ import { useSelector } from "react-redux";
 import { Outlet, Navigate } from "react-router-dom";
 
 const RoleProtectedRouteWrapper = ({ allowedRoles }) => {
-  console.log(
-    "Check!!! Check!!! Check!!! Role Based Protected Route Wrapper Check!!!"
-  );
-
   const { user } = useSelector((state) => state.auth);
 
-  console.log(`Check for User: ${user}`);
+  if (!user) {
+    console.log("User not found in Role Protected Route Wrapper");
+  }
 
   if (!user) {
     return <Navigate to="/login" replace />;

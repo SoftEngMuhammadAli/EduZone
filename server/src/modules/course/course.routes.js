@@ -4,7 +4,7 @@ const router = express.Router();
 import {
   checkAuth,
   authorizeRoles,
-} from "../../shared/middlewares/auth/auth_middleware.js";
+} from "../../shared/middlewares/auth_middleware.js";
 
 import {
   getAllCourses,

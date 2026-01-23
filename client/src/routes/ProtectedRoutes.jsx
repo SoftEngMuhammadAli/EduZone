@@ -2,9 +2,13 @@ import React from "react";
 import { Outlet, Navigate } from "react-router-dom";
 
 const ProtectedRouteWrapper = () => {
-  console.log("Check!!! Check!!! Check!!! -> Protected Route Wrapper Check!!!");
   const token = localStorage.getItem("token");
-  console.log(`Check Token in Protected Route Wrapper: ${token}`);
+
+  if (token) {
+    console.log(`Checking Token in Protected Route Wrapper: ${token}`);
+  } else {
+    console.log("No token found in Protected Route Wrapper");
+  }
 
   return token ? <Outlet /> : <Navigate to="/login" replace />;
 };

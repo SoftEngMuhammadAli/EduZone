@@ -1,9 +1,6 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
 
 const AdminDashboardBlogs = ({ blogs = [], loading, error }) => {
-  const navigate = useNavigate();
-
   if (loading) return <p>Loading blogs...</p>;
 
   return (
@@ -12,7 +9,9 @@ const AdminDashboardBlogs = ({ blogs = [], loading, error }) => {
         <h2 className="text-xl font-semibold">Blogs Overview</h2>
         <p
           className="text-blue-600 hover:text-blue-800 cursor-pointer"
-          onClick={() => navigate("/admin/blogs")}
+          onClick={() => {
+            alert("Feature coming soon!");
+          }}
         >
           See All Details
         </p>

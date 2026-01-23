@@ -38,10 +38,10 @@ const UserProfileCard = () => {
           {isAdmin
             ? "ADMIN"
             : isStudent
-            ? "STUDENT"
-            : isTeacher
-            ? "INSTRUCTOR"
-            : "UNKNOWN ROLE"}
+              ? "STUDENT"
+              : isTeacher
+                ? "INSTRUCTOR"
+                : "UNKNOWN ROLE"}
         </span>
       </div>
     </div>

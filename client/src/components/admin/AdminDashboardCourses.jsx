@@ -1,8 +1,6 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
 
 const AdminCoursesGrid = ({ courses = [] }) => {
-  const navigate = useNavigate();
   return (
     <>
       <div className="flex flex-row justify-between items-center mt-8 mb-4">
@@ -10,10 +8,10 @@ const AdminCoursesGrid = ({ courses = [] }) => {
         <p
           className="text-blue-600 hover:text-blue-800 cursor-pointer"
           onClick={() => {
-            navigate("/admin/courses");
+            alert("Feature coming soon!");
           }}
         >
-          See All Details
+          See All Courses
         </p>
       </div>
 

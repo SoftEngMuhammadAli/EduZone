@@ -16,7 +16,7 @@ const ratingSchema = new mongoose.Schema(
     comment: { type: String },
     createdAt: { type: Date, default: Date.now },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 export default mongoose.model("Rating", ratingSchema);

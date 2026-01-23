@@ -4,7 +4,7 @@ import {
   getCommentsByCourse,
   getAllComments,
 } from "./comments.controller.js";
-import { checkAuth } from "../../shared/middlewares/auth/auth_middleware.js";
+import { checkAuth } from "../../shared/middlewares/auth_middleware.js";
 
 const router = express.Router();
 

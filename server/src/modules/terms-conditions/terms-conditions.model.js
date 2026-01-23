@@ -13,7 +13,7 @@ const termsAndConditionsSchema = new mongoose.Schema(
       trim: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 export default mongoose.model("TermsConditions", termsAndConditionsSchema);

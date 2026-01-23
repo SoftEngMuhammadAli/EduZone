@@ -12,13 +12,19 @@ const UpdateBlogPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { blogs, loading, error } = useSelector((state) => state.blogs || {});
+  const {
+    blogs = [],
+    loading,
+    error,
+  } = useSelector((state) => state.blogs || {});
+
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [tags, setTags] = useState("");
   const [category, setCategory] = useState("");
-  const [blogLoaded, setBlogLoaded] = useState(false);
   const [image, setImage] = useState(null);
+  const [preview, setPreview] = useState(null);
+  const [blogLoaded, setBlogLoaded] = useState(false);
 
   useEffect(() => {
     dispatch(fetchBlogs());
@@ -31,17 +37,20 @@ const UpdateBlogPage = () => {
       setContent(blog.content);
       setTags((blog.tags || []).join(", "));
       setCategory(blog.category || "");
+      setPreview(
+        blog.image
+          ? `${import.meta.env.VITE_BASE_URL}/uploads/${blog.image}`
+          : null,
+      );
       setBlogLoaded(true);
-    } else {
-      setBlogLoaded(false);
     }
   }, [blogs, id]);
 
   const handleImageChange = (e) => {
     const file = e.target.files?.[0];
-    if (file) {
-      setImage(file);
-    }
+    if (!file) return;
+    setImage(file);
+    setPreview(URL.createObjectURL(file));
   };
 
   const handleSubmit = (e) => {
@@ -53,7 +62,7 @@ const UpdateBlogPage = () => {
     formData.append("category", category);
     formData.append(
       "tags",
-      JSON.stringify(tags.split(",").map((tag) => tag.trim()))
+      JSON.stringify(tags.split(",").map((t) => t.trim())),
     );
     if (image) formData.append("image", image);
 
@@ -63,88 +72,132 @@ const UpdateBlogPage = () => {
   };
 
   const handleDelete = () => {
-    if (window.confirm("Are you sure you want to delete this blog?")) {
-      dispatch(deleteBlog(id)).then((res) => {
-        if (!res.error) navigate("/admin/dashboard-page");
-      });
-    }
+    if (
+      !window.confirm(
+        "This action cannot be undone.\nAre you sure you want to delete this blog?",
+      )
+    )
+      return;
+
+    dispatch(deleteBlog(id)).then((res) => {
+      if (!res.error) navigate("/admin/dashboard-page");
+    });
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-md">
-      <h1 className="text-2xl font-semibold mb-6">Update Blog</h1>
+    <div className="max-w-4xl mx-auto p-6">
+      <div className="bg-white rounded-lg shadow p-6">
+        <h1 className="text-2xl font-semibold mb-1">Update Blog</h1>
+        <p className="text-sm text-gray-500 mb-6">
+          Edit blog details or replace its image
+        </p>
 
-      {loading ? (
-        <p>Loading...</p>
-      ) : error ? (
-        <p className="text-red-600">Error: {error}</p>
-      ) : !blogLoaded ? (
-        <p className="text-gray-600">No blog found with the given ID.</p>
-      ) : (
-        <form className="space-y-4" onSubmit={handleSubmit}>
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-            className="w-full px-4 py-2 border rounded"
-            placeholder="Title"
-          />
+        {loading && <p className="text-gray-500">Loading blog...</p>}
+        {error && <p className="text-red-600">{error}</p>}
 
-          <textarea
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            rows="5"
-            required
-            className="w-full px-4 py-2 border rounded"
-            placeholder="Content"
-          />
+        {!loading && blogLoaded && (
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Title */}
+            <div>
+              <label className="block text-sm font-medium mb-1">Title</label>
+              <input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                className="w-full border px-4 py-2 rounded"
+                required
+              />
+            </div>
 
-          <input
-            type="text"
-            value={tags}
-            onChange={(e) => setTags(e.target.value)}
-            required
-            className="w-full px-4 py-2 border rounded"
-            placeholder="Tags (comma-separated)"
-          />
+            {/* Content */}
+            <div>
+              <label className="block text-sm font-medium mb-1">Content</label>
+              <textarea
+                rows="6"
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                className="w-full border px-4 py-2 rounded"
+                required
+              />
+            </div>
 
-          <input
-            type="text"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            required
-            className="w-full px-4 py-2 border rounded"
-            placeholder="Category"
-          />
+            {/* Category + Tags */}
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Category
+                </label>
+                <input
+                  type="text"
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  className="w-full border px-4 py-2 rounded"
+                  required
+                />
+              </div>
 
-          <input
-            type="file"
-            name="image"
-            accept="image/*"
-            onChange={handleImageChange}
-            className="w-full"
-          />
+              <div>
+                <label className="block text-sm font-medium mb-1">Tags</label>
+                <input
+                  type="text"
+                  value={tags}
+                  onChange={(e) => setTags(e.target.value)}
+                  className="w-full border px-4 py-2 rounded"
+                  placeholder="react, node, backend"
+                />
+              </div>
+            </div>
 
-          <div className="flex gap-4 pt-4">
+            {/* Image */}
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                Blog Image
+              </label>
+
+              {preview && (
+                <img
+                  src={preview}
+                  alt="Preview"
+                  className="w-40 h-40 object-cover rounded mb-3 border"
+                />
+              )}
+
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+              />
+            </div>
+
+            {/* Actions */}
+            <div className="flex gap-4 pt-4">
+              <button
+                type="submit"
+                disabled={loading}
+                className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+              >
+                {loading ? "Updating..." : "Save Changes"}
+              </button>
+            </div>
+          </form>
+        )}
+
+        {/* DANGER ZONE */}
+        {!loading && blogLoaded && (
+          <div className="mt-8 border-t pt-6">
+            <h2 className="text-red-600 font-semibold mb-2">Danger Zone</h2>
+            <p className="text-sm text-gray-500 mb-4">
+              Deleting a blog is permanent and cannot be undone.
+            </p>
             <button
-              type="submit"
-              className="flex-1 bg-green-600 text-white py-2 rounded hover:bg-green-700"
-              disabled={loading}
-            >
-              {loading ? "Updating..." : "Update Blog"}
-            </button>
-
-            <button
-              type="button"
               onClick={handleDelete}
-              className="flex-1 bg-red-600 text-white py-2 rounded hover:bg-red-700"
+              className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
             >
               Delete Blog
             </button>
           </div>
-        </form>
-      )}
+        )}
+      </div>
     </div>
   );
 };
