@@ -1,52 +1,119 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { MoreVertical } from "lucide-react";
+import {
+  Menu,
+  X,
+  Home,
+  BookOpen,
+  GraduationCap,
+  Users,
+  Award,
+  Search,
+  Bell,
+  ChevronDown,
+  Settings,
+  HelpCircle,
+  LogOut,
+  Sparkles,
+  MessageSquare,
+} from "lucide-react";
 import { logout } from "../../features/auth/authSlice";
 
 const HeaderNav = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [showDropdown, setShowDropdown] = useState(false);
-  const [loggingOut, setLoggingOut] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const user = useSelector((state) => state.auth.user);
+  const location = useLocation();
 
-  const handleLogout = async () => {
-    try {
-      setLoggingOut(true);
-      await dispatch(logout());
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      navigate("/login", { replace: true });
-    } catch (error) {
-      console.error("Logout failed:", error);
-    } finally {
-      setLoggingOut(false);
-    }
-  };
-  const toggleDropdown = () => setShowDropdown((prev) => !prev);
+  const { user } = useSelector((state) => state.auth);
+
+  const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
 
   const isAdmin = user?.user_type === "admin";
   const isInstructor = user?.user_type === "instructor";
   const isStudent = user?.user_type === "student";
+  const userInitial = user?.name?.charAt(0) || "U";
 
-  // Scroll effect for header
-  const [scrolled, setScrolled] = React.useState(false);
-
-  React.useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+  /* ------------------ Effects ------------------ */
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? "hidden" : "auto";
+    return () => (document.body.style.overflow = "auto");
+  }, [menuOpen]);
+
+  useEffect(() => {
+    const close = (e) => {
+      if (!e.target.closest(".dropdown") && !e.target.closest(".notify")) {
+        setDropdownOpen(false);
+        setNotificationsOpen(false);
+      }
+    };
+    document.addEventListener("click", close);
+    return () => document.removeEventListener("click", close);
+  }, []);
+
+  /* ------------------ Logout ------------------ */
+  const handleLogout = async () => {
+    setLoggingOut(true);
+    await dispatch(logout());
+    localStorage.clear();
+    navigate("/login", { replace: true });
+  };
+
+  /* ------------------ Nav Links ------------------ */
+  const navLinks = isAdmin
+    ? [
+        { to: "/admin/dashboard-page", label: "Dashboard", icon: Home },
+        { to: "/admin/get-all-students", label: "Students", icon: Users },
+        {
+          to: "/admin/get-all-instructors",
+          label: "Instructors",
+          icon: GraduationCap,
+        },
+        { to: "/admin/analytics", label: "Analytics", icon: Award },
+      ]
+    : isInstructor
+      ? [
+          {
+            to: "/instructor/instructor-dashboard-page",
+            label: "Dashboard",
+            icon: Home,
+          },
+          {
+            to: "/instructor/courses-management/get-all-courses",
+            label: "Courses",
+            icon: BookOpen,
+          },
+          { to: "/instructor/students", label: "Students", icon: Users },
+          { to: "/instructor/analytics", label: "Analytics", icon: Award },
+        ]
+      : [
+          { to: "/home", label: "Home", icon: Home },
+          { to: "/courses/courses-list", label: "Courses", icon: BookOpen },
+          { to: "/user/learning-room", label: "Learning", icon: GraduationCap },
+          { to: "/user/certificates", label: "Certificates", icon: Award },
+          { to: "/user/community", label: "Community", icon: Users },
+        ];
+
+  /* ================== RENDER ================== */
   return (
     <header
-      className={`sticky top-0 w-full z-50 transition-all duration-300 ${
-        scrolled ? "glass-nav py-3 shadow-lg" : "bg-[#1C1E53] py-4"
+      className={`sticky top-0 z-50 h-16 md:h-20 transition-all ${
+        scrolled
+          ? "bg-white/95 backdrop-blur border-b shadow-sm"
+          : "bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900"
       }`}
     >
-      <div className="flex items-center justify-between px-6 lg:px-12">
+      <div className="max-w-7xl mx-auto h-full px-4 flex items-center justify-between">
         {/* Logo */}
         <Link
           to={
@@ -56,254 +123,189 @@ const HeaderNav = () => {
                 ? "/instructor/instructor-dashboard-page"
                 : "/home"
           }
-          className="text-2xl font-bold tracking-tight text-white hover:text-yellow-400 transition-colors"
+          className="flex items-center gap-3"
         >
-          EduZone
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center text-white font-bold">
+            EZ
+          </div>
+          <span
+            className={`font-bold text-lg ${scrolled ? "text-gray-900" : "text-white"}`}
+          >
+            EDU-ZONE
+          </span>
         </Link>
 
-        {/* Hamburger */}
-        <button
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-          className="md:hidden focus:outline-none text-white hover:scale-110 transition-transform"
-        >
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            {isMenuOpen ? (
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            ) : (
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4 6h16M4 12h16M4 18h16"
-              />
-            )}
-          </svg>
-        </button>
-
         {/* Desktop Nav */}
-        <nav className="hidden md:flex gap-8 text-white/90 font-medium items-center">
-          {isAdmin && (
-            <>
-              <Link
-                to="/admin/dashboard-page"
-                className="hover:text-yellow-400 transition-colors"
-              >
-                Dashboard
-              </Link>
-              <Link
-                to="/admin/get-all-students"
-                className="hover:text-yellow-400 transition-colors"
-              >
-                Students
-              </Link>
-              <Link
-                to="/admin/get-all-instructors"
-                className="hover:text-yellow-400 transition-colors"
-              >
-                Instructors
-              </Link>
-            </>
-          )}
-
-          {isInstructor && (
-            <>
-              <Link
-                to="/instructor/instructor-dashboard-page"
-                className="hover:text-yellow-400 transition-colors"
-              >
-                Dashboard
-              </Link>
-              <Link
-                to="/instructor/courses-management/get-all-courses"
-                className="hover:text-yellow-400 transition-colors"
-              >
-                Courses
-              </Link>
-              <Link
-                to="/instructor/settings"
-                className="hover:text-yellow-400 transition-colors"
-              >
-                Settings
-              </Link>
-              <button
-                onClick={handleLogout}
-                className="hover:text-red-400 transition-colors"
-              >
-                Sign Out
-              </button>
-            </>
-          )}
-
-          {isStudent && (
-            <>
-              <Link
-                to="/home"
-                className="hover:text-yellow-400 transition-colors"
-              >
-                Home
-              </Link>
-              <Link
-                to="/courses/courses-list"
-                className="hover:text-yellow-400 transition-colors"
-              >
-                Courses
-              </Link>
-              <Link
-                to="/user/learning-room"
-                className="hover:text-yellow-400 transition-colors"
-              >
-                Learning
-              </Link>
-              <Link
-                to="/contact"
-                className="hover:text-yellow-400 transition-colors"
-              >
-                Contact
-              </Link>
-              <Link
-                to="/about"
-                className="hover:text-yellow-400 transition-colors"
-              >
-                About
-              </Link>
-            </>
-          )}
-
-          {/* Dropdown */}
-          <div className="relative group">
-            <button
-              onClick={toggleDropdown}
-              className="text-white hover:text-yellow-400 transition-colors p-1"
+        <nav className="hidden md:flex items-center gap-1">
+          {navLinks.map(({ to, label, icon: Icon }) => (
+            <Link
+              key={to}
+              to={to}
+              className={`px-4 py-2 rounded-xl flex items-center gap-2 transition ${
+                location.pathname === to
+                  ? scrolled
+                    ? "bg-blue-50 text-blue-600"
+                    : "bg-white/10 text-white"
+                  : scrolled
+                    ? "text-gray-700 hover:bg-gray-100"
+                    : "text-white/80 hover:bg-white/10"
+              }`}
             >
-              {/* If teacher Then Show Only LogOut Button */}
-              {isInstructor ? null : <MoreVertical size={20} />}
+              <Icon className="w-4 h-4" />
+              {label}
+            </Link>
+          ))}
+        </nav>
+
+        {/* Desktop Actions */}
+        <div className="hidden md:flex items-center gap-2">
+          {isStudent && (
+            <div className="relative w-72">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <input
+                className="w-full pl-9 pr-3 py-2 rounded-xl bg-gray-50 border focus:ring-2 focus:ring-blue-500"
+                placeholder="Search courses..."
+              />
+            </div>
+          )}
+
+          {/* Notifications */}
+          <div className="relative notify bg-white/80 backdrop-blur-md rounded-xl">
+            <button
+              onClick={() => setNotificationsOpen(!notificationsOpen)}
+              className="p-2 rounded-xl hover:bg-gray-100"
+            >
+              <Bell className="w-5 h-5" />
+            </button>
+            {notificationsOpen && (
+              <div className="absolute right-0 mt-2 w-72 bg-white rounded-xl shadow-lg border">
+                <p className="p-4 font-semibold">No new notifications</p>
+              </div>
+            )}
+          </div>
+
+          {/* User Dropdown */}
+          <div className="relative dropdown bg-white/80 backdrop-blur-md rounded-xl">
+            <button
+              onClick={() => setDropdownOpen(!dropdownOpen)}
+              className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-gray-100"
+            >
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 text-white flex items-center justify-center font-bold">
+                {userInitial}
+              </div>
+              <ChevronDown className="w-4 h-4" />
             </button>
 
-            {(showDropdown || false) /* group-hover logic could go here */ && (
-              <div className="absolute right-0 mt-2 w-48 bg-white text-gray-800 rounded-lg shadow-xl overflow-hidden animate-fade-in border border-gray-100 z-50">
+            {dropdownOpen && (
+              <div
+                className="
+      absolute right-0 mt-2 w-60
+      rounded-xl border border-gray-200
+      bg-white shadow-lg
+      overflow-hidden
+      z-50
+      animate-in fade-in zoom-in-95
+    "
+              >
+                {/* Settings */}
                 <Link
-                  to={
-                    isAdmin
-                      ? "/admin/settings"
-                      : isInstructor
-                        ? "/instructor/settings"
-                        : "/user/settings"
-                  }
-                  onClick={() => setShowDropdown(false)}
-                  className="block px-4 py-3 hover:bg-gray-50 transition-colors"
+                  to="/user/settings"
+                  className="
+        flex items-center gap-3
+        px-4 py-3
+        text-sm font-medium text-gray-700
+        hover:bg-gray-100
+        transition
+      "
                 >
+                  <Settings className="w-4 h-4 text-gray-500" />
                   Settings
                 </Link>
+
+                {/* Help */}
+                <Link
+                  to="/help"
+                  className="
+        flex items-center gap-3
+        px-4 py-3
+        text-sm font-medium text-gray-700
+        hover:bg-gray-100
+        transition
+      "
+                >
+                  <HelpCircle className="w-4 h-4 text-gray-500" />
+                  Help
+                </Link>
+
+                {/* Divider */}
+                <div className="my-1 h-px bg-gray-200" />
+
+                {/* Logout */}
                 <button
                   onClick={handleLogout}
-                  className="w-full text-left px-4 py-3 hover:bg-red-50 text-red-600 transition-colors"
+                  disabled={loggingOut}
+                  className="
+        flex w-full items-center gap-3
+        px-4 py-3
+        text-sm font-medium
+        text-red-600
+        hover:bg-red-50
+        transition
+        disabled:opacity-60
+        disabled:cursor-not-allowed
+      "
                 >
-                  Logout
+                  <LogOut className="w-4 h-4" />
+                  {loggingOut ? "Logging out..." : "Logout"}
                 </button>
               </div>
             )}
           </div>
-        </nav>
+        </div>
+
+        {/* Mobile Toggle */}
+        <button
+          onClick={() => setMenuOpen(!menuOpen)}
+          className={`md:hidden p-2 rounded-xl ${scrolled ? "text-gray-700" : "text-white"}`}
+        >
+          {menuOpen ? <X /> : <Menu />}
+        </button>
       </div>
 
       {/* Mobile Menu */}
-      {isMenuOpen && (
-        <div className="md:hidden px-6 pb-4">
-          <nav className="flex flex-col gap-4 text-white text-base">
-            {isAdmin && (
-              <>
-                <Link
-                  to="/admin/dashboard-page"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Dashboard
-                </Link>
-                <Link
-                  to="/admin/get-all-students"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Manage Students
-                </Link>
-                <Link
-                  to="/admin/get-all-instructors"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Manage Instructors
-                </Link>
-                <Link to="/admin/settings" onClick={() => setIsMenuOpen(false)}>
-                  Settings
-                </Link>
-              </>
-            )}
-
-            {isInstructor && (
-              <>
-                {" "}
-                <Link to="/instructor/instructor-dashboard-page">
-                  Dashboard
-                </Link>
-                <Link to="/instructor/courses-management/get-all-courses">
-                  Courses
-                </Link>
-                <Link
-                  to="/instructor/settings"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Settings
-                </Link>
-              </>
-            )}
+      {menuOpen && (
+        <div className="md:hidden fixed inset-x-0 top-16 bottom-0 bg-white overflow-y-auto z-40 animate-[slide-in_0.3s_ease-out]">
+          <div className="p-4 space-y-2">
+            {navLinks.map(({ to, label, icon: Icon }) => (
+              <Link
+                key={to}
+                to={to}
+                onClick={() => setMenuOpen(false)}
+                className="flex items-center gap-3 p-4 rounded-xl hover:bg-gray-50"
+              >
+                <Icon className="w-5 h-5" />
+                {label}
+              </Link>
+            ))}
 
             {isStudent && (
               <>
-                <Link to="/home" onClick={() => setIsMenuOpen(false)}>
-                  Home
+                <Link to="/about" className="mobile-link">
+                  <Sparkles /> About
                 </Link>
-
-                <Link
-                  to="/courses/courses-list"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Courses
-                </Link>
-                <Link
-                  to="/user/learning-room"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Learning Room
-                </Link>
-                <Link to="/contact" onClick={() => setIsMenuOpen(false)}>
-                  Contact
-                </Link>
-                <Link to="/about" onClick={() => setIsMenuOpen(false)}>
-                  About
-                </Link>
-                <Link to="/user/settings" onClick={() => setIsMenuOpen(false)}>
-                  Settings
-                </Link>
-                <Link to="/help" onClick={() => setIsMenuOpen(false)}>
-                  Help
+                <Link to="/contact" className="mobile-link">
+                  <MessageSquare /> Contact
                 </Link>
               </>
             )}
 
             <button
               onClick={handleLogout}
-              className="text-left w-full px-4 py-2 bg-white hover:bg-red-100 text-red-600 rounded"
+              className="flex items-center gap-3 p-4 rounded-xl text-red-600 hover:bg-red-50 w-full"
             >
-              Logout
+              <LogOut /> Logout
             </button>
-          </nav>
+          </div>
         </div>
       )}
     </header>
@@ -311,3 +313,28 @@ const HeaderNav = () => {
 };
 
 export default HeaderNav;
+
+/* Tailwind helpers */
+
+// Add CSS animations
+const style = document.createElement("style");
+style.textContent = `
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  @keyframes slide-in {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+  }
+  
+  .animate-fade-in {
+    animation: fade-in 0.2s ease-out;
+  }
+  
+  .animate-slide-in {
+    animation: slide-in 0.3s ease-out;
+  }
+`;
+document.head.appendChild(style);

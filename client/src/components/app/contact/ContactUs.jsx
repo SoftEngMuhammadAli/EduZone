@@ -1,137 +1,358 @@
-import React from "react";
+import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { AppFooter } from "../../../components/layout/Footer";
 import { useDispatch, useSelector } from "react-redux";
 import { contactUs } from "../../../features/contact-us/contactUsSlice";
+import {
+  Send,
+  Mail,
+  Phone,
+  MapPin,
+  Clock,
+  User,
+  MessageSquare,
+  CheckCircle,
+  Loader2,
+} from "lucide-react";
 
 const ContactUs = () => {
   const dispatch = useDispatch();
   const location = useLocation();
+  const [formData, setFormData] = useState({
+    fullname: "",
+    email: "",
+    subject: "",
+    message: "",
+  });
 
   const { loading, error, data } = useSelector((state) => state.contactUs);
 
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
   const handleFormSubmit = (e) => {
     e.preventDefault();
-    const form = e.target;
-
-    const contactUsData = {
-      fullname: form.fullname.value,
-      email: form.email.value,
-      subject: form.subject.value,
-      message: form.message.value,
-    };
 
     if (
-      !contactUsData.fullname ||
-      !contactUsData.email ||
-      !contactUsData.subject ||
-      !contactUsData.message
+      !formData.fullname ||
+      !formData.email ||
+      !formData.subject ||
+      !formData.message
     ) {
       console.error("All fields are required");
       return;
     }
 
-    dispatch(contactUs(contactUsData));
-    form.reset();
+    dispatch(contactUs(formData));
+    setFormData({
+      fullname: "",
+      email: "",
+      subject: "",
+      message: "",
+    });
   };
+
+  const contactInfo = [
+    {
+      icon: <Phone className="w-5 h-5" />,
+      title: "Phone Number",
+      value: "+92 302 8186660",
+      href: "tel:+923028186660",
+      color: "from-blue-500 to-cyan-400",
+    },
+    {
+      icon: <Mail className="w-5 h-5" />,
+      title: "Email Address",
+      value: "softeng.aliijaz@gmail.com",
+      href: "mailto:softeng.aliijaz@gmail.com",
+      color: "from-purple-500 to-pink-400",
+    },
+    {
+      icon: <MapPin className="w-5 h-5" />,
+      title: "Location",
+      value: "Lahore, Pakistan",
+      href: "#",
+      color: "from-green-500 to-emerald-400",
+    },
+    {
+      icon: <Clock className="w-5 h-5" />,
+      title: "Office Hours",
+      value: "Mon - Fri, 9am - 5pm",
+      href: "#",
+      color: "from-orange-500 to-yellow-400",
+    },
+  ];
 
   return (
     <>
-      <section className="bg-white text-black py-12 px-4 sm:px-6 md:px-8 lg:px-16">
-        <div className="max-w-7xl mx-auto">
-          {/* Heading */}
-          <div className="mb-10">
-            <h2 className="text-3xl sm:text-4xl font-bold text-[#1C1E53]">
-              Contact Us
+      <section className="relative bg-gradient-to-b from-white to-gray-50 py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
+        {/* Background Elements */}
+        <div className="absolute inset-0">
+          <div className="absolute top-0 left-0 w-64 h-64 bg-blue-100 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
+          <div className="absolute bottom-0 right-0 w-64 h-64 bg-purple-100 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
+        </div>
+
+        <div className="max-w-7xl mx-auto relative z-10">
+          {/* Header Section */}
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-gradient-to-r from-blue-50 to-purple-50 text-blue-700 rounded-full text-sm font-semibold mb-4">
+              <MessageSquare className="w-4 h-4" />
+              GET IN TOUCH
+            </div>
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+              Let's{" "}
+              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                Connect
+              </span>
             </h2>
-            <p className="text-sm md:text-base text-gray-600 mt-2 max-w-xl">
-              Have a question or feedback? Reach out to us using the form below
-              or via our contact details.
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Have questions, feedback, or ideas? We're here to help. Reach out
+              and our team will get back to you promptly.
             </p>
           </div>
 
-          {/* Main Layout */}
-          <div className="flex flex-col md:flex-row items-stretch w-full shadow-lg rounded-lg overflow-hidden">
-            {/* Left Panel */}
-            <div className="bg-[#1C1E53] text-white w-full md:w-1/2 p-8 sm:p-10 flex flex-col justify-between">
-              <div>
-                <h2 className="text-2xl sm:text-3xl font-bold mb-4">
-                  Get In Touch
-                </h2>
-                <p className="text-sm md:text-base text-gray-300 leading-relaxed">
-                  We're here to answer any questions you may have. Send us a
-                  message and our team will respond shortly.
-                </p>
-              </div>
-              <div className="mt-10 space-y-2">
-                <p className="text-base md:text-lg font-medium">
-                  <a href="tel:+923028186660">📞 +92 302 8186660</a>
-                </p>
-                <p className="text-base md:text-lg font-medium">
-                  <a href="mailto:softeng.aliijaz@gmail.com">
-                    📧 softeng.aliijaz@gmail.com
-                  </a>
-                </p>
-                <p className="text-xs md:text-sm text-gray-400 mt-4">
-                  🕘 Office Hours: Mon - Fri, 9am - 5pm
-                </p>
-              </div>
-            </div>
-
-            {/* Right Panel */}
-            <div className="bg-white w-full md:w-1/2 p-6 sm:p-8 md:p-10">
-              <h3 className="text-xl sm:text-2xl font-semibold text-gray-800 mb-6">
-                Send us a message
-              </h3>
-              <form className="space-y-6 w-full" onSubmit={handleFormSubmit}>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <input
-                    name="fullname"
-                    type="text"
-                    placeholder="Full Name"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FCD980] transition"
-                  />
-                  <input
-                    name="email"
-                    type="email"
-                    placeholder="Email Address"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FCD980] transition"
-                  />
-                </div>
-                <input
-                  name="subject"
-                  type="text"
-                  placeholder="Subject"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FCD980] transition"
-                />
-                <textarea
-                  name="message"
-                  rows="5"
-                  placeholder="Your Message"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FCD980] transition resize-none"
-                ></textarea>
-
-                {/* Feedback messages */}
-                {loading && (
-                  <p className="text-sm text-blue-600">Sending message...</p>
-                )}
-                {error && (
-                  <p className="text-sm text-red-500">Error: {error}</p>
-                )}
-                {data && (
-                  <p className="text-sm text-green-600">
-                    Message sent successfully!
-                  </p>
-                )}
-
-                <button
-                  type="submit"
-                  className="bg-[#FCD980] hover:bg-[#f4c44f] text-black font-semibold py-3 px-6 rounded-lg transition-all duration-300 w-full md:w-fit"
+          {/* Main Content Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Contact Information Sidebar */}
+            <div className="space-y-6">
+              {contactInfo.map((info, index) => (
+                <a
+                  key={index}
+                  href={info.href}
+                  className="group block bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-gray-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
                 >
-                  Send Message
-                </button>
-              </form>
+                  <div className="flex items-start gap-4">
+                    <div
+                      className={`p-3 rounded-xl bg-gradient-to-br ${info.color} shadow-lg group-hover:scale-110 transition-transform duration-300`}
+                    >
+                      <div className="text-white">{info.icon}</div>
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-semibold text-gray-500 mb-1">
+                        {info.title}
+                      </h3>
+                      <p className="text-lg font-bold text-gray-900">
+                        {info.value}
+                      </p>
+                    </div>
+                  </div>
+                </a>
+              ))}
+
+              {/* Support Stats */}
+              <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl p-6 border border-blue-100">
+                <h3 className="text-lg font-bold text-gray-900 mb-4">
+                  Our Support Promise
+                </h3>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600">Response Time</span>
+                    <span className="font-semibold text-blue-600">
+                      Within 24 hours
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600">Support Hours</span>
+                    <span className="font-semibold text-purple-600">
+                      24/7 Available
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600">Satisfaction Rate</span>
+                    <span className="font-semibold text-green-600">98%</span>
+                  </div>
+                </div>
+              </div>
             </div>
+
+            {/* Contact Form */}
+            <div className="lg:col-span-2">
+              <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl border border-gray-100 overflow-hidden">
+                <div className="p-8 md:p-12">
+                  <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+                    Send Us a Message
+                  </h3>
+                  <p className="text-gray-600 mb-8">
+                    Fill out the form below and we'll get back to you as soon as
+                    possible.
+                  </p>
+
+                  <form className="space-y-6" onSubmit={handleFormSubmit}>
+                    {/* Two Column Inputs */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="relative">
+                        <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
+                          <User className="w-5 h-5 text-gray-400" />
+                        </div>
+                        <input
+                          name="fullname"
+                          type="text"
+                          placeholder="Full Name"
+                          value={formData.fullname}
+                          onChange={handleInputChange}
+                          required
+                          className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-12 pr-4 py-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                        />
+                      </div>
+
+                      <div className="relative">
+                        <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
+                          <Mail className="w-5 h-5 text-gray-400" />
+                        </div>
+                        <input
+                          name="email"
+                          type="email"
+                          placeholder="Email Address"
+                          value={formData.email}
+                          onChange={handleInputChange}
+                          required
+                          className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-12 pr-4 py-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Subject Input */}
+                    <div className="relative">
+                      <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
+                        <MessageSquare className="w-5 h-5 text-gray-400" />
+                      </div>
+                      <input
+                        name="subject"
+                        type="text"
+                        placeholder="Subject"
+                        value={formData.subject}
+                        onChange={handleInputChange}
+                        required
+                        className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-12 pr-4 py-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      />
+                    </div>
+
+                    {/* Message Textarea */}
+                    <div className="relative">
+                      <div className="absolute left-4 top-4">
+                        <MessageSquare className="w-5 h-5 text-gray-400" />
+                      </div>
+                      <textarea
+                        name="message"
+                        rows="6"
+                        placeholder="Your Message"
+                        value={formData.message}
+                        onChange={handleInputChange}
+                        required
+                        className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-12 pr-4 py-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+                      ></textarea>
+                    </div>
+
+                    {/* Status Messages */}
+                    <div className="space-y-3">
+                      {loading && (
+                        <div className="flex items-center gap-2 text-blue-600">
+                          <Loader2 className="w-5 h-5 animate-spin" />
+                          <span>Sending your message...</span>
+                        </div>
+                      )}
+
+                      {error && (
+                        <div className="flex items-center gap-2 text-red-600 bg-red-50 p-3 rounded-xl">
+                          <svg
+                            className="w-5 h-5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                            />
+                          </svg>
+                          <span>Error: {error}</span>
+                        </div>
+                      )}
+
+                      {data && (
+                        <div className="flex items-center gap-2 text-green-600 bg-green-50 p-3 rounded-xl">
+                          <CheckCircle className="w-5 h-5" />
+                          <span>
+                            Message sent successfully! We'll get back to you
+                            soon.
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Submit Button */}
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      className="group relative w-full bg-gradient-to-r from-gray-900 to-gray-800 text-white font-semibold py-4 rounded-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl"></div>
+                      <span className="relative flex items-center justify-center gap-3">
+                        {loading ? (
+                          <>
+                            <Loader2 className="w-5 h-5 animate-spin" />
+                            Sending...
+                          </>
+                        ) : (
+                          <>
+                            Send Message
+                            <Send className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                          </>
+                        )}
+                      </span>
+                    </button>
+                  </form>
+
+                  {/* Privacy Note */}
+                  <p className="text-center text-gray-500 text-sm mt-6">
+                    We respect your privacy. Your information will only be used
+                    to respond to your inquiry.
+                  </p>
+                </div>
+              </div>
+
+              {/* Additional Info */}
+              <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-6">
+                <div className="text-center p-6 bg-white/80 backdrop-blur-sm rounded-2xl border border-gray-100">
+                  <div className="text-2xl font-bold text-blue-600 mb-2">
+                    24/7
+                  </div>
+                  <p className="text-gray-700">Support Available</p>
+                </div>
+                <div className="text-center p-6 bg-white/80 backdrop-blur-sm rounded-2xl border border-gray-100">
+                  <div className="text-2xl font-bold text-purple-600 mb-2">
+                    100%
+                  </div>
+                  <p className="text-gray-700">Response Rate</p>
+                </div>
+                <div className="text-center p-6 bg-white/80 backdrop-blur-sm rounded-2xl border border-gray-100">
+                  <div className="text-2xl font-bold text-green-600 mb-2">
+                    Secure
+                  </div>
+                  <p className="text-gray-700">Encrypted Communication</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* FAQ Link */}
+          <div className="text-center mt-16">
+            <p className="text-gray-600">
+              Need immediate help? Check out our{" "}
+              <a
+                href="/faq"
+                className="text-blue-600 font-semibold hover:underline"
+              >
+                Frequently Asked Questions
+              </a>
+            </p>
           </div>
         </div>
       </section>

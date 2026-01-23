@@ -15,10 +15,10 @@ export const createBlogThunk = createAsyncThunk(
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
-        error.response?.data?.message || "Error creating blog"
+        error.response?.data?.message || "Error creating blog",
       );
     }
-  }
+  },
 );
 
 export const fetchBlogs = createAsyncThunk(
@@ -29,10 +29,10 @@ export const fetchBlogs = createAsyncThunk(
       return response.data.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
-        error.response?.data?.message || error.message
+        error.response?.data?.message || error.message,
       );
     }
-  }
+  },
 );
 
 export const getBlogById = createAsyncThunk(
@@ -43,10 +43,10 @@ export const getBlogById = createAsyncThunk(
       return response.data.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
-        error.response?.data?.message || "Failed to fetch blog"
+        error.response?.data?.message || "Failed to fetch blog",
       );
     }
-  }
+  },
 );
 
 export const updateBlog = createAsyncThunk(
@@ -59,10 +59,10 @@ export const updateBlog = createAsyncThunk(
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
-        error.response?.data?.message || "Failed to update blog"
+        error.response?.data?.message || "Failed to update blog",
       );
     }
-  }
+  },
 );
 
 export const deleteBlog = createAsyncThunk(
@@ -74,7 +74,29 @@ export const deleteBlog = createAsyncThunk(
     } catch (error) {
       return thunkAPI.rejectWithValue(error.message);
     }
-  }
+  },
+);
+
+// Async thunk to increment view count
+export const incrementViewCount = createAsyncThunk(
+  "blogs/incrementViewCount",
+  async (blogId, thunkAPI) => {
+    try {
+      // You can make an API call here or handle it locally
+      return blogId; // Return the blog ID if you want to update locally
+
+      // OR make API call if you want to update on server:
+      // return await blogService.incrementViewCount(blogId);
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  },
 );
 
 const blogSlice = createSlice({
@@ -84,8 +106,32 @@ const blogSlice = createSlice({
     selectedBlog: null,
     loading: false,
     error: null,
+    success: false,
   },
-  reducers: {},
+  reducers: {
+    reset: (state) => {
+      state.loading = false;
+      state.error = null;
+      state.success = false;
+    },
+    // Local view count increment (if not using API)
+    incrementLocalViewCount: (state, action) => {
+      const blogId = action.payload;
+
+      // Increment in blogs array
+      state.blogs = state.blogs.map((blog) =>
+        blog._id === blogId ? { ...blog, views: (blog.views || 0) + 1 } : blog,
+      );
+
+      // Increment in selectedBlog if it's the current one
+      if (state.selectedBlog && state.selectedBlog._id === blogId) {
+        state.selectedBlog = {
+          ...state.selectedBlog,
+          views: (state.selectedBlog.views || 0) + 1,
+        };
+      }
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(createBlogThunk.pending, (state) => {
@@ -130,7 +176,7 @@ const blogSlice = createSlice({
       .addCase(updateBlog.fulfilled, (state, action) => {
         state.loading = false;
         const index = state.blogs.findIndex(
-          (b) => b._id === action.payload._id
+          (b) => b._id === action.payload._id,
         );
         if (index !== -1) state.blogs[index] = action.payload;
       })
@@ -149,6 +195,33 @@ const blogSlice = createSlice({
       .addCase(deleteBlog.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+
+      // Increment View Count
+      .addCase(incrementViewCount.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(incrementViewCount.fulfilled, (state, action) => {
+        const blogId = action.payload;
+
+        // Update view count in blogs array
+        state.blogs = state.blogs.map((blog) =>
+          blog._id === blogId
+            ? { ...blog, views: (blog.views || 0) + 1 }
+            : blog,
+        );
+
+        // Update view count in selectedBlog if it's the current one
+        if (state.selectedBlog && state.selectedBlog._id === blogId) {
+          state.selectedBlog = {
+            ...state.selectedBlog,
+            views: (state.selectedBlog.views || 0) + 1,
+          };
+        }
+      })
+      .addCase(incrementViewCount.rejected, (state, action) => {
+        // Optional: Handle error
+        console.error("Failed to increment view count:", action.payload);
       });
   },
 });

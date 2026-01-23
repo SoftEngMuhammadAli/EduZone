@@ -53,6 +53,8 @@ import BlogsDetails from "../pages/app/blogs/BlogsDetails";
 import AdminProfileSettings from "../components/settings/AdminProfileSettings";
 import InstructorProfileSettings from "../components/settings/InstructorProfileSettings";
 import StudentProfileSettings from "../components/settings/StudentProfileSettings";
+import CertificateView from "../components/common/Certificate";
+import CommunityView from "../components/common/Community";
 
 const AppRoutes = () => {
   return (
@@ -243,6 +245,8 @@ const MainLayout = () => {
               element={<ContinueLearning />}
             />
             <Route path="/user/settings" element={<StudentProfileSettings />} />
+            <Route path="/user/certificates" element={<CertificateView />} />
+            <Route path="/user/community" element={<CommunityView />} />
           </Route>
         </Route>
 

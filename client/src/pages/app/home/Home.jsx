@@ -9,7 +9,7 @@ import AskedQuestions from "../frequently-asked-questions/AskedQuestions";
 import ReadHomeBlogs from "../../../components/app/blogs/ReadHomeBlogs";
 import ContactUs from "../../../components/app/contact/ContactUs";
 import { AppFooter } from "../../../components/layout/Footer";
-import TrustedBySection from "../../../components/app/about/TrusterBy";
+import TrustedBySection from "../../../components/app/about/TrustedBy";
 
 const HomePage = () => {
   return (
