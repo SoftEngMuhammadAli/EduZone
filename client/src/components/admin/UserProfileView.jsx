@@ -19,8 +19,6 @@ import {
   Loader2,
   Sparkles,
   MessageSquare,
-  Settings,
-  Eye,
 } from "lucide-react";
 
 const UserProfileView = ({ user }) => {
@@ -112,38 +110,14 @@ const UserProfileView = ({ user }) => {
   const config = roleConfig[user.user_type] || roleConfig.student;
   const userInitial = user.name?.charAt(0) || user.email?.charAt(0) || "U";
 
-  // Mock statistics for demonstration
-  const userStats = [
-    {
-      icon: <BookOpen className="w-5 h-5" />,
-      label: "Courses",
-      value: user.user_type === "student" ? "5" : "8",
-    },
-    {
-      icon: <CheckCircle className="w-5 h-5" />,
-      label: "Completed",
-      value: user.user_type === "student" ? "3" : "12",
-    },
-    {
-      icon: <Clock className="w-5 h-5" />,
-      label: "Hours",
-      value: user.user_type === "student" ? "42" : "156",
-    },
-    {
-      icon: <TrendingUp className="w-5 h-5" />,
-      label: "Progress",
-      value: user.user_type === "student" ? "68%" : "92%",
-    },
-  ];
-
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white p-4 md:p-6 lg:p-8">
+    <div className="min-h-screen bg-linear-to-b from-gray-50 to-white p-4 md:p-6 lg:p-8">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-8">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div>
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-gradient-to-r from-blue-50 to-cyan-50 text-blue-700 rounded-full text-sm font-semibold mb-3">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-linear-to-r from-blue-50 to-cyan-50 text-blue-700 rounded-full text-sm font-semibold mb-3">
                 <User className="w-4 h-4" />
                 USER PROFILE MANAGEMENT
               </div>
@@ -170,7 +144,7 @@ const UserProfileView = ({ user }) => {
         <div className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden mb-8">
           {/* Profile Header */}
           <div
-            className={`bg-gradient-to-r ${config.gradient} p-8 text-white relative overflow-hidden`}
+            className={`bg-linear-to-r ${config.gradient} p-8 text-white relative overflow-hidden`}
           >
             {/* Background Pattern */}
             <div className="absolute inset-0 opacity-10">
@@ -329,36 +303,6 @@ const UserProfileView = ({ user }) => {
               )}
             </div>
 
-            {/* User Statistics */}
-            <div className="mb-8">
-              <div className="flex items-center gap-3 mb-6">
-                <TrendingUp className="w-6 h-6 text-gray-600" />
-                <h3 className="text-xl font-semibold text-gray-900">
-                  Activity Overview
-                </h3>
-              </div>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                {userStats.map((stat, index) => (
-                  <div
-                    key={index}
-                    className={`p-6 rounded-2xl ${config.bg} border border-gray-100 transition-all duration-300 hover:shadow-lg`}
-                  >
-                    <div className="flex items-center gap-3 mb-3">
-                      <div
-                        className={`p-2 rounded-xl ${config.color.replace("text", "bg")} bg-opacity-20`}
-                      >
-                        <div className={config.color}>{stat.icon}</div>
-                      </div>
-                      <div className="text-3xl font-bold text-gray-900">
-                        {stat.value}
-                      </div>
-                    </div>
-                    <div className="text-sm text-gray-600">{stat.label}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
             {/* Action Buttons */}
             <div className="flex flex-wrap gap-4">
               {editMode ? (
@@ -366,7 +310,7 @@ const UserProfileView = ({ user }) => {
                   <button
                     onClick={handleSave}
                     disabled={loading}
-                    className="group flex items-center gap-3 px-8 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-semibold rounded-xl hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="group flex items-center gap-3 px-8 py-3 bg-linear-to-r from-green-600 to-emerald-600 text-white font-semibold rounded-xl hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {loading ? (
                       <>
@@ -392,18 +336,10 @@ const UserProfileView = ({ user }) => {
                 <>
                   <button
                     onClick={() => setEditMode(true)}
-                    className="group flex items-center gap-3 px-8 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-semibold rounded-xl hover:shadow-lg transition-all"
+                    className="group flex items-center gap-3 px-8 py-3 bg-linear-to-r from-blue-600 to-cyan-600 text-white font-semibold rounded-xl hover:shadow-lg transition-all"
                   >
                     <Edit2 className="w-5 h-5 group-hover:rotate-12 transition-transform" />
                     Edit Profile
-                  </button>
-                  <button className="flex items-center gap-3 px-8 py-3 border border-gray-300 text-gray-700 font-semibold rounded-xl hover:bg-gray-50 transition-colors">
-                    <Eye className="w-5 h-5" />
-                    View Activity
-                  </button>
-                  <button className="flex items-center gap-3 px-8 py-3 border border-gray-300 text-gray-700 font-semibold rounded-xl hover:bg-gray-50 transition-colors">
-                    <Settings className="w-5 h-5" />
-                    Settings
                   </button>
                 </>
               )}
@@ -411,7 +347,7 @@ const UserProfileView = ({ user }) => {
               {currentUser?.user_type === "admin" && !editMode && (
                 <button
                   onClick={() => setShowDeleteConfirm(true)}
-                  className="group flex items-center gap-3 px-8 py-3 bg-gradient-to-r from-red-600 to-orange-600 text-white font-semibold rounded-xl hover:shadow-lg transition-all"
+                  className="group flex items-center gap-3 px-8 py-3 bg-linear-to-r from-red-600 to-orange-600 text-white font-semibold rounded-xl hover:shadow-lg transition-all"
                 >
                   <Trash2 className="w-5 h-5 group-hover:shake" />
                   Delete User
@@ -422,56 +358,7 @@ const UserProfileView = ({ user }) => {
         </div>
 
         {/* Additional Information */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Recent Activity */}
-          <div className="bg-white rounded-3xl shadow-xl border border-gray-100 p-8">
-            <h3 className="text-xl font-semibold text-gray-900 mb-6">
-              Recent Activity
-            </h3>
-            <div className="space-y-4">
-              {[
-                {
-                  action: "Completed course",
-                  item: "React Fundamentals",
-                  time: "2 hours ago",
-                },
-                {
-                  action: "Submitted assignment",
-                  item: "Project Week 3",
-                  time: "1 day ago",
-                },
-                {
-                  action: "Earned badge",
-                  item: "Fast Learner",
-                  time: "2 days ago",
-                },
-                {
-                  action: "Joined course",
-                  item: "Advanced JavaScript",
-                  time: "3 days ago",
-                },
-              ].map((activity, index) => (
-                <div
-                  key={index}
-                  className="flex items-start gap-4 p-4 hover:bg-gray-50 rounded-xl transition-colors"
-                >
-                  <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center">
-                    <CheckCircle className="w-5 h-5 text-blue-600" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="font-medium text-gray-900">
-                      {activity.action}
-                    </p>
-                    <p className="text-sm text-gray-600">{activity.item}</p>
-                  </div>
-                  <span className="text-xs text-gray-500 whitespace-nowrap">
-                    {activity.time}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-
+        <div className="grid grid-cols-1 gap-8">
           {/* Account Information */}
           <div className="bg-white rounded-3xl shadow-xl border border-gray-100 p-8">
             <h3 className="text-xl font-semibold text-gray-900 mb-6">
@@ -571,7 +458,7 @@ const UserProfileView = ({ user }) => {
                   setShowDeleteConfirm(false);
                   handleDelete();
                 }}
-                className="flex-1 py-3 bg-gradient-to-r from-red-600 to-orange-600 text-white rounded-xl hover:shadow-lg transition-all"
+                className="flex-1 py-3 bg-linear-to-r from-red-600 to-orange-600 text-white rounded-xl hover:shadow-lg transition-all"
               >
                 Delete Account
               </button>

@@ -6,10 +6,8 @@ import {
   Phone,
   Mail,
   MessageSquare,
-  Zap,
-  Shield,
-  Globe,
 } from "lucide-react";
+import { askedQuestionsCategoriesData } from "../../../utils/AppUtils";
 
 const AskedQuestions = () => {
   const [activeId, setActiveId] = useState(null);
@@ -25,31 +23,8 @@ const AskedQuestions = () => {
       faq.answer.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
-  const categories = [
-    {
-      icon: <Shield className="w-5 h-5" />,
-      label: "Account & Security",
-      count: 3,
-    },
-    {
-      icon: <Zap className="w-5 h-5" />,
-      label: "Courses & Learning",
-      count: 5,
-    },
-    {
-      icon: <Globe className="w-5 h-5" />,
-      label: "Platform Features",
-      count: 4,
-    },
-    {
-      icon: <HelpCircle className="w-5 h-5" />,
-      label: "General Support",
-      count: 3,
-    },
-  ];
-
   return (
-    <section className="relative bg-gradient-to-b from-white to-gray-50 py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
+    <section className="relative bg-linear-to-b from-white to-gray-50 py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
       {/* Background Elements */}
       <div className="absolute inset-0">
         <div className="absolute top-0 left-0 w-64 h-64 bg-blue-100 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
@@ -59,13 +34,13 @@ const AskedQuestions = () => {
       <div className="max-w-7xl mx-auto relative z-10">
         {/* Header Section */}
         <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-gradient-to-r from-blue-50 to-purple-50 text-blue-700 rounded-full text-sm font-semibold mb-4">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-linear-to-r from-blue-50 to-purple-50 text-blue-700 rounded-full text-sm font-semibold mb-4">
             <HelpCircle className="w-4 h-4" />
             FIND ANSWERS QUICKLY
           </div>
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
             Frequently Asked{" "}
-            <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            <span className="bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
               Questions
             </span>
           </h2>
@@ -100,7 +75,7 @@ const AskedQuestions = () => {
                   Browse by Category
                 </h3>
                 <div className="space-y-3">
-                  {categories.map((category, index) => (
+                  {askedQuestionsCategoriesData.map((category, index) => (
                     <button
                       key={index}
                       className="w-full flex items-center justify-between p-3 rounded-xl hover:bg-gray-50 transition-colors group"
@@ -122,7 +97,7 @@ const AskedQuestions = () => {
               </div>
 
               {/* Contact Info */}
-              <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl p-6 border border-blue-100">
+              <div className="bg-linear-to-br from-blue-50 to-purple-50 rounded-2xl p-6 border border-blue-100">
                 <h3 className="text-lg font-bold text-gray-900 mb-4">
                   Still Need Help?
                 </h3>
@@ -189,15 +164,18 @@ const AskedQuestions = () => {
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex-1">
                           <div className="flex items-center gap-3 mb-3">
-                            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center">
+                            <div className="w-8 h-8 rounded-lg bg-linear-to-br from-blue-500 to-purple-500 flex items-center justify-center">
                               <span className="text-white text-sm font-bold">
                                 {String(faq.id).padStart(2, "0")}
                               </span>
                             </div>
                             <span className="text-sm font-semibold text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
                               {
-                                categories[
-                                  Math.min(faq.id - 1, categories.length - 1)
+                                askedQuestionsCategoriesData[
+                                  Math.min(
+                                    faq.id - 1,
+                                    askedQuestionsCategoriesData.length - 1,
+                                  )
                                 ].label
                               }
                             </span>
@@ -209,7 +187,7 @@ const AskedQuestions = () => {
                         <div
                           className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ${
                             activeId === faq.id
-                              ? "bg-gradient-to-br from-blue-500 to-purple-500 text-white rotate-180"
+                              ? "bg-linear-to-br from-blue-500 to-purple-500 text-white rotate-180"
                               : "bg-gray-100 text-gray-700 group-hover:bg-gray-200"
                           }`}
                         >
@@ -246,7 +224,7 @@ const AskedQuestions = () => {
 
             {/* FAQ Stats */}
             <div className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-6">
-              <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-2xl p-6 text-center">
+              <div className="bg-linear-to-br from-blue-50 to-cyan-50 rounded-2xl p-6 text-center">
                 <div className="text-3xl font-bold text-blue-600 mb-2">
                   {listOfFrequentlyAskedQuestions.length}+
                 </div>
@@ -254,7 +232,7 @@ const AskedQuestions = () => {
                   Answered Questions
                 </div>
               </div>
-              <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-6 text-center">
+              <div className="bg-linear-to-br from-purple-50 to-pink-50 rounded-2xl p-6 text-center">
                 <div className="text-3xl font-bold text-purple-600 mb-2">
                   24/7
                 </div>
@@ -262,7 +240,7 @@ const AskedQuestions = () => {
                   Support Available
                 </div>
               </div>
-              <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-6 text-center">
+              <div className="bg-linear-to-br from-green-50 to-emerald-50 rounded-2xl p-6 text-center">
                 <div className="text-3xl font-bold text-green-600 mb-2">
                   98%
                 </div>
@@ -273,7 +251,7 @@ const AskedQuestions = () => {
             </div>
 
             {/* Additional Help */}
-            <div className="mt-12 bg-gradient-to-r from-gray-900 to-gray-800 rounded-3xl p-8 md:p-12 text-white">
+            <div className="mt-12 bg-linear-to-r from-gray-900 to-gray-800 rounded-3xl p-8 md:p-12 text-white">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
                 <div>
                   <h3 className="text-2xl font-bold mb-4">

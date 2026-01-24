@@ -4,88 +4,16 @@ import {
   Star,
   ChevronLeft,
   ChevronRight,
-  Award,
   TrendingUp,
-  Users,
   Sparkles,
 } from "lucide-react";
+import {
+  coursesFeedBackStatsData,
+  coursesFeedBackTestimonialsData,
+} from "../../../utils/AppUtils";
 
 const CoursesFeedBack = () => {
   const [activeTestimonial, setActiveTestimonial] = useState(0);
-
-  const testimonials = [
-    {
-      id: 1,
-      content:
-        "The learning material is exceptionally clear and well-structured. The instructors demonstrate deep expertise and provide timely, valuable feedback. This course has transformed my approach to development.",
-      author: "Sarah Johnson",
-      role: "Senior Software Engineer",
-      company: "TechVision Inc.",
-      rating: 5,
-      gradient: "from-blue-500 to-cyan-400",
-      initials: "SJ",
-    },
-    {
-      id: 2,
-      content:
-        "An outstanding platform that bridges theory with practical application. The hands-on projects are industry-relevant and the community support is exceptional. Highly recommended for career advancement.",
-      author: "Michael Chen",
-      role: "Product Manager",
-      company: "Innovate Labs",
-      rating: 5,
-      gradient: "from-purple-500 to-pink-400",
-      initials: "MC",
-    },
-    {
-      id: 3,
-      content:
-        "The course exceeded my expectations in every aspect. The curriculum is comprehensive, the delivery is engaging, and the skills I've gained have already impacted my professional trajectory significantly.",
-      author: "Elena Rodriguez",
-      role: "Data Scientist",
-      company: "Analytics Pro",
-      rating: 4,
-      gradient: "from-green-500 to-emerald-400",
-      initials: "ER",
-    },
-    {
-      id: 4,
-      content:
-        "A transformative learning experience. The balance between theoretical concepts and practical implementation is perfect. The certification has added substantial value to my professional profile.",
-      author: "David Kim",
-      role: "Cloud Architect",
-      company: "Digital Solutions",
-      rating: 5,
-      gradient: "from-orange-500 to-yellow-400",
-      initials: "DK",
-    },
-  ];
-
-  const stats = [
-    {
-      value: "10K+",
-      label: "Student Reviews",
-      icon: <Users className="w-5 h-5" />,
-      color: "text-blue-600",
-    },
-    {
-      value: "4.9/5",
-      label: "Average Rating",
-      icon: <Star className="w-5 h-5" />,
-      color: "text-purple-600",
-    },
-    {
-      value: "98%",
-      label: "Satisfaction Rate",
-      icon: <TrendingUp className="w-5 h-5" />,
-      color: "text-green-600",
-    },
-    {
-      value: "21K+",
-      label: "Learners Impacted",
-      icon: <Award className="w-5 h-5" />,
-      color: "text-orange-600",
-    },
-  ];
 
   const handlePrev = () => {
     setActiveTestimonial((prev) =>
@@ -99,7 +27,7 @@ const CoursesFeedBack = () => {
     );
   };
 
-  const testimonial = testimonials[activeTestimonial];
+  const testimonial = coursesFeedBackTestimonialsData[activeTestimonial];
 
   return (
     <section className="relative bg-gradient-to-br from-gray-50 to-blue-50 py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
@@ -130,7 +58,7 @@ const CoursesFeedBack = () => {
 
         {/* Stats Bar */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
-          {stats.map((stat, index) => (
+          {coursesFeedBackStatsData.map((stat, index) => (
             <div
               key={index}
               className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-100"
@@ -275,7 +203,7 @@ const CoursesFeedBack = () => {
 
             {/* Testimonial Dots */}
             <div className="flex justify-center gap-2 mt-12">
-              {testimonials.map((_, index) => (
+              {coursesFeedBackTestimonialsData.map((_, index) => (
                 <button
                   key={index}
                   onClick={() => setActiveTestimonial(index)}

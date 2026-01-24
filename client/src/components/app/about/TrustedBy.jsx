@@ -1,22 +1,7 @@
 import React from "react";
+import { organizations } from "../../../utils/AppUtils";
 
 const TrustedBySection = () => {
-  const organizations = [
-    { name: "Al Jazeera", description: "Global media network" },
-    {
-      name: "Qatar Foundation",
-      description: "Education and community development",
-    },
-    { name: "Dubai Future", description: "Innovation and future technologies" },
-    { name: "Misk Foundation", description: "Youth empowerment and education" },
-    { name: "STC", description: "Telecommunications leader" },
-    { name: "Saudi Aramco", description: "Energy and technology" },
-    { name: "Emirates Group", description: "Aviation and travel" },
-    { name: "NEOM", description: "Future city development" },
-    { name: "Mubadala", description: "Investment and innovation" },
-    { name: "KAUST", description: "Scientific research" },
-  ];
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-blue-50 flex flex-col items-center justify-center py-20 px-6">
       {/* Header Section */}

@@ -1,58 +1,14 @@
 import React from "react";
 import ContactUs from "../contact/ContactUs";
 import { useLocation } from "react-router-dom";
+import { Users, Award, Sparkles, TrendingUp } from "lucide-react";
 import {
-  Target,
-  Users,
-  Globe,
-  Award,
-  Sparkles,
-  TrendingUp,
-} from "lucide-react";
+  aboutUsScreenFeaturesData,
+  aboutUsScreenStatsData,
+} from "../../../utils/AppUtils";
 
 const AboutUs = () => {
   const location = useLocation();
-
-  const aboutData = {
-    heading: "Why Choose EduZone",
-    subheading: "Empowering Learners Across the Globe",
-    description:
-      "EduZone provides a platform for quality learning with industry-standard content, expert mentors, and hands-on projects. We are committed to delivering knowledge that drives success, fostering growth for students of all levels.",
-  };
-
-  const features = [
-    {
-      icon: <Target className="w-6 h-6" />,
-      title: "Clear Learning Paths",
-      description: "Structured curriculum designed for career success",
-      gradient: "from-blue-500 to-cyan-400",
-    },
-    {
-      icon: <Users className="w-6 h-6" />,
-      title: "Expert Community",
-      description: "Learn alongside peers and industry professionals",
-      gradient: "from-purple-500 to-pink-400",
-    },
-    {
-      icon: <Globe className="w-6 h-6" />,
-      title: "Global Accessibility",
-      description: "Access courses from anywhere, anytime",
-      gradient: "from-green-500 to-emerald-400",
-    },
-    {
-      icon: <Award className="w-6 h-6" />,
-      title: "Certified Excellence",
-      description: "Industry-recognized certifications",
-      gradient: "from-orange-500 to-yellow-400",
-    },
-  ];
-
-  const stats = [
-    { value: "21K+", label: "Active Learners", color: "text-blue-600" },
-    { value: "150+", label: "Courses", color: "text-purple-600" },
-    { value: "98%", label: "Success Rate", color: "text-green-600" },
-    { value: "24/7", label: "Support", color: "text-orange-600" },
-  ];
 
   return (
     <section className="relative min-h-screen bg-gradient-to-b from-white via-blue-50/30 to-white overflow-hidden">
@@ -92,7 +48,7 @@ const AboutUs = () => {
 
           {/* Stats Bar */}
           <div className="flex flex-wrap justify-center gap-8 md:gap-12 mb-12">
-            {stats.map((stat, index) => (
+            {aboutUsScreenStatsData.map((stat, index) => (
               <div key={index} className="text-center">
                 <div
                   className={`text-4xl md:text-5xl font-bold ${stat.color} mb-2`}
@@ -126,7 +82,7 @@ const AboutUs = () => {
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              {features.map((feature, index) => (
+              {aboutUsScreenFeaturesData.map((feature, index) => (
                 <div
                   key={index}
                   className="group bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-gray-100 hover:border-transparent hover:shadow-2xl transition-all duration-500"

@@ -6,6 +6,21 @@ import {
   deleteBlog,
 } from "../../../features/admin/blogSlice";
 import { useParams, useNavigate } from "react-router-dom";
+import {
+  Save,
+  Upload,
+  FileText,
+  Tag,
+  Layers,
+  Image as ImageIcon,
+  AlertTriangle,
+  ArrowLeft,
+  RotateCcw,
+  Eye,
+  X,
+  Loader2,
+} from "lucide-react";
+import { toast } from "react-hot-toast";
 
 const UpdateBlogPage = () => {
   const { id } = useParams();
@@ -18,13 +33,36 @@ const UpdateBlogPage = () => {
     error,
   } = useSelector((state) => state.blogs || {});
 
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  const [tags, setTags] = useState("");
-  const [category, setCategory] = useState("");
+  const [formData, setFormData] = useState({
+    title: "",
+    content: "",
+    tags: "",
+    category: "",
+  });
+
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
+  const [originalImage, setOriginalImage] = useState(null);
   const [blogLoaded, setBlogLoaded] = useState(false);
+  const [hasChanges, setHasChanges] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  const popularCategories = [
+    "Technology",
+    "Education",
+    "Lifestyle",
+    "Health",
+    "Business",
+    "Programming",
+  ];
+  const popularTags = [
+    "react",
+    "javascript",
+    "webdev",
+    "nodejs",
+    "tutorial",
+    "beginners",
+  ];
 
   useEffect(() => {
     dispatch(fetchBlogs());
@@ -33,172 +71,476 @@ const UpdateBlogPage = () => {
   useEffect(() => {
     const blog = blogs.find((b) => b._id === id);
     if (blog) {
-      setTitle(blog.title);
-      setContent(blog.content);
-      setTags((blog.tags || []).join(", "));
-      setCategory(blog.category || "");
-      setPreview(
-        blog.image
-          ? `${import.meta.env.VITE_BASE_URL}/uploads/${blog.image}`
-          : null,
-      );
+      setFormData({
+        title: blog.title || "",
+        content: blog.content || "",
+        tags: (blog.tags || []).join(", "),
+        category: blog.category || "",
+      });
+
+      const imageUrl = blog.image
+        ? `${import.meta.env.VITE_BASE_URL}/uploads/${blog.image}`
+        : null;
+
+      if (imageUrl) {
+        setPreview(imageUrl);
+        setOriginalImage(imageUrl);
+      }
+
       setBlogLoaded(true);
     }
   }, [blogs, id]);
 
+  // Check for changes
+  useEffect(() => {
+    if (blogLoaded) {
+      const hasFormChanges = Object.values(formData).some(
+        (value) => value !== "",
+      );
+      const hasImageChanges = image !== null;
+      setHasChanges(hasFormChanges || hasImageChanges);
+    }
+  }, [formData, image, blogLoaded]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
   const handleImageChange = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image size should be less than 5MB");
+      return;
+    }
+
     setImage(file);
-    setPreview(URL.createObjectURL(file));
+    const previewUrl = URL.createObjectURL(file);
+    setPreview(previewUrl);
   };
 
-  const handleSubmit = (e) => {
+  const removeImage = () => {
+    setImage(null);
+    if (preview && preview !== originalImage) {
+      URL.revokeObjectURL(preview);
+    }
+    setPreview(originalImage);
+  };
+
+  const resetImage = () => {
+    setImage(null);
+    if (preview !== originalImage) {
+      URL.revokeObjectURL(preview);
+    }
+    setPreview(originalImage);
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const formData = new FormData();
-    formData.append("title", title);
-    formData.append("content", content);
-    formData.append("category", category);
-    formData.append(
-      "tags",
-      JSON.stringify(tags.split(",").map((t) => t.trim())),
-    );
-    if (image) formData.append("image", image);
-
-    dispatch(updateBlog({ id, blogData: formData })).then((res) => {
-      if (!res.error) navigate("/admin/dashboard-page");
-    });
-  };
-
-  const handleDelete = () => {
-    if (
-      !window.confirm(
-        "This action cannot be undone.\nAre you sure you want to delete this blog?",
-      )
-    )
+    if (!formData.title || !formData.content || !formData.category) {
+      toast.error("Please fill all required fields");
       return;
+    }
 
-    dispatch(deleteBlog(id)).then((res) => {
-      if (!res.error) navigate("/admin/dashboard-page");
-    });
+    const data = new FormData();
+    data.append("title", formData.title);
+    data.append("content", formData.content);
+    data.append("category", formData.category);
+    data.append(
+      "tags",
+      JSON.stringify(
+        formData.tags
+          .split(",")
+          .map((t) => t.trim())
+          .filter((t) => t),
+      ),
+    );
+    if (image) data.append("image", image);
+
+    try {
+      await dispatch(updateBlog({ id, blogData: data })).unwrap();
+      toast.success("✅ Blog updated successfully!");
+      navigate("/admin/blog");
+    } catch (err) {
+      toast.error(err || "Failed to update blog");
+    }
   };
+
+  const handleDelete = async () => {
+    try {
+      await dispatch(deleteBlog(id)).unwrap();
+      toast.success("Blog deleted successfully!");
+      navigate("/admin/blog");
+    } catch (err) {
+      toast.error("Failed to delete blog");
+    } finally {
+      setShowDeleteModal(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="relative mb-4">
+            <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+          </div>
+          <p className="text-gray-700">Loading blog details...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <div className="bg-white rounded-lg shadow p-6">
-        <h1 className="text-2xl font-semibold mb-1">Update Blog</h1>
-        <p className="text-sm text-gray-500 mb-6">
-          Edit blog details or replace its image
-        </p>
-
-        {loading && <p className="text-gray-500">Loading blog...</p>}
-        {error && <p className="text-red-600">{error}</p>}
-
-        {!loading && blogLoaded && (
-          <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Title */}
-            <div>
-              <label className="block text-sm font-medium mb-1">Title</label>
-              <input
-                type="text"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                className="w-full border px-4 py-2 rounded"
-                required
-              />
+    <>
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 animate-in slide-in-from-bottom-2">
+            <div className="text-center mb-6">
+              <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
+                <AlertTriangle className="w-8 h-8 text-red-600" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">
+                Delete Blog
+              </h3>
+              <p className="text-gray-600">
+                Are you sure you want to delete this blog? This action cannot be
+                undone.
+              </p>
             </div>
 
-            {/* Content */}
-            <div>
-              <label className="block text-sm font-medium mb-1">Content</label>
-              <textarea
-                rows="6"
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-                className="w-full border px-4 py-2 rounded"
-                required
-              />
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                className="flex-1 px-4 py-2.5 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors font-medium"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDelete}
+                className="flex-1 px-4 py-2.5 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors font-medium"
+              >
+                Delete Permanently
+              </button>
             </div>
+          </div>
+        </div>
+      )}
 
-            {/* Category + Tags */}
-            <div className="grid md:grid-cols-2 gap-4">
+      <div className="max-w-4xl mx-auto p-4">
+        {/* Header */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => navigate(-1)}
+                className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </button>
               <div>
-                <label className="block text-sm font-medium mb-1">
-                  Category
+                <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
+                  Edit Blog
+                </h1>
+                <p className="text-gray-600">
+                  Update your blog content and details
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() =>
+                  window.open(`/view-blog-details/${id}`, "_blank")
+                }
+                className="flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm"
+              >
+                <Eye className="w-4 h-4" />
+                Preview
+              </button>
+            </div>
+          </div>
+
+          {/* Changes Indicator */}
+          {hasChanges && blogLoaded && (
+            <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
+              <div className="flex items-center gap-3">
+                <div className="w-3 h-3 rounded-full bg-blue-500 animate-pulse"></div>
+                <p className="text-sm text-blue-800">
+                  You have unsaved changes. Remember to save your updates.
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {error && (
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl">
+            <p className="text-red-700">⚠️ {error}</p>
+          </div>
+        )}
+
+        {blogLoaded && (
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 md:p-8">
+            <form onSubmit={handleSubmit} className="space-y-8">
+              {/* Blog Title */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                  <FileText className="w-4 h-4 text-blue-600" />
+                  Blog Title *
                 </label>
                 <input
                   type="text"
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  className="w-full border px-4 py-2 rounded"
+                  name="title"
+                  value={formData.title}
+                  onChange={handleChange}
                   required
+                  placeholder="e.g., How to Master React in 2024"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg"
                 />
               </div>
 
+              {/* Category & Tags */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                    <Layers className="w-4 h-4 text-green-600" />
+                    Category *
+                  </label>
+                  <div>
+                    <input
+                      type="text"
+                      name="category"
+                      value={formData.category}
+                      onChange={handleChange}
+                      required
+                      placeholder="Enter category..."
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                    <div className="flex flex-wrap gap-2 mt-3">
+                      {popularCategories.map((cat) => (
+                        <button
+                          key={cat}
+                          type="button"
+                          onClick={() =>
+                            setFormData((prev) => ({ ...prev, category: cat }))
+                          }
+                          className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${
+                            formData.category === cat
+                              ? "bg-blue-100 text-blue-700 border border-blue-200"
+                              : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                          }`}
+                        >
+                          {cat}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                    <Tag className="w-4 h-4 text-purple-600" />
+                    Tags
+                  </label>
+                  <input
+                    type="text"
+                    name="tags"
+                    value={formData.tags}
+                    onChange={handleChange}
+                    placeholder="react, javascript, webdev"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                  <div className="flex flex-wrap gap-2 mt-3">
+                    {popularTags.map((tag) => (
+                      <button
+                        key={tag}
+                        type="button"
+                        onClick={() => {
+                          const currentTags = formData.tags
+                            .split(",")
+                            .map((t) => t.trim())
+                            .filter((t) => t);
+                          if (!currentTags.includes(tag)) {
+                            setFormData((prev) => ({
+                              ...prev,
+                              tags: [...currentTags, tag].join(", "),
+                            }));
+                          }
+                        }}
+                        className={`px-3 py-1 text-xs rounded-lg transition-colors ${
+                          formData.tags.includes(tag)
+                            ? "bg-purple-100 text-purple-700 border border-purple-200"
+                            : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                        }`}
+                      >
+                        #{tag}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Content */}
               <div>
-                <label className="block text-sm font-medium mb-1">Tags</label>
-                <input
-                  type="text"
-                  value={tags}
-                  onChange={(e) => setTags(e.target.value)}
-                  className="w-full border px-4 py-2 rounded"
-                  placeholder="react, node, backend"
+                <label className="block text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                  <FileText className="w-4 h-4 text-indigo-600" />
+                  Content *
+                </label>
+                <textarea
+                  rows={10}
+                  name="content"
+                  value={formData.content}
+                  onChange={handleChange}
+                  required
+                  placeholder="Write your blog content here..."
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
                 />
+                <div className="flex justify-between mt-2">
+                  <p className="text-xs text-gray-500">
+                    Minimum 500 characters recommended
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    {formData.content.length}/5000
+                  </p>
+                </div>
+              </div>
+
+              {/* Image Upload */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-900 mb-3">
+                  Blog Image
+                </label>
+
+                <div className="space-y-4">
+                  {/* Current Image */}
+                  {preview && (
+                    <div>
+                      <div className="text-sm font-medium text-gray-900 mb-2">
+                        Current Image
+                      </div>
+                      <div className="relative rounded-xl overflow-hidden border border-gray-200 max-w-xs">
+                        <img
+                          src={preview}
+                          alt="Current blog image"
+                          className="w-full h-48 object-cover"
+                        />
+                        <div className="absolute bottom-3 right-3 flex gap-2">
+                          {image && (
+                            <button
+                              type="button"
+                              onClick={resetImage}
+                              className="p-1.5 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors"
+                              title="Reset to original"
+                            >
+                              <RotateCcw className="w-4 h-4" />
+                            </button>
+                          )}
+                          {preview !== originalImage && (
+                            <button
+                              type="button"
+                              onClick={removeImage}
+                              className="p-1.5 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                              title="Remove new image"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Upload Area */}
+                  <label
+                    className={`
+                    block border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer
+                    transition-all hover:border-blue-400 hover:bg-blue-50
+                    ${image ? "border-blue-300 bg-blue-50" : "border-gray-300"}
+                  `}
+                  >
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                      className="hidden"
+                    />
+                    <div className="space-y-3">
+                      <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mx-auto">
+                        <Upload className="w-6 h-6 text-blue-600" />
+                      </div>
+                      <div>
+                        <p className="font-medium text-gray-900">
+                          {image ? "Change image" : "Upload new image"}
+                        </p>
+                        <p className="text-sm text-gray-500 mt-1">
+                          PNG, JPG, or WebP • Max 5MB • 1200×630px recommended
+                        </p>
+                      </div>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="flex flex-col sm:flex-row gap-4 pt-8 border-t border-gray-200">
+                <button
+                  type="button"
+                  onClick={() => navigate(-1)}
+                  className="px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors font-medium"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={loading || !hasChanges}
+                  className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      Updating...
+                    </>
+                  ) : (
+                    <>
+                      <Save className="w-5 h-5" />
+                      {hasChanges ? "Save Changes" : "No Changes Made"}
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+
+            {/* Danger Zone */}
+            <div className="mt-12 pt-8 border-t border-gray-200">
+              <div className="bg-red-50 border border-red-200 rounded-xl p-6">
+                <div className="flex items-start gap-3 mb-4">
+                  <AlertTriangle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <h3 className="text-lg font-semibold text-red-900 mb-1">
+                      Danger Zone
+                    </h3>
+                    <p className="text-sm text-red-800">
+                      Deleting a blog is permanent and cannot be undone. All
+                      data will be lost.
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowDeleteModal(true)}
+                  className="px-6 py-2.5 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors font-medium"
+                >
+                  Delete Blog
+                </button>
               </div>
             </div>
-
-            {/* Image */}
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Blog Image
-              </label>
-
-              {preview && (
-                <img
-                  src={preview}
-                  alt="Preview"
-                  className="w-40 h-40 object-cover rounded mb-3 border"
-                />
-              )}
-
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-              />
-            </div>
-
-            {/* Actions */}
-            <div className="flex gap-4 pt-4">
-              <button
-                type="submit"
-                disabled={loading}
-                className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
-              >
-                {loading ? "Updating..." : "Save Changes"}
-              </button>
-            </div>
-          </form>
-        )}
-
-        {/* DANGER ZONE */}
-        {!loading && blogLoaded && (
-          <div className="mt-8 border-t pt-6">
-            <h2 className="text-red-600 font-semibold mb-2">Danger Zone</h2>
-            <p className="text-sm text-gray-500 mb-4">
-              Deleting a blog is permanent and cannot be undone.
-            </p>
-            <button
-              onClick={handleDelete}
-              className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
-            >
-              Delete Blog
-            </button>
           </div>
         )}
       </div>
-    </div>
+    </>
   );
 };
 

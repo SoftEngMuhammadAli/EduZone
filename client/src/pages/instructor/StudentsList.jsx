@@ -2,6 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import useFetchData from "../../../hooks/useCustomHooks";
 import { BASE_URL } from "../../../utils/constants";
+import Loader from "../../components/common/Loader";
 
 const StudentsListPage = () => {
   const navigate = useNavigate();
@@ -17,11 +18,7 @@ const StudentsListPage = () => {
   const students = allUsers?.filter((user) => user.user_type === "student");
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center text-[#1C1E53] text-lg font-semibold">
-        Loading Students...
-      </div>
-    );
+    return <Loader />;
   }
 
   if (error || students.length === 0) {

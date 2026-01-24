@@ -10,14 +10,10 @@ import {
   User,
   Mail,
   GraduationCap,
-  Calendar,
   Eye,
   MoreVertical,
   Users,
   TrendingUp,
-  Award,
-  ChevronRight,
-  Sparkles,
 } from "lucide-react";
 
 const StudentsListPage = () => {
@@ -52,16 +48,6 @@ const StudentsListPage = () => {
     student.profile_picture_url ||
     `https://ui-avatars.com/api/?name=${encodeURIComponent(student.name || "Student")}&background=3B82F6&color=fff&size=128`;
 
-  const getInitials = (name) => {
-    if (!name) return "S";
-    return name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase()
-      .substring(0, 2);
-  };
-
   if (studentLoader) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -81,19 +67,6 @@ const StudentsListPage = () => {
       </div>
     );
   }
-
-  // Mock statistics
-  const studentStats = [
-    {
-      label: "Active Students",
-      value: students.length,
-      change: "+12%",
-      color: "blue",
-    },
-    { label: "Avg. Completion", value: "42%", change: "+8%", color: "green" },
-    { label: "Avg. Rating", value: "4.7", change: "+0.3", color: "yellow" },
-    { label: "Engagement", value: "78%", change: "+5%", color: "purple" },
-  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white p-4 md:p-6 lg:p-8">
@@ -122,7 +95,7 @@ const StudentsListPage = () => {
 
           {/* Search and Filter Bar */}
           <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-8">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="relative">
                 <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <input
@@ -179,46 +152,6 @@ const StudentsListPage = () => {
                 </div>
               </div>
             </div>
-          </div>
-
-          {/* Statistics Cards */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            {studentStats.map((stat, index) => (
-              <div
-                key={index}
-                className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6"
-              >
-                <div className="flex items-center justify-between mb-3">
-                  <div
-                    className={`w-12 h-12 rounded-xl bg-${stat.color}-100 flex items-center justify-center`}
-                  >
-                    {stat.label === "Active Students" && (
-                      <Users className={`w-6 h-6 text-${stat.color}-600`} />
-                    )}
-                    {stat.label === "Avg. Completion" && (
-                      <Award className={`w-6 h-6 text-${stat.color}-600`} />
-                    )}
-                    {stat.label === "Avg. Rating" && (
-                      <Sparkles className={`w-6 h-6 text-${stat.color}-600`} />
-                    )}
-                    {stat.label === "Engagement" && (
-                      <TrendingUp
-                        className={`w-6 h-6 text-${stat.color}-600`}
-                      />
-                    )}
-                  </div>
-                  <div
-                    className={`text-sm font-semibold text-${stat.color}-600`}
-                  >
-                    {stat.change}
-                  </div>
-                </div>
-                <div className="text-2xl font-bold text-gray-900 mb-1">
-                  {stat.value}
-                </div>
-                <div className="text-sm text-gray-600">{stat.label}</div>
-              </div>
-            ))}
           </div>
         </div>
 
@@ -393,34 +326,6 @@ const StudentsListPage = () => {
                 </div>
               </div>
             ))}
-          </div>
-
-          {/* Pagination/Footer */}
-          <div className="p-6 border-t border-gray-100">
-            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-              <div className="text-sm text-gray-600">
-                Showing{" "}
-                <span className="font-semibold">
-                  1-{filteredStudents.length}
-                </span>{" "}
-                of <span className="font-semibold">{students.length}</span>{" "}
-                students
-              </div>
-              <div className="flex items-center gap-2">
-                <button className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
-                  Previous
-                </button>
-                <button className="px-4 py-2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-lg hover:shadow-lg transition-all">
-                  1
-                </button>
-                <button className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
-                  2
-                </button>
-                <button className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
-                  Next
-                </button>
-              </div>
-            </div>
           </div>
         </div>
       </div>

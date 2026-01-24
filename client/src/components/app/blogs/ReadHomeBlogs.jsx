@@ -11,6 +11,7 @@ import {
   TrendingUp,
   Sparkles,
 } from "lucide-react";
+import Loader from "../../common/Loader";
 
 const ReadHomeBlogs = () => {
   const dispatch = useDispatch();
@@ -50,21 +51,7 @@ const ReadHomeBlogs = () => {
   ];
 
   if (loading) {
-    return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center">
-        <div className="relative mb-6">
-          <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-          <div
-            className="absolute inset-0 w-16 h-16 border-4 border-purple-600 border-t-transparent rounded-full animate-spin opacity-50"
-            style={{ animation: "spin 2s linear infinite reverse" }}
-          ></div>
-        </div>
-        <p className="text-lg font-semibold text-gray-700">
-          Discovering Insights...
-        </p>
-        <p className="text-gray-500 mt-2">Loading valuable content for you</p>
-      </div>
-    );
+    return <Loader />;
   }
 
   if (error) {

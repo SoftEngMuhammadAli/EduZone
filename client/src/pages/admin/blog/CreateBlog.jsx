@@ -2,6 +2,19 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { createBlogThunk } from "../../../features/admin/blogSlice";
 import { useNavigate } from "react-router-dom";
+import {
+  Plus,
+  Upload,
+  FileText,
+  Tag,
+  Layers,
+  Image as ImageIcon,
+  Sparkles,
+  CheckCircle,
+  Loader2,
+  X,
+} from "lucide-react";
+import { toast } from "react-hot-toast";
 
 const CreateBlogPage = () => {
   const dispatch = useDispatch();
@@ -17,23 +30,69 @@ const CreateBlogPage = () => {
 
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
+  const [characterCount, setCharacterCount] = useState(0);
+
+  const popularCategories = [
+    "Technology",
+    "Education",
+    "Lifestyle",
+    "Health",
+    "Business",
+    "Programming",
+  ];
+  const popularTags = [
+    "react",
+    "javascript",
+    "webdev",
+    "nodejs",
+    "tutorial",
+    "beginners",
+  ];
 
   // ===== handlers =====
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+
+    if (name === "content") {
+      setCharacterCount(value.length);
+    }
   };
 
   const handleImageChange = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image size should be less than 5MB");
+      return;
+    }
+
     setImage(file);
-    setPreview(URL.createObjectURL(file));
+    const previewUrl = URL.createObjectURL(file);
+    setPreview(previewUrl);
   };
 
-  const handleSubmit = (e) => {
+  const removeImage = () => {
+    setImage(null);
+    if (preview) {
+      URL.revokeObjectURL(preview);
+    }
+    setPreview(null);
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!formData.title || !formData.content || !formData.category) {
+      toast.error("Please fill all required fields");
+      return;
+    }
+
+    if (formData.content.length < 500) {
+      toast.error("Content should be at least 500 characters");
+      return;
+    }
 
     const data = new FormData();
     data.append("title", formData.title);
@@ -41,132 +100,312 @@ const CreateBlogPage = () => {
     data.append("category", formData.category);
     data.append(
       "tags",
-      JSON.stringify(formData.tags.split(",").map((t) => t.trim())),
+      JSON.stringify(
+        formData.tags
+          .split(",")
+          .map((t) => t.trim())
+          .filter((t) => t),
+      ),
     );
     if (image) data.append("image", image);
 
-    dispatch(createBlogThunk(data)).then((res) => {
-      if (!res.error) navigate("/admin/dashboard-page");
-    });
+    try {
+      await dispatch(createBlogThunk(data)).unwrap();
+      toast.success("🎉 Blog created successfully!");
+      setTimeout(() => {
+        navigate("/admin/blog");
+      }, 1500);
+    } catch (err) {
+      toast.error(err || "Failed to create blog");
+    }
   };
 
   return (
-    <div className="max-w-5xl mx-auto my-12 p-4 sm:p-6">
-      <div className="bg-white shadow-lg rounded-xl p-6">
-        <h1 className="text-2xl font-semibold mb-1">Create New Blog</h1>
-        <p className="text-sm text-gray-500 mb-6">
-          Write and publish a new blog post.
-        </p>
+    <div className="max-w-4xl mx-auto p-4">
+      {/* Header */}
+      <div className="mb-8">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center">
+            <FileText className="w-6 h-6 text-white" />
+          </div>
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
+              Create New Blog
+            </h1>
+            <p className="text-gray-600">
+              Share your knowledge and insights with the world
+            </p>
+          </div>
+        </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* ===== GRID ===== */}
+        {/* Progress Steps */}
+        <div className="flex items-center justify-between mb-8">
+          {["Blog Details", "Content", "SEO", "Publish"].map((step, index) => (
+            <div key={step} className="flex items-center">
+              <div
+                className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium
+                ${index === 0 ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-600"}`}
+              >
+                {index === 0 ? <CheckCircle className="w-4 h-4" /> : index + 1}
+              </div>
+              <span
+                className={`ml-2 text-sm ${index === 0 ? "text-blue-600 font-medium" : "text-gray-500"}`}
+              >
+                {step}
+              </span>
+              {index < 3 && (
+                <div
+                  className={`w-16 h-0.5 mx-4 ${index === 0 ? "bg-blue-600" : "bg-gray-200"}`}
+                />
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 md:p-8">
+        <form onSubmit={handleSubmit} className="space-y-8">
+          {/* Blog Title */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+              <FileText className="w-4 h-4 text-blue-600" />
+              Blog Title *
+            </label>
+            <input
+              type="text"
+              name="title"
+              value={formData.title}
+              onChange={handleChange}
+              required
+              placeholder="e.g., How to Master React Hooks in 2024"
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg"
+            />
+            <p className="text-xs text-gray-500 mt-2">
+              Make it catchy and descriptive
+            </p>
+          </div>
+
+          {/* Category & Tags */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Title */}
             <div>
-              <label className="block text-sm font-medium mb-1">Title *</label>
-              <input
-                type="text"
-                name="title"
-                value={formData.title}
-                onChange={handleChange}
-                required
-                placeholder="e.g. How React Changed Frontend"
-                className="w-full px-4 py-2 border rounded focus:ring-2 focus:ring-blue-500"
-              />
+              <label className="block text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                <Layers className="w-4 h-4 text-green-600" />
+                Category *
+              </label>
+              <div>
+                <input
+                  type="text"
+                  name="category"
+                  value={formData.category}
+                  onChange={handleChange}
+                  required
+                  placeholder="Enter category..."
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+                <div className="flex flex-wrap gap-2 mt-3">
+                  {popularCategories.map((cat) => (
+                    <button
+                      key={cat}
+                      type="button"
+                      onClick={() =>
+                        setFormData((prev) => ({ ...prev, category: cat }))
+                      }
+                      className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${
+                        formData.category === cat
+                          ? "bg-blue-100 text-blue-700 border border-blue-200"
+                          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                      }`}
+                    >
+                      {cat}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
 
-            {/* Category */}
             <div>
-              <label className="block text-sm font-medium mb-1">
-                Category *
+              <label className="block text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                <Tag className="w-4 h-4 text-purple-600" />
+                Tags
               </label>
               <input
                 type="text"
-                name="category"
-                value={formData.category}
+                name="tags"
+                value={formData.tags}
                 onChange={handleChange}
-                required
-                placeholder="Tech, Design, AI..."
-                className="w-full px-4 py-2 border rounded focus:ring-2 focus:ring-blue-500"
+                placeholder="react, javascript, webdev"
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
+              <div className="flex flex-wrap gap-2 mt-3">
+                {popularTags.map((tag) => (
+                  <button
+                    key={tag}
+                    type="button"
+                    onClick={() => {
+                      const currentTags = formData.tags
+                        .split(",")
+                        .map((t) => t.trim())
+                        .filter((t) => t);
+                      if (!currentTags.includes(tag)) {
+                        setFormData((prev) => ({
+                          ...prev,
+                          tags: [...currentTags, tag].join(", "),
+                        }));
+                      }
+                    }}
+                    className={`px-3 py-1 text-xs rounded-lg transition-colors ${
+                      formData.tags.includes(tag)
+                        ? "bg-purple-100 text-purple-700 border border-purple-200"
+                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                    }`}
+                  >
+                    #{tag}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
           {/* Content */}
           <div>
-            <label className="block text-sm font-medium mb-1">Content *</label>
+            <label className="block text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+              <FileText className="w-4 h-4 text-indigo-600" />
+              Content *
+            </label>
             <textarea
-              rows={6}
+              rows={12}
               name="content"
               value={formData.content}
               onChange={handleChange}
               required
               placeholder="Write your blog content here..."
-              className="w-full px-4 py-2 border rounded resize-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
             />
-          </div>
-
-          {/* Tags */}
-          <div>
-            <label className="block text-sm font-medium mb-1">Tags *</label>
-            <input
-              type="text"
-              name="tags"
-              value={formData.tags}
-              onChange={handleChange}
-              required
-              placeholder="react, javascript, frontend"
-              className="w-full px-4 py-2 border rounded focus:ring-2 focus:ring-blue-500"
-            />
-            <p className="text-xs text-gray-500 mt-1">
-              Separate tags with commas
-            </p>
+            <div className="flex justify-between mt-2">
+              <p className="text-xs text-gray-500">
+                Minimum 500 characters recommended
+              </p>
+              <p
+                className={`text-xs ${characterCount >= 500 ? "text-green-600" : "text-gray-500"}`}
+              >
+                {characterCount}/5000
+              </p>
+            </div>
           </div>
 
           {/* Image Upload */}
           <div>
-            <label className="block text-sm font-medium mb-2">
-              Blog Thumbnail
+            <label className="block text-sm font-semibold text-gray-900 mb-3">
+              Blog Image
             </label>
 
-            <div className="flex items-center gap-4">
-              <label className="cursor-pointer px-4 py-2 border rounded bg-gray-50 hover:bg-gray-100">
-                Upload Image
+            <div className="space-y-4">
+              {/* Upload Area */}
+              <label
+                className={`
+                block border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer
+                transition-all hover:border-blue-400 hover:bg-blue-50
+                ${preview ? "border-blue-300 bg-blue-50" : "border-gray-300"}
+              `}
+              >
                 <input
                   type="file"
                   accept="image/*"
                   onChange={handleImageChange}
                   className="hidden"
                 />
+                <div className="space-y-3">
+                  <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mx-auto">
+                    <Upload className="w-6 h-6 text-blue-600" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-900">
+                      {preview ? "Change image" : "Upload blog image"}
+                    </p>
+                    <p className="text-sm text-gray-500 mt-1">
+                      PNG, JPG, or WebP • Max 5MB • 1200×630px recommended
+                    </p>
+                  </div>
+                </div>
               </label>
 
+              {/* Preview */}
               {preview && (
-                <img
-                  src={preview}
-                  alt="Preview"
-                  className="w-24 h-24 object-cover rounded border"
-                />
+                <div className="relative">
+                  <div className="text-sm font-medium text-gray-900 mb-2">
+                    Preview
+                  </div>
+                  <div className="relative rounded-xl overflow-hidden border border-gray-200 max-w-xs">
+                    <img
+                      src={preview}
+                      alt="Blog image preview"
+                      className="w-full h-48 object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={removeImage}
+                      className="absolute top-3 right-3 p-1.5 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
               )}
             </div>
-
-            <p className="text-xs text-gray-500 mt-1">
-              Recommended size: 600×400px
-            </p>
           </div>
 
-          {/* Submit */}
-          <div>
+          {/* Tips Section */}
+          <div className="bg-blue-50 border border-blue-200 rounded-xl p-5">
+            <div className="flex items-start gap-3">
+              <Sparkles className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+              <div>
+                <h4 className="font-semibold text-blue-900 mb-2">
+                  Tips for a great blog
+                </h4>
+                <ul className="space-y-2 text-sm text-blue-800">
+                  <li>• Start with an engaging hook or question</li>
+                  <li>• Use subheadings to break up content</li>
+                  <li>• Add code snippets or examples when relevant</li>
+                  <li>• Include a clear call-to-action at the end</li>
+                  <li>• Use relevant tags for better discoverability</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-200">
+            <button
+              type="button"
+              onClick={() => navigate(-1)}
+              className="px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors font-medium"
+            >
+              Cancel
+            </button>
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-blue-600 text-white py-2.5 rounded font-medium
-                         hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed"
+              className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
-              {loading ? "Creating Blog..." : "Create Blog"}
+              {loading ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  Creating Blog...
+                </>
+              ) : (
+                <>
+                  <Plus className="w-5 h-5" />
+                  Publish Blog
+                </>
+              )}
             </button>
-
-            {error && <p className="text-red-600 text-sm mt-3">❌ {error}</p>}
           </div>
+
+          {error && (
+            <div className="p-4 bg-red-50 border border-red-200 rounded-xl">
+              <p className="text-red-700 text-sm">❌ {error}</p>
+            </div>
+          )}
         </form>
       </div>
     </div>

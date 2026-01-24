@@ -20,6 +20,7 @@ import {
   Grid,
   List,
 } from "lucide-react";
+import Loader from "../../../components/common/Loader";
 
 const ReadAllBlogs = () => {
   const dispatch = useDispatch();
@@ -86,25 +87,7 @@ const ReadAllBlogs = () => {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="relative mb-6">
-            <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-            <div
-              className="absolute inset-0 w-16 h-16 border-4 border-purple-600 border-t-transparent rounded-full animate-spin opacity-50"
-              style={{ animationDirection: "reverse" }}
-            ></div>
-          </div>
-          <p className="text-lg font-semibold text-gray-700">
-            Loading Insights...
-          </p>
-          <p className="text-gray-500 mt-2">
-            Discovering valuable content for you
-          </p>
-        </div>
-      </div>
-    );
+    return <Loader />;
   }
 
   if (error) {

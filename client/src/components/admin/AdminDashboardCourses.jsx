@@ -1,21 +1,18 @@
 import React from "react";
 import { BookOpen, Users, Clock, Award, TrendingUp, Plus } from "lucide-react";
+import { Navigate, useNavigate } from "react-router-dom";
+import Loader from "../common/Loader";
 
 const AdminDashboardCourses = ({ courses = [], loading, error }) => {
+  const navigate = useNavigate();
   if (loading) {
-    return (
-      <div className="bg-white rounded-3xl shadow-xl border border-gray-100 p-8">
-        <div className="flex items-center justify-center">
-          <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-        </div>
-      </div>
-    );
+    return <Loader />;
   }
 
   return (
     <div className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-50 to-cyan-50 p-6 border-b border-gray-100">
+      <div className="bg-linear-to-r from-blue-50 to-cyan-50 p-6 border-b border-gray-100">
         <div className="flex items-center justify-between">
           <div>
             <h3 className="text-xl font-bold text-gray-900 mb-1">
@@ -26,7 +23,12 @@ const AdminDashboardCourses = ({ courses = [], loading, error }) => {
             </p>
           </div>
           <div className="flex items-center gap-3">
-            <button className="px-4 py-2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-xl hover:shadow-lg transition-all flex items-center gap-2">
+            <button
+              onClick={() => {
+                navigate("/admin/courses-management/create-course");
+              }}
+              className="px-4 py-2 bg-linear-to-r from-blue-600 to-cyan-600 text-white rounded-xl hover:shadow-lg transition-all flex items-center gap-2"
+            >
               <Plus className="w-4 h-4" />
               New Course
             </button>
@@ -52,7 +54,7 @@ const AdminDashboardCourses = ({ courses = [], loading, error }) => {
               >
                 {/* Course Header */}
                 <div className="flex items-start gap-4 mb-4">
-                  <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-blue-100 to-cyan-100 flex items-center justify-center flex-shrink-0">
+                  <div className="w-16 h-16 rounded-xl bg-linear-to-br from-blue-100 to-cyan-100 flex items-center justify-center shrink-0">
                     {course.image ? (
                       <img
                         src={`${import.meta.env.VITE_BASE_URL}/uploads/${course.image}`}
@@ -98,11 +100,21 @@ const AdminDashboardCourses = ({ courses = [], loading, error }) => {
 
                 {/* Actions */}
                 <div className="flex gap-2">
-                  <button className="flex-1 px-3 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm">
+                  <button
+                    onClick={() => {
+                      navigate("/admin/courses-management/update-course/:id");
+                    }}
+                    className="flex-1 px-3 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm"
+                  >
                     Edit
                   </button>
-                  <button className="flex-1 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm">
-                    View
+                  <button
+                    onClick={() => {
+                      navigate("/admin/courses-management/delete-course");
+                    }}
+                    className="flex-1 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
+                  >
+                    Delete
                   </button>
                   <button className="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm">
                     ...
@@ -122,7 +134,7 @@ const AdminDashboardCourses = ({ courses = [], loading, error }) => {
             <p className="text-gray-500 text-sm">
               Start building your course catalog
             </p>
-            <button className="mt-4 px-6 py-2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-xl hover:shadow-lg transition-all">
+            <button className="mt-4 px-6 py-2 bg-linear-to-r from-blue-600 to-cyan-600 text-white rounded-xl hover:shadow-lg transition-all">
               Create First Course
             </button>
           </div>
@@ -130,7 +142,12 @@ const AdminDashboardCourses = ({ courses = [], loading, error }) => {
 
         {/* View All Button */}
         {courses.length > 0 && (
-          <button className="w-full mt-6 py-3 border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors flex items-center justify-center gap-2">
+          <button
+            onClick={() => {
+              navigate("/admin/courses-management/get-all-courses");
+            }}
+            className="w-full mt-6 py-3 border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
+          >
             View All Courses ({courses.length})
             <TrendingUp className="w-4 h-4" />
           </button>

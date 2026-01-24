@@ -71,14 +71,10 @@ const AdminDashboardStatsCards = ({
             Key metrics and statistics at a glance
           </p>
         </div>
-        <div className="flex items-center gap-2 text-sm text-green-600">
-          <Activity className="w-4 h-4" />
-          <span>All metrics growing</span>
-        </div>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {stats.map((stat, index) => (
           <div
             key={index}
@@ -86,26 +82,16 @@ const AdminDashboardStatsCards = ({
           >
             {/* Gradient Overlay */}
             <div
-              className={`absolute inset-0 bg-gradient-to-br ${stat.color} opacity-0 group-hover:opacity-5 transition-opacity duration-500 -z-10`}
+              className={`absolute inset-0 bg-linear-to-br ${stat.color} opacity-0 group-hover:opacity-5 transition-opacity duration-500 -z-10`}
             ></div>
 
             {/* Content */}
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <div
-                  className={`p-3 rounded-xl bg-gradient-to-br ${stat.color} shadow-lg`}
+                  className={`p-3 rounded-xl bg-linear-to-br ${stat.color} shadow-lg text-white`}
                 >
                   <div className="text-white">{stat.icon}</div>
-                </div>
-                <div
-                  className={`flex items-center gap-1 text-sm font-semibold ${
-                    stat.change === "positive"
-                      ? "text-green-600"
-                      : "text-red-600"
-                  }`}
-                >
-                  <TrendingUp className="w-4 h-4" />
-                  {stat.trend}
                 </div>
               </div>
 
@@ -118,7 +104,7 @@ const AdminDashboardStatsCards = ({
               <div className="mt-4">
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div
-                    className={`h-2 rounded-full bg-gradient-to-r ${stat.color}`}
+                    className={`h-2 rounded-full bg-linear-to-r ${stat.color}`}
                     style={{ width: `${Math.min(stat.value * 10, 100)}%` }}
                   ></div>
                 </div>
@@ -127,41 +113,10 @@ const AdminDashboardStatsCards = ({
 
             {/* Hover Effect Border */}
             <div
-              className={`absolute bottom-0 left-1/2 transform -translate-x-1/2 w-0 h-1 bg-gradient-to-r ${stat.color} group-hover:w-full transition-all duration-700 rounded-t-full`}
+              className={`absolute bottom-0 left-1/2 transform -translate-x-1/2 w-0 h-1 bg-linear-to-r ${stat.color} group-hover:w-full transition-all duration-700 rounded-t-full`}
             ></div>
           </div>
         ))}
-      </div>
-
-      {/* Summary Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-2xl p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="text-sm text-gray-600">Avg. Engagement</div>
-              <div className="text-2xl font-bold text-gray-900">78%</div>
-            </div>
-            <Activity className="w-8 h-8 text-blue-600" />
-          </div>
-        </div>
-        <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="text-sm text-gray-600">Completion Rate</div>
-              <div className="text-2xl font-bold text-gray-900">42%</div>
-            </div>
-            <TrendingUp className="w-8 h-8 text-green-600" />
-          </div>
-        </div>
-        <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="text-sm text-gray-600">Satisfaction</div>
-              <div className="text-2xl font-bold text-gray-900">4.8/5</div>
-            </div>
-            <Users className="w-8 h-8 text-purple-600" />
-          </div>
-        </div>
       </div>
     </div>
   );

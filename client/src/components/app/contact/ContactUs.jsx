@@ -6,14 +6,12 @@ import { contactUs } from "../../../features/contact-us/contactUsSlice";
 import {
   Send,
   Mail,
-  Phone,
-  MapPin,
-  Clock,
   User,
   MessageSquare,
   CheckCircle,
   Loader2,
 } from "lucide-react";
+import { contactUsScreenData } from "../../../utils/AppUtils";
 
 const ContactUs = () => {
   const dispatch = useDispatch();
@@ -57,37 +55,6 @@ const ContactUs = () => {
     });
   };
 
-  const contactInfo = [
-    {
-      icon: <Phone className="w-5 h-5" />,
-      title: "Phone Number",
-      value: "+92 302 8186660",
-      href: "tel:+923028186660",
-      color: "from-blue-500 to-cyan-400",
-    },
-    {
-      icon: <Mail className="w-5 h-5" />,
-      title: "Email Address",
-      value: "softeng.aliijaz@gmail.com",
-      href: "mailto:softeng.aliijaz@gmail.com",
-      color: "from-purple-500 to-pink-400",
-    },
-    {
-      icon: <MapPin className="w-5 h-5" />,
-      title: "Location",
-      value: "Lahore, Pakistan",
-      href: "#",
-      color: "from-green-500 to-emerald-400",
-    },
-    {
-      icon: <Clock className="w-5 h-5" />,
-      title: "Office Hours",
-      value: "Mon - Fri, 9am - 5pm",
-      href: "#",
-      color: "from-orange-500 to-yellow-400",
-    },
-  ];
-
   return (
     <>
       <section className="relative bg-gradient-to-b from-white to-gray-50 py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
@@ -120,7 +87,7 @@ const ContactUs = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Contact Information Sidebar */}
             <div className="space-y-6">
-              {contactInfo.map((info, index) => (
+              {contactUsScreenData.map((info, index) => (
                 <a
                   key={index}
                   href={info.href}

@@ -210,7 +210,6 @@ const MainLayout = () => {
               path="/admin/courses-management/delete-course"
               element={<DeleteCoursePage />}
             />
-            {/* <Route path="/admin/courses" element={<AdminCourseDetailPage />} /> */}
 
             {/* Instructor */}
             <Route
@@ -229,10 +228,6 @@ const MainLayout = () => {
               path="/instructor/courses-management/delete-course"
               element={<DeleteCoursePage />}
             />
-            {/* <Route
-              path="/instructor/courses"
-              element={<AdminCourseDetailPage />}
-            /> */}
           </Route>
 
           {/* Student Only */}

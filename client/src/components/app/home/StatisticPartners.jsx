@@ -1,66 +1,10 @@
 import React from "react";
+import {
+  statisticPartnersData,
+  statisticsScreenData,
+} from "../../../utils/AppUtils";
 
 const StatisticPartners = () => {
-  const partners = [
-    {
-      name: "Lorem Innovations",
-      category: "Technology Solutions",
-      color: "from-blue-500 to-cyan-400",
-    },
-    {
-      name: "Ditlance",
-      category: "Digital Transformation",
-      color: "from-purple-500 to-pink-400",
-    },
-    {
-      name: "Owthest",
-      category: "E-Learning Platform",
-      color: "from-green-500 to-emerald-400",
-    },
-    {
-      name: "Neovasi",
-      category: "AI & Analytics",
-      color: "from-orange-500 to-yellow-400",
-    },
-    {
-      name: "Onago",
-      category: "Cloud Infrastructure",
-      color: "from-red-500 to-rose-400",
-    },
-    {
-      name: "TechSphere",
-      category: "EdTech Solutions",
-      color: "from-indigo-500 to-blue-400",
-    },
-  ];
-
-  const statistics = [
-    {
-      value: "21,000+",
-      label: "Registered Students",
-      description: "Active learners across our platform",
-      icon: "👨‍🎓",
-    },
-    {
-      value: "100+",
-      label: "Expert Instructors",
-      description: "Industry professionals & educators",
-      icon: "👩‍🏫",
-    },
-    {
-      value: "150+",
-      label: "Free Courses",
-      description: "Comprehensive learning materials",
-      icon: "📚",
-    },
-    {
-      value: "98%",
-      label: "Satisfaction Rate",
-      description: "Positive learner feedback",
-      icon: "⭐",
-    },
-  ];
-
   return (
     <section className="relative bg-gradient-to-br from-gray-50 to-blue-50 py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
       {/* Background Pattern */}
@@ -89,7 +33,7 @@ const StatisticPartners = () => {
 
         {/* Statistics Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-20">
-          {statistics.map((stat, index) => (
+          {statisticsScreenData.map((stat, index) => (
             <div
               key={index}
               className="group relative bg-white/90 backdrop-blur-sm rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 border border-gray-100 hover:border-blue-200"
@@ -134,7 +78,7 @@ const StatisticPartners = () => {
 
           {/* Partners Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {partners.map((partner, index) => (
+            {statisticPartnersData.map((partner, index) => (
               <div
                 key={index}
                 className="group relative bg-gradient-to-br from-white to-gray-50 rounded-2xl p-6 border border-gray-200 hover:border-transparent transition-all duration-500 hover:shadow-2xl"

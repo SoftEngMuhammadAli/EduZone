@@ -1,21 +1,18 @@
 import React from "react";
 import { Calendar, Eye, User, ArrowRight, BookOpen } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import Loader from "../common/Loader";
 
 const AdminDashboardBlogs = ({ blogs = [], loading, error }) => {
+  const navigate = useNavigate();
   if (loading) {
-    return (
-      <div className="bg-white rounded-3xl shadow-xl border border-gray-100 p-8">
-        <div className="flex items-center justify-center">
-          <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-        </div>
-      </div>
-    );
+    return <Loader />;
   }
 
   return (
     <div className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
       {/* Header */}
-      <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-6 border-b border-gray-100">
+      <div className="bg-linear-to-r from-purple-50 to-pink-50 p-6 border-b border-gray-100">
         <div className="flex items-center justify-between">
           <div>
             <h3 className="text-xl font-bold text-gray-900 mb-1">
@@ -49,7 +46,7 @@ const AdminDashboardBlogs = ({ blogs = [], loading, error }) => {
               >
                 <div className="flex items-start gap-4">
                   {/* Blog Image/Icon */}
-                  <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center flex-shrink-0">
+                  <div className="w-16 h-16 rounded-xl bg-linear-to-br from-purple-100 to-pink-100 flex items-center justify-center shrink-0">
                     {blog.image ? (
                       <img
                         src={`${import.meta.env.VITE_BASE_URL}/uploads/${blog.image}`}
@@ -103,7 +100,7 @@ const AdminDashboardBlogs = ({ blogs = [], loading, error }) => {
             <p className="text-gray-500 text-sm">
               Start creating content for your audience
             </p>
-            <button className="mt-4 px-6 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl hover:shadow-lg transition-all">
+            <button className="mt-4 px-6 py-2 bg-linear-to-r from-purple-600 to-pink-600 text-white rounded-xl hover:shadow-lg transition-all">
               Create First Post
             </button>
           </div>
@@ -111,7 +108,12 @@ const AdminDashboardBlogs = ({ blogs = [], loading, error }) => {
 
         {/* View All Button */}
         {blogs.length > 0 && (
-          <button className="w-full mt-6 py-3 border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors flex items-center justify-center gap-2">
+          <button
+            onClick={() => {
+              navigate("/admin/blog/get-all-blogs");
+            }}
+            className="w-full mt-6 py-3 border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
+          >
             View All Blog Posts
             <ArrowRight className="w-4 h-4" />
           </button>

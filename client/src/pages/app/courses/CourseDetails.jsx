@@ -34,6 +34,7 @@ import {
   Globe,
 } from "lucide-react";
 import { toast } from "react-hot-toast";
+import Loader from "../../../components/common/Loader";
 
 const CourseDetail = () => {
   const { id } = useParams();
@@ -168,23 +169,7 @@ const CourseDetail = () => {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white flex items-center justify-center">
-        <div className="text-center">
-          <div className="relative mb-6">
-            <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-            <div
-              className="absolute inset-0 w-16 h-16 border-4 border-purple-600 border-t-transparent rounded-full animate-spin opacity-50"
-              style={{ animationDirection: "reverse" }}
-            ></div>
-          </div>
-          <p className="text-lg font-semibold text-gray-700">
-            Loading Course...
-          </p>
-          <p className="text-gray-500 mt-2">Preparing your learning journey</p>
-        </div>
-      </div>
-    );
+    return <Loader />;
   }
 
   if (!course) {

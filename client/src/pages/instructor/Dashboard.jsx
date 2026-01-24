@@ -3,11 +3,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchCourses } from "../../features/admin/courseSlice";
 import useFetchData from "../../hooks/useCustomHooks";
 import { BASE_URL } from "../../utils/constants";
-import AdminSideBarNavigation from "../../components/admin/AdminSideBar";
 import UserProfileCard from "../../components/admin/UserProfileCard";
 import AdminDashboardStatsCards from "../../components/admin/AdminStatsCards";
 import AdminCoursesGrid from "../../components/admin/AdminDashboardCourses";
-import { DashboardCharts } from "../../components/admin/DashboardCharts";
 
 const InstrcutorDashboard = () => {
   const dispatch = useDispatch();
@@ -61,7 +59,6 @@ const InstrcutorDashboard = () => {
       <div className="flex flex-col md:flex-row flex-1">
         <main className="flex-1 p-4 md:p-8">
           <UserProfileCard />
-
           <AdminDashboardStatsCards
             studentsCount={studentsCount}
             instructorsCount={instructorsCount}
@@ -70,8 +67,7 @@ const InstrcutorDashboard = () => {
             adminsCount={adminsCount}
           />
 
-          <DashboardCharts />
-
+          
           <AdminCoursesGrid courses={courses} loading={loading} error={error} />
         </main>
       </div>

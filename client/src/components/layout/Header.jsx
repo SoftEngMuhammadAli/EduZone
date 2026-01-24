@@ -5,18 +5,17 @@ import {
   Menu,
   X,
   Home,
-  BookOpen,
   GraduationCap,
   Users,
   Award,
-  Search,
-  Bell,
+  BookOpen,
   ChevronDown,
   Settings,
   HelpCircle,
   LogOut,
   Sparkles,
   MessageSquare,
+  BookOpenCheck,
 } from "lucide-react";
 import { logout } from "../../features/auth/authSlice";
 
@@ -30,7 +29,6 @@ const HeaderNav = () => {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
 
   const isAdmin = user?.user_type === "admin";
@@ -73,6 +71,11 @@ const HeaderNav = () => {
   const navLinks = isAdmin
     ? [
         { to: "/admin/dashboard-page", label: "Dashboard", icon: Home },
+        {
+          to: "/admin/courses-management/get-all-courses",
+          label: "Courses",
+          icon: BookOpenCheck,
+        },
         { to: "/admin/get-all-students", label: "Students", icon: Users },
         {
           to: "/admin/get-all-instructors",
@@ -102,6 +105,16 @@ const HeaderNav = () => {
           { to: "/user/learning-room", label: "Learning", icon: GraduationCap },
           { to: "/user/certificates", label: "Certificates", icon: Award },
           { to: "/user/community", label: "Community", icon: Users },
+          {
+            to: "/about",
+            label: "About",
+            icon: Sparkles,
+          },
+          {
+            to: "/contact",
+            label: "Contact",
+            icon: MessageSquare,
+          },
         ];
 
   /* ================== RENDER ================== */
@@ -159,31 +172,6 @@ const HeaderNav = () => {
 
         {/* Desktop Actions */}
         <div className="hidden md:flex items-center gap-2">
-          {isStudent && (
-            <div className="relative w-72">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-              <input
-                className="w-full pl-9 pr-3 py-2 rounded-xl bg-gray-50 border focus:ring-2 focus:ring-blue-500"
-                placeholder="Search courses..."
-              />
-            </div>
-          )}
-
-          {/* Notifications */}
-          <div className="relative notify bg-white/80 backdrop-blur-md rounded-xl">
-            <button
-              onClick={() => setNotificationsOpen(!notificationsOpen)}
-              className="p-2 rounded-xl hover:bg-gray-100"
-            >
-              <Bell className="w-5 h-5" />
-            </button>
-            {notificationsOpen && (
-              <div className="absolute right-0 mt-2 w-72 bg-white rounded-xl shadow-lg border">
-                <p className="p-4 font-semibold">No new notifications</p>
-              </div>
-            )}
-          </div>
-
           {/* User Dropdown */}
           <div className="relative dropdown bg-white/80 backdrop-blur-md rounded-xl">
             <button
@@ -209,7 +197,13 @@ const HeaderNav = () => {
               >
                 {/* Settings */}
                 <Link
-                  to="/user/settings"
+                  to={
+                    isAdmin
+                      ? "/admin/settings"
+                      : isInstructor
+                        ? "/instructor/settings"
+                        : "/user/settings"
+                  }
                   className="
         flex items-center gap-3
         px-4 py-3
@@ -288,17 +282,6 @@ const HeaderNav = () => {
               </Link>
             ))}
 
-            {isStudent && (
-              <>
-                <Link to="/about" className="mobile-link">
-                  <Sparkles /> About
-                </Link>
-                <Link to="/contact" className="mobile-link">
-                  <MessageSquare /> Contact
-                </Link>
-              </>
-            )}
-
             <button
               onClick={handleLogout}
               className="flex items-center gap-3 p-4 rounded-xl text-red-600 hover:bg-red-50 w-full"
@@ -313,8 +296,6 @@ const HeaderNav = () => {
 };
 
 export default HeaderNav;
-
-/* Tailwind helpers */
 
 // Add CSS animations
 const style = document.createElement("style");

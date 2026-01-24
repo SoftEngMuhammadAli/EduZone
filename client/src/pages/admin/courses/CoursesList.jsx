@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchCourses,
@@ -7,6 +7,19 @@ import {
 import { useNavigate } from "react-router-dom";
 import Loader from "../../../components/common/Loader";
 import ErrorBox from "../../../components/common/ErrorBox";
+import {
+  Edit,
+  Trash2,
+  Eye,
+  Plus,
+  Search,
+  Filter,
+  BookOpen,
+  User,
+  Clock,
+  TrendingUp,
+} from "lucide-react";
+import { toast } from "react-hot-toast";
 
 const CoursesListPage = () => {
   const dispatch = useDispatch();
@@ -15,14 +28,30 @@ const CoursesListPage = () => {
   const { courses, loading, error } = useSelector((state) => state.course);
   const { user } = useSelector((state) => state.auth);
 
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterCategory, setFilterCategory] = useState("all");
+
   useEffect(() => {
     dispatch(fetchCourses());
   }, [dispatch]);
 
-  const handleDelete = (id) => {
-    if (window.confirm("Are you sure you want to delete this course?")) {
-      dispatch(deleteCourse({ id }));
+  const handleDelete = async (id, title) => {
+    if (window.confirm(`Are you sure you want to delete "${title}"?`)) {
+      try {
+        await dispatch(deleteCourse({ id })).unwrap();
+        toast.success("Course deleted successfully!");
+      } catch (err) {
+        toast.error("Failed to delete course");
+      }
     }
+  };
+
+  const handleView = (id) => {
+    navigate(`/view-course/${id}`);
+  };
+
+  const handleEdit = (id) => {
+    navigate(`/admin/courses-management/update-course/${id}`);
   };
 
   /** helpers */
@@ -47,148 +76,300 @@ const CoursesListPage = () => {
       : course.courseCreatedBy === user?._id,
   );
 
+  // Get unique categories
+  const categories = [
+    "all",
+    ...new Set(myCourses?.map((c) => c.category).filter(Boolean)),
+  ];
+
+  // Filter courses based on search and category
+  const filteredCourses = myCourses?.filter((course) => {
+    const matchesSearch =
+      course.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      course.description?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory =
+      filterCategory === "all" || course.category === filterCategory;
+    return matchesSearch && matchesCategory;
+  });
+
   if (loading) return <Loader title="Loading courses..." />;
   if (error) return <ErrorBox message={error} />;
 
   return (
-    <div className="max-w-7xl mx-auto p-6">
-      <h1 className="text-2xl font-semibold mb-6">My Uploaded Courses</h1>
-
-      {myCourses?.length === 0 && (
-        <p className="text-gray-500">No courses found.</p>
-      )}
-
-      {/* ================= MOBILE CARDS ================= */}
-      <div className="grid gap-4 md:hidden">
-        {myCourses?.map((course) => (
-          <div
-            key={course._id}
-            className="bg-white rounded-lg shadow p-4 space-y-3"
+    <div className="max-w-7xl mx-auto p-4 sm:p-6">
+      {/* Header */}
+      <div className="mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+              My Courses
+            </h1>
+            <p className="text-gray-600">
+              Manage and edit your uploaded courses
+            </p>
+          </div>
+          <button
+            onClick={() => navigate("/admin/courses-management/create-course")}
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
           >
-            <div className="flex items-center gap-3">
-              {course.image ? (
-                <img
-                  src={getImageUrl(course)}
-                  alt={course.title}
-                  className="w-14 h-14 rounded object-cover"
-                />
-              ) : (
-                <div className="w-14 h-14 bg-gray-100 rounded flex items-center justify-center text-xs text-gray-400">
-                  No Image
-                </div>
-              )}
+            <Plus className="w-5 h-5" />
+            New Course
+          </button>
+        </div>
 
-              <div>
-                <h2 className="font-semibold">{course.title}</h2>
-                <p className="text-sm text-gray-500">
-                  {course.category || "Uncategorized"}
-                </p>
+        {/* Filters */}
+        <div className="bg-white rounded-xl shadow border border-gray-100 p-4 mb-6">
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex-1">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search courses..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
               </div>
             </div>
-
-            <div className="text-sm text-gray-600 space-y-1">
-              <p>
-                <strong>Level:</strong> {course.level}
-              </p>
-              <p>
-                <strong>Duration:</strong> {course.duration}
-              </p>
-              <p>
-                <strong>Created By:</strong>{" "}
-                {getCreatorName(course.courseCreatedBy)}
-              </p>
-              <p>
-                <strong>Role:</strong> {getCreatorType(course.courseCreatedBy)}
-              </p>
-            </div>
-
-            <div className="flex gap-2 pt-2">
-              <button
-                onClick={() =>
-                  navigate(
-                    `/admin/courses-management/update-course/${course._id}`,
-                  )
-                }
-                className="flex-1 bg-blue-600 text-white py-1.5 rounded hover:bg-blue-700"
-              >
-                Edit
-              </button>
-              <button
-                onClick={() => handleDelete(course._id)}
-                className="flex-1 bg-red-600 text-white py-1.5 rounded hover:bg-red-700"
-              >
-                Delete
-              </button>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <Filter className="w-5 h-5 text-gray-500" />
+                <select
+                  value={filterCategory}
+                  onChange={(e) => setFilterCategory(e.target.value)}
+                  className="border border-gray-300 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  {categories.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {cat === "all" ? "All Categories" : cat}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
           </div>
-        ))}
+        </div>
       </div>
 
-      {/* ================= DESKTOP TABLE ================= */}
-      <div className="hidden md:block">
-        <table className="min-w-full bg-white shadow rounded overflow-hidden text-sm">
-          <thead className="bg-gray-100 text-left">
-            <tr>
-              <th className="p-3">Image</th>
-              <th className="p-3">Title</th>
-              <th className="p-3">Category</th>
-              <th className="p-3">Level</th>
-              <th className="p-3">Duration</th>
-              <th className="p-3">Created By</th>
-              <th className="p-3">Role</th>
-              <th className="p-3">Actions</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {myCourses?.map((course) => (
-              <tr key={course._id} className="border-t">
-                <td className="p-3">
-                  {course.image ? (
-                    <img
-                      src={getImageUrl(course)}
-                      alt={course.title}
-                      className="w-10 h-10 rounded object-cover"
-                    />
-                  ) : (
-                    <span className="text-gray-400">No image</span>
-                  )}
-                </td>
-
-                <td className="p-3">{course.title}</td>
-                <td className="p-3">{course.category || "Uncategorized"}</td>
-                <td className="p-3">{course.level}</td>
-                <td className="p-3">{course.duration}</td>
-                <td className="p-3">
-                  {getCreatorName(course.courseCreatedBy)}
-                </td>
-                <td className="p-3 font-semibold">
-                  {getCreatorType(course.courseCreatedBy)}
-                </td>
-
-                <td className="p-3 space-x-2">
-                  <button
-                    onClick={() =>
-                      navigate(
-                        `/admin/courses-management/update-course/${course._id}`,
-                      )
-                    }
-                    className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(course._id)}
-                    className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
+      {/* Courses List */}
+      {filteredCourses?.length === 0 ? (
+        <div className="text-center py-12">
+          <div className="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4">
+            <BookOpen className="w-10 h-10 text-gray-400" />
+          </div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            No courses found
+          </h3>
+          <p className="text-gray-600 mb-6">
+            {searchTerm || filterCategory !== "all"
+              ? "Try adjusting your search or filters"
+              : "You haven't uploaded any courses yet"}
+          </p>
+          <button
+            onClick={() => navigate("/admin/courses-management/create-course")}
+            className="inline-flex items-center gap-2 px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+          >
+            <Plus className="w-5 h-5" />
+            Create Your First Course
+          </button>
+        </div>
+      ) : (
+        <>
+          {/* Mobile Cards */}
+          <div className="grid gap-4 md:hidden">
+            {filteredCourses?.map((course) => (
+              <div
+                key={course._id}
+                className="bg-white rounded-xl shadow border border-gray-100 overflow-hidden hover:shadow-md transition-shadow"
+              >
+                <div className="p-4">
+                  <div className="flex items-start gap-4">
+                    <div className="flex-shrink-0">
+                      {course.image ? (
+                        <img
+                          src={getImageUrl(course)}
+                          alt={course.title}
+                          className="w-16 h-16 rounded-lg object-cover"
+                        />
+                      ) : (
+                        <div className="w-16 h-16 rounded-lg bg-gray-100 flex items-center justify-center">
+                          <BookOpen className="w-8 h-8 text-gray-400" />
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex justify-between items-start mb-2">
+                        <h3 className="font-semibold text-gray-900 line-clamp-1">
+                          {course.title}
+                        </h3>
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs font-medium ${
+                            course.status === "published"
+                              ? "bg-green-100 text-green-800"
+                              : "bg-yellow-100 text-yellow-800"
+                          }`}
+                        >
+                          {course.status || "draft"}
+                        </span>
+                      </div>
+                      <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                        {course.description}
+                      </p>
+                      <div className="flex items-center gap-4 text-sm text-gray-500">
+                        <span className="flex items-center gap-1">
+                          <Clock className="w-4 h-4" />
+                          {course.duration}
+                        </span>
+                        <span>•</span>
+                        <span>{course.level}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="px-4 pb-4 pt-2 border-t border-gray-100">
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleView(course._id)}
+                      className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm"
+                    >
+                      <Eye className="w-4 h-4" />
+                      View
+                    </button>
+                    <button
+                      onClick={() => handleEdit(course._id)}
+                      className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors text-sm"
+                    >
+                      <Edit className="w-4 h-4" />
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(course._id, course.title)}
+                      className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 bg-red-50 text-red-700 rounded-lg hover:bg-red-100 transition-colors text-sm"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              </div>
             ))}
-          </tbody>
-        </table>
-      </div>
+          </div>
+
+          {/* Desktop Table */}
+          <div className="hidden md:block bg-white rounded-xl shadow border border-gray-100 overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="min-w-full">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                      Course
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                      Category
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                      Level
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                      Duration
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                      Status
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  {filteredCourses?.map((course) => (
+                    <tr
+                      key={course._id}
+                      className="hover:bg-gray-50 transition-colors"
+                    >
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="flex-shrink-0">
+                            {course.image ? (
+                              <img
+                                src={getImageUrl(course)}
+                                alt={course.title}
+                                className="w-12 h-12 rounded-lg object-cover"
+                              />
+                            ) : (
+                              <div className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center">
+                                <BookOpen className="w-6 h-6 text-gray-400" />
+                              </div>
+                            )}
+                          </div>
+                          <div>
+                            <div className="font-medium text-gray-900">
+                              {course.title}
+                            </div>
+                            <div className="text-sm text-gray-500">
+                              {getCreatorName(course.courseCreatedBy)}
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium">
+                          {course.category || "Uncategorized"}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-gray-700">
+                        {course.level}
+                      </td>
+                      <td className="px-6 py-4 text-gray-700">
+                        {course.duration}
+                      </td>
+                      <td className="px-6 py-4">
+                        <span
+                          className={`px-3 py-1 rounded-full text-xs font-medium ${
+                            course.status === "published"
+                              ? "bg-green-100 text-green-800"
+                              : "bg-yellow-100 text-yellow-800"
+                          }`}
+                        >
+                          {course.status || "draft"}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => handleView(course._id)}
+                            className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                            title="View"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleEdit(course._id)}
+                            className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                            title="Edit"
+                          >
+                            <Edit className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() =>
+                              handleDelete(course._id, course.title)
+                            }
+                            className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            title="Delete"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };
