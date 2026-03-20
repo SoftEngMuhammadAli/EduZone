@@ -1,137 +1,98 @@
-# 🎓 EduZone – MERN Stack LMS
+# EduZone LMS (MERN)
 
-**EduZone** is a modern, full-stack **Learning Management System (LMS)** built using the **MERN stack** — **MongoDB**, **Express.js**, **React.js**, and **Node.js**.
-This monorepo includes both the **frontend client** and the **backend API**, designed to support students, teachers, and administrators with a seamless learning experience.
+Production-oriented LMS monorepo with:
 
----
+- `client/` (React + Vite + Redux Toolkit + Tailwind)
+- `server/` (Node.js + Express + MongoDB + JWT access/refresh auth)
 
-## 📁 Project Structure
+## Architecture
 
-```
-EduZone/
-├── client/       # React.js Client – LMS Frontend
-├── server/       # Node.js + Express – Backend API
-└── README.md              # Project Overview & Setup Guide
-```
+### Backend (`server/src`)
 
----
+- `config/` database + env config
+- `controllers/` request handlers
+- `models/` mongoose schemas
+- `routes/` API route modules
+- `middlewares/` auth, validation, security, error handling
+- `utils/` token helpers, API response helpers, mailer, misc
+- `validators/` request validators
 
-## 🚀 Getting Started
+### Frontend (`client/src`)
 
-### ✅ Prerequisites
+- `components/` shared/admin/lms UI
+- `features/` Redux slices by domain
+- `hooks/` reusable hooks
+- `pages/` route-level views
+- `routes/` route guards + app routing
+- `services/` axios API client layer
+- `app/` Redux store
 
-Ensure the following tools are installed on your system:
+## Key Implemented Upgrades
 
-- [Node.js](https://nodejs.org/) (v18 or later)
-- [MongoDB](https://www.mongodb.com/cloud/atlas) (local or cloud)
-- [Git](https://git-scm.com/)
+- Access + refresh JWT auth flow (`/api/auth/login`, `/api/auth/refresh`, `/api/auth/logout`)
+- Role-based guards (`admin`, `instructor`, `student`)
+- Request validation middleware + validators
+- Security middleware:
+  - in-memory rate limiting
+  - request sanitization against Mongo operator injection keys
+  - secure default headers
+- Centralized success/error response utilities
+- Public browse APIs for courses/blogs
+- Course search/filter + pagination metadata
+- Enrollment ownership checks + student progress update endpoint
+- Analytics APIs with real data:
+  - `GET /api/analytics/admin`
+  - `GET /api/analytics/instructor`
+  - `GET /api/analytics/student`
+- Frontend axios interceptor with token refresh retry
+- Dashboard pages wired to real analytics API data
+- Student learning room wired to backend lessons + enrollment progress persistence
 
----
+## Run Locally
 
-## 🔧 Installation & Setup
-
-### 1. Clone the Repository
-
-```bash
-git clone https://github.com/SoftEngMuhammadAli/EduZone.git
-cd EduZone
-```
-
----
-
-### 2. Setup & Run the Backend
+## 1) Backend
 
 ```bash
 cd server
 npm install
+cp .env.example .env
+# update .env values
 npm run dev
 ```
 
-🔐 Create a `.env` file in the `server/` directory with the following content:
-
-```env
-PORT=5000
-MONGO_URI=your_mongodb_connection_string
-JWT_SECRET=your_jwt_SECRET_KEY
-```
-
----
-
-### 3. Setup & Run the Frontend
+## 2) Frontend
 
 ```bash
-cd ../client
+cd client
 npm install
-npm start
+cp .env.example .env
+# update .env values
+npm run dev
 ```
 
-- Frontend: [http://localhost:3000](http://localhost:3000)
-- Backend: [http://localhost:5000](http://localhost:5000)
+## 3) URLs
 
-Ensure both frontend and backend servers are running simultaneously.
+- Frontend: `http://localhost:5173`
+- Backend: `http://localhost:5000`
 
----
+## Environment Variables
 
-## 💻 Tech Stack
+### Backend (`server/.env`)
 
-| Layer     | Technologies                            |
-| --------- | --------------------------------------- |
-| Frontend  | React.js, React Router, Axios           |
-| Backend   | Node.js, Express.js, JWT Authentication |
-| Database  | MongoDB, Mongoose                       |
-| Dev Tools | Git, VS Code, Postman                   |
+Use `server/.env.example` as reference.
 
----
+Required:
 
-## ✨ Key Features
+- `DB_CONFIGURATION`
+- `ACCESS_TOKEN_SECRET`
+- `REFRESH_TOKEN_SECRET`
+- `CLIENT_URL`
+- `BASE_URL`
 
-- 🔐 **JWT-based Authentication & Authorization**
-- 📚 **Course Management** – Add, update, and remove courses
-- 🧑‍🏫 **Role-Based Dashboards** – Separate interfaces for Admin, Teacher, and Student
-- 📝 **Assignments & Quizzes** – Create and manage learning tasks
-- 📊 **Progress Tracking** – Visualize student performance
+### Frontend (`client/.env`)
 
----
+Use `client/.env.example` as reference.
 
-## 🚧 Project Status
+Required:
 
-| Module       | Status         |
-| ------------ | -------------- |
-| Folder Setup | ✅ Completed   |
-| Backend API  | ⚙️ In Progress |
-| Frontend UI  | ⚙️ In Progress |
-
----
-
-## 🤝 Contributing
-
-We welcome contributions from the community!
-
-1. **Fork** the repository
-2. **Create** your feature branch:
-
-   ```bash
-   git checkout -b feature-name
-   ```
-
-3. **Commit** your changes:
-
-   ```bash
-   git commit -m "Add feature"
-   ```
-
-4. **Push** the branch:
-
-   ```bash
-   git push origin feature-name
-   ```
-
-5. **Open a Pull Request**
-
----
-
-## 📄 License
-
-This project is licensed under the [MIT License](LICENSE).
-
----
+- `VITE_BASE_URL`

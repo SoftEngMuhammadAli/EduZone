@@ -47,7 +47,7 @@ const CoursesListPage = () => {
   };
 
   const handleView = (id) => {
-    navigate(`/view-course/${id}`);
+    navigate(`/courses/course-details/course/${id}`);
   };
 
   const handleEdit = (id) => {
@@ -375,3 +375,4 @@ const CoursesListPage = () => {
 };
 
 export default CoursesListPage;
+

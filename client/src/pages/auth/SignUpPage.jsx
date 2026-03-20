@@ -132,8 +132,7 @@ const SignUpPage = () => {
     );
 
     if (register.fulfilled.match(result)) {
-      toast.success("Account created successfully! Please login.");
-      navigate("/login");
+      toast.success("Account created successfully! Redirecting...");
     } else if (register.rejected.match(result)) {
       toast.error(result.payload || "Registration failed. Please try again.");
     }

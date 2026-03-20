@@ -243,7 +243,11 @@ const EnrolledCoursesCard = () => {
                   <button
                     onClick={() =>
                       navigate("/user/continue-learning", {
-                        state: { course: course },
+                        state: {
+                          course,
+                          enrollmentId: enroll._id,
+                          initialProgress: enroll.progress || 0,
+                        },
                       })
                     }
                     className="group flex-1 bg-gradient-to-r from-gray-900 to-gray-800 text-white font-semibold py-3 rounded-xl hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2"
@@ -273,10 +277,10 @@ const EnrolledCoursesCard = () => {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           <div className="text-center">
             <div className="text-4xl font-bold text-blue-600 mb-2">
-              {courses.reduce(
-                (acc, course) => acc + (course.progress || 0),
-                0,
-              ) / Math.max(courses.length, 1)}
+              {Math.round(
+                courses.reduce((acc, course) => acc + (course.progress || 0), 0) /
+                  Math.max(courses.length, 1),
+              )}
               %
             </div>
             <p className="text-gray-700 font-medium">Average Progress</p>
@@ -295,7 +299,9 @@ const EnrolledCoursesCard = () => {
           </div>
           <div className="text-center">
             <div className="text-4xl font-bold text-orange-600 mb-2">
-              {Math.max(...courses.map((c) => c.progress || 0))}%
+              {courses.length > 0
+                ? `${Math.max(...courses.map((c) => c.progress || 0))}%`
+                : "0%"}
             </div>
             <p className="text-gray-700 font-medium">Highest Progress</p>
           </div>

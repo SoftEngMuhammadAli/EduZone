@@ -5,7 +5,7 @@ export default defineConfig({
   plugins: [tailwindcss()],
   server: {
     port: 5173,
-    strictPort: true,
+    strictPort: false,
     proxy: {
       "/api": {
         target: "https://eduzone-jscm.onrender.com",

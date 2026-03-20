@@ -26,6 +26,11 @@ const LikeFeature = () => {
   }, [likes, user]);
 
   const handleLike = async () => {
+    if (!user?._id) {
+      window.alert("Please login to like this course.");
+      return;
+    }
+
     if (localUserLiked) {
       setLocalLikes(localLikes.filter((l) => l.user?._id !== user?._id));
       setLocalUserLiked(false);

@@ -1,74 +1,55 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCourses } from "../../features/admin/courseSlice";
-import useFetchData from "../../hooks/useCustomHooks";
-import { BASE_URL } from "../../utils/constants";
+import { fetchInstructorAnalytics } from "../../features/analytics/analyticsSlice";
 import UserProfileCard from "../../components/admin/UserProfileCard";
 import AdminDashboardStatsCards from "../../components/admin/AdminStatsCards";
 import AdminCoursesGrid from "../../components/admin/AdminDashboardCourses";
+import { DashboardCharts } from "../../components/admin/DashboardCharts";
 
-const InstrcutorDashboard = () => {
+const InstructorDashboard = () => {
   const dispatch = useDispatch();
   const { courses, loading, error } = useSelector((state) => state.course);
+  const { instructor: analytics } = useSelector((state) => state.analytics);
+  const { user } = useSelector((state) => state.auth);
 
   useEffect(() => {
     dispatch(fetchCourses());
+    dispatch(fetchInstructorAnalytics());
   }, [dispatch]);
 
-  const { data: studentsData, loading: studentsLoading } = useFetchData(
-    `${BASE_URL}/api/users/role/student`,
-    "GET",
-  );
+  const instructorCourses = (courses || []).filter((course) => {
+    const creatorId =
+      typeof course.courseCreatedBy === "object"
+        ? course.courseCreatedBy?._id
+        : course.courseCreatedBy;
+    return creatorId === user?._id;
+  });
 
-  const { data: adminsData, loading: adminLoading } = useFetchData(
-    `${BASE_URL}/api/users/role/admin`,
-    "GET",
-  );
-
-  const { data: instructorsData, loading: instructorsLoading } = useFetchData(
-    `${BASE_URL}/api/users/role/instructor`,
-    "GET",
-  );
-
-  const {
-    data: blogs,
-    loading: blogsLoading,
-    error: blogsError,
-  } = useFetchData(`${BASE_URL}/api/blogs`, "GET");
-
-  const studentsCount = studentsLoading
-    ? "..."
-    : (studentsData || []).filter((user) => user.user_type === "student")
-        .length;
-
-  const adminsCount = adminLoading
-    ? "..."
-    : (adminsData || []).filter((user) => user.user_type === "admin").length;
-
-  const instructorsCount = instructorsLoading
-    ? "..."
-    : (instructorsData || []).filter((user) => user.user_type === "instructor")
-        .length;
-
-  const blogsCount = blogsLoading ? "..." : blogs?.length || 0;
-
-  const coursesCount = loading ? "..." : courses?.length || 0;
+  const counts = analytics?.counts || {};
+  const trends = analytics?.trends || {};
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <div className="flex flex-col md:flex-row flex-1">
-        <main className="flex-1 p-4 md:p-8">
+        <main className="flex-1 p-4 md:p-8 space-y-6">
           <UserProfileCard />
           <AdminDashboardStatsCards
-            studentsCount={studentsCount}
-            instructorsCount={instructorsCount}
-            coursesCount={coursesCount}
-            blogsCount={blogsCount}
-            adminsCount={adminsCount}
+            studentsCount={counts.students || counts.enrollments || 0}
+            instructorsCount={1}
+            coursesCount={counts.courses || instructorCourses.length}
+            blogsCount={counts.lessons || 0}
+            adminsCount={counts.assignments || 0}
           />
-
-          
-          <AdminCoursesGrid courses={courses} loading={loading} error={error} />
+          <DashboardCharts
+            userTrend={trends.courses || []}
+            enrollmentTrend={trends.enrollments || []}
+          />
+          <AdminCoursesGrid
+            courses={instructorCourses}
+            loading={loading}
+            error={error}
+          />
         </main>
       </div>
       <footer className="bg-[#1D2130] px-4 py-6 border-t text-center text-sm text-white">
@@ -78,4 +59,4 @@ const InstrcutorDashboard = () => {
   );
 };
 
-export default InstrcutorDashboard;
+export default InstructorDashboard;

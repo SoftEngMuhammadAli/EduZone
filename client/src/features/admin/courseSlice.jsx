@@ -52,7 +52,7 @@ export const updateCourse = createAsyncThunk(
         `/api/courses/${id}`,
         courseData,
         {
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "multipart/form-data" },
         },
       );
       return response.data.data;

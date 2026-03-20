@@ -1,13 +1,30 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axiosInstance from "../../services/axios";
 
-// REGISTER thunk
+const normalizeAuthPayload = (responseData) => {
+  const root = responseData?.data || responseData || {};
+  const user = root.user || responseData?.user || responseData?.data?.user || null;
+  const accessToken =
+    root.accessToken ||
+    root.token ||
+    responseData?.token ||
+    responseData?.accessToken ||
+    null;
+
+  return { user, accessToken };
+};
+
 export const register = createAsyncThunk(
   "auth/register",
   async (userData, thunkAPI) => {
     try {
       const response = await axiosInstance.post("/api/auth/register", userData);
-      return response.data;
+      const { user, accessToken } = normalizeAuthPayload(response.data);
+
+      if (accessToken) localStorage.setItem("token", accessToken);
+      if (user) localStorage.setItem("user", JSON.stringify(user));
+
+      return { user, accessToken };
     } catch (error) {
       return thunkAPI.rejectWithValue(
         error?.response?.data?.message || "Registration failed",
@@ -16,20 +33,18 @@ export const register = createAsyncThunk(
   },
 );
 
-// LOGIN thunk
 export const login = createAsyncThunk(
   "auth/login",
   async (credentials, thunkAPI) => {
     try {
       const response = await axiosInstance.post("/api/auth/login", credentials);
-      const { token, user } = response.data;
+      const { user, accessToken } = normalizeAuthPayload(response.data);
 
-      localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(user));
+      if (accessToken) localStorage.setItem("token", accessToken);
+      if (user) localStorage.setItem("user", JSON.stringify(user));
 
-      return { user };
+      return { user, accessToken };
     } catch (error) {
-      console.error("Login error:", error);
       return thunkAPI.rejectWithValue(
         error?.response?.data?.message || "Login failed",
       );
@@ -37,7 +52,36 @@ export const login = createAsyncThunk(
   },
 );
 
-// SLICE
+export const fetchCurrentUser = createAsyncThunk(
+  "auth/fetchCurrentUser",
+  async (_, thunkAPI) => {
+    try {
+      const response = await axiosInstance.get("/api/auth/profile");
+      const user = response?.data?.data || response?.data?.user || null;
+
+      if (user) {
+        localStorage.setItem("user", JSON.stringify(user));
+      }
+
+      return { user };
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error?.response?.data?.message || "Failed to fetch current user",
+      );
+    }
+  },
+);
+
+export const logoutUser = createAsyncThunk("auth/logoutUser", async () => {
+  try {
+    await axiosInstance.post("/api/auth/logout");
+  } catch (_error) {
+    // No-op, always clear local session.
+  }
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
+});
+
 const authSlice = createSlice({
   name: "auth",
   initialState: {
@@ -56,33 +100,48 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // REGISTER
       .addCase(register.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(register.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload.user;
+        state.user = action.payload.user || null;
       })
       .addCase(register.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
-
-      // LOGIN
       .addCase(login.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(login.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload.user;
-        console.log("Login success:", action.payload.user);
+        state.user = action.payload.user || null;
       })
       .addCase(login.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Login failed. Please try again.";
+      })
+      .addCase(fetchCurrentUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchCurrentUser.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload.user || null;
+      })
+      .addCase(fetchCurrentUser.rejected, (state) => {
+        state.loading = false;
+        state.user = null;
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+      })
+      .addCase(logoutUser.fulfilled, (state) => {
+        state.loading = false;
+        state.user = null;
+        state.error = null;
       });
   },
 });

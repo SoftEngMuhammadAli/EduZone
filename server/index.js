@@ -1,25 +1,36 @@
 import dotenv from "dotenv";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+dotenv.config({ path: path.join(__dirname, ".env") });
 dotenv.config();
 
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import connectToDatabase from "./src/shared/config/server.js";
-import registeredRouters from "./src/modules/index.js";
-import path from "path";
-import { fileURLToPath } from "url";
-import { globalErrorHandler } from "./src/shared/middlewares/global_error_handler.js";
+import connectToDatabase from "./src/config/server.js";
+import registeredRouters from "./src/routes/index.js";
+import { globalErrorHandler } from "./src/middlewares/global_error_handler.js";
+import env from "./src/config/env.js";
+import {
+  createRateLimiter,
+  sanitizeBody,
+  securityHeaders,
+} from "./src/middlewares/security_middleware.js";
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = env.port;
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const clientUrl = env.clientUrl;
 
 app.use(
   cors({
     origin: (origin, callback) => {
       const allowedOrigins = [
+        clientUrl,
         "http://localhost:5173",
         "https://eduzone-web.vercel.app",
       ];
@@ -37,9 +48,13 @@ app.use(
 );
 
 /* ===================== MIDDLEWARE ===================== */
+app.set("trust proxy", 1);
+app.use(securityHeaders);
+app.use(createRateLimiter({ windowMs: 15 * 60 * 1000, max: 300 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(sanitizeBody);
 
 /* ===================== STATIC ===================== */
 app.use(
@@ -77,7 +92,7 @@ registeredRouters(app);
 app.use(globalErrorHandler);
 
 /* ===================== DB + SERVER ===================== */
-connectToDatabase(process.env.DB_CONFIGURATION);
+connectToDatabase(env.dbUrl);
 
 app.listen(PORT, () => {
   console.log(`Server running on port: http://localhost:${PORT}`);

@@ -50,11 +50,11 @@ const CourseDetail = () => {
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [showEnrollModal, setShowEnrollModal] = useState(false);
   const [stats, setStats] = useState({
-    students: 1250,
-    rating: 4.8,
-    reviews: 342,
-    duration: "8 weeks",
-    level: "Intermediate",
+    students: 0,
+    rating: 0,
+    reviews: 0,
+    duration: "Flexible",
+    level: "Beginner",
   });
 
   useEffect(() => {
@@ -64,11 +64,12 @@ const CourseDetail = () => {
         const { data } = await axiosInstance.get(`/api/courses/${id}`);
         setCourse(data?.data);
 
-        // Simulate stats (replace with actual API call)
         setStats((prev) => ({
           ...prev,
-          students: data?.data?.students || 1250,
-          rating: data?.data?.rating || 4.8,
+          students: data?.data?.students || 0,
+          rating: data?.data?.rating || 0,
+          duration: data?.data?.duration || "Flexible",
+          level: data?.data?.level || "Beginner",
         }));
       } catch (err) {
         console.error("Error fetching course:", err);
@@ -105,7 +106,7 @@ const CourseDetail = () => {
 
     if (enrolled) {
       toast.success("You're already enrolled in this course!");
-      navigate("/dashboard/my-courses");
+      navigate("/user/learning-room");
       return;
     }
 
@@ -125,7 +126,7 @@ const CourseDetail = () => {
 
         // Redirect to course content after 2 seconds
         setTimeout(() => {
-          navigate("/dashboard/my-courses");
+          navigate("/user/learning-room");
         }, 2000);
       } else if (enrollInCourse.rejected.match(res)) {
         const payload = res.payload;
@@ -186,7 +187,7 @@ const CourseDetail = () => {
             The course you're looking for doesn't exist or has been removed.
           </p>
           <button
-            onClick={() => navigate("/courses")}
+            onClick={() => navigate("/courses/courses-list")}
             className="px-6 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition"
           >
             Browse Courses
@@ -456,7 +457,7 @@ const CourseDetail = () => {
 
                 {enrolled && (
                   <button
-                    onClick={() => navigate("/dashboard/my-courses")}
+                    onClick={() => navigate("/user/learning-room")}
                     className="w-full mt-4 py-3 bg-gradient-to-r from-gray-900 to-gray-800 text-white rounded-xl hover:shadow-lg transition"
                   >
                     Go to Dashboard
@@ -495,12 +496,12 @@ const CourseDetail = () => {
               <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold">
-                    {course.instructor?.name?.charAt(0) || "E"}
+                    {course.courseCreatedBy?.name?.charAt(0) || "E"}
                   </div>
                   <div>
                     <h4 className="font-bold text-gray-900">Instructor</h4>
                     <p className="text-sm text-gray-600">
-                      {course.instructor?.name || "EDU-ZONE Expert"}
+                      {course.courseCreatedBy?.name || "EDU-ZONE Expert"}
                     </p>
                   </div>
                 </div>

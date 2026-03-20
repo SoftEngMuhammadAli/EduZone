@@ -7,6 +7,7 @@ import enrollReducer from "../features/course/enrollSlice";
 import commentReducer from "../features/post-interactions/commentSlice";
 import likeReducer from "../features/post-interactions/likesSlice";
 import userReducer from "../features/auth/userApiSlice";
+import analyticsReducer from "../features/analytics/analyticsSlice";
 
 const store = configureStore({
   reducer: {
@@ -18,6 +19,7 @@ const store = configureStore({
     comment: commentReducer,
     likes: likeReducer,
     user: userReducer,
+    analytics: analyticsReducer,
   },
 });
 

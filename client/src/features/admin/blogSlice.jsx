@@ -12,7 +12,7 @@ export const createBlogThunk = createAsyncThunk(
       const response = await axiosInstance.post("/api/blogs", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      return response.data;
+      return response.data.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
         error.response?.data?.message || "Error creating blog",
@@ -56,7 +56,7 @@ export const updateBlog = createAsyncThunk(
       const response = await axiosInstance.put(`/api/blogs/${id}`, blogData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      return response.data;
+      return response.data.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
         error.response?.data?.message || "Failed to update blog",

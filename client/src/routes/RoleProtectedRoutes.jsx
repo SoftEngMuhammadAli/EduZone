@@ -6,10 +6,6 @@ const RoleProtectedRouteWrapper = ({ allowedRoles }) => {
   const { user } = useSelector((state) => state.auth);
 
   if (!user) {
-    console.log("User not found in Role Protected Route Wrapper");
-  }
-
-  if (!user) {
     return <Navigate to="/login" replace />;
   }
 

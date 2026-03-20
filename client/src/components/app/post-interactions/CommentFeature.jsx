@@ -13,6 +13,7 @@ const CommentFeature = () => {
   const [isAdding, setIsAdding] = useState(false);
 
   const { comments, status, error } = useSelector((state) => state.comment);
+  const { user } = useSelector((state) => state.auth);
 
   useEffect(() => {
     if (id) dispatch(getComments(id));
@@ -20,6 +21,10 @@ const CommentFeature = () => {
 
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
+    if (!user?._id) {
+      window.alert("Please login to add a comment.");
+      return;
+    }
     if (!commentText.trim()) return;
     setIsAdding(true);
     await dispatch(createComment({ courseId: id, text: commentText.trim() }));
@@ -72,25 +77,6 @@ const CommentFeature = () => {
                 {new Date(c.createdAt).toLocaleString()}
               </div>
 
-              {/* Buttons: Update / Delete */}
-              <div className="mt-2 flex gap-2">
-                <button
-                  onClick={() => {
-                    alert("This feature is not implemented yet!");
-                  }}
-                  className="text-blue-600 hover:underline text-xs"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => {
-                    alert("This feature is not implemented yet!");
-                  }}
-                  className="text-red-600 hover:underline text-xs"
-                >
-                  Delete
-                </button>
-              </div>
             </div>
           ))}
         </div>

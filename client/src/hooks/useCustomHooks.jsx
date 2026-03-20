@@ -2,7 +2,10 @@ import { useEffect, useState } from "react";
 import axiosInstance from "../services/axios";
 
 const useFetchData = (endpoint, options = {}) => {
-  const [data, setData] = useState(options.initialData || []);
+  const normalizedOptions =
+    typeof options === "object" && options !== null ? options : {};
+
+  const [data, setData] = useState(normalizedOptions.initialData || []);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 

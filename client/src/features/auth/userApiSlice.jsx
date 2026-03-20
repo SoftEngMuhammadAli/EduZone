@@ -6,9 +6,9 @@ const savedUser = localStorage.getItem("user");
 // GET user profile
 export const getUserProfile = createAsyncThunk(
   "user/getUserProfile",
-  async (userId, { rejectWithValue }) => {
+  async (_, { rejectWithValue }) => {
     try {
-      const res = await axiosInstance.get(`/api/users/${userId}`);
+      const res = await axiosInstance.get("/api/auth/profile");
       return res.data.data;
     } catch (err) {
       const errorMsg =

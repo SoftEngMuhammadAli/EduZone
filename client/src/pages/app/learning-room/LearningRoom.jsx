@@ -1,9 +1,36 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import UserProfileCard from "../../../components/admin/UserProfileCard";
 import EnrolledCoursesCard from "../../../components/app/learning-room/EnrolledCoursesCard";
 import { Sparkles, TrendingUp, Award, BookOpen } from "lucide-react";
+import axiosInstance from "../../../services/axios";
 
 const LearningRoom = () => {
+  const [analytics, setAnalytics] = useState(null);
+
+  useEffect(() => {
+    const fetchStudentAnalytics = async () => {
+      try {
+        const response = await axiosInstance.get("/api/analytics/student");
+        setAnalytics(response?.data?.data || null);
+      } catch (_error) {
+        setAnalytics(null);
+      }
+    };
+
+    fetchStudentAnalytics();
+  }, []);
+
+  const stats = useMemo(() => {
+    const counts = analytics?.counts || {};
+    const performance = analytics?.performance || {};
+    return {
+      activeCourses: counts.inProgressCourses || 0,
+      completedCourses: counts.completedCourses || 0,
+      enrolledCourses: counts.enrolledCourses || 0,
+      overallProgress: performance.averageProgress || 0,
+    };
+  }, [analytics]);
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
       {/* Hero Header */}
@@ -33,19 +60,19 @@ const LearningRoom = () => {
           {/* Stats Overview */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-12">
             <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 text-center">
-              <div className="text-3xl font-bold mb-2">0</div>
+              <div className="text-3xl font-bold mb-2">{stats.activeCourses}</div>
               <div className="text-white/80">Active Courses</div>
             </div>
             <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 text-center">
-              <div className="text-3xl font-bold mb-2">0</div>
-              <div className="text-white/80">Hours Completed</div>
+              <div className="text-3xl font-bold mb-2">{stats.completedCourses}</div>
+              <div className="text-white/80">Completed Courses</div>
             </div>
             <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 text-center">
-              <div className="text-3xl font-bold mb-2">0</div>
-              <div className="text-white/80">Achievements</div>
+              <div className="text-3xl font-bold mb-2">{stats.enrolledCourses}</div>
+              <div className="text-white/80">Enrolled Courses</div>
             </div>
             <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 text-center">
-              <div className="text-3xl font-bold mb-2">0%</div>
+              <div className="text-3xl font-bold mb-2">{stats.overallProgress}%</div>
               <div className="text-white/80">Overall Progress</div>
             </div>
           </div>

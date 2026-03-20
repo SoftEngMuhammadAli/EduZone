@@ -17,7 +17,7 @@ import {
   MessageSquare,
   BookOpenCheck,
 } from "lucide-react";
-import { logout } from "../../features/auth/authSlice";
+import { logoutUser } from "../../features/auth/authSlice";
 
 const HeaderNav = () => {
   const dispatch = useDispatch();
@@ -50,9 +50,8 @@ const HeaderNav = () => {
 
   useEffect(() => {
     const close = (e) => {
-      if (!e.target.closest(".dropdown") && !e.target.closest(".notify")) {
+      if (!e.target.closest(".dropdown")) {
         setDropdownOpen(false);
-        setNotificationsOpen(false);
       }
     };
     document.addEventListener("click", close);
@@ -62,8 +61,7 @@ const HeaderNav = () => {
   /* ------------------ Logout ------------------ */
   const handleLogout = async () => {
     setLoggingOut(true);
-    await dispatch(logout());
-    localStorage.clear();
+    await dispatch(logoutUser());
     navigate("/login", { replace: true });
   };
 
@@ -82,7 +80,7 @@ const HeaderNav = () => {
           label: "Instructors",
           icon: GraduationCap,
         },
-        { to: "/admin/analytics", label: "Analytics", icon: Award },
+        { to: "/admin/blog/get-all-blogs", label: "Blogs", icon: Award },
       ]
     : isInstructor
       ? [
@@ -96,8 +94,12 @@ const HeaderNav = () => {
             label: "Courses",
             icon: BookOpen,
           },
-          { to: "/instructor/students", label: "Students", icon: Users },
-          { to: "/instructor/analytics", label: "Analytics", icon: Award },
+          {
+            to: "/instructor/courses-management/create-course",
+            label: "Create",
+            icon: Users,
+          },
+          { to: "/instructor/settings", label: "Settings", icon: Award },
         ]
       : [
           { to: "/home", label: "Home", icon: Home },

@@ -31,6 +31,7 @@ import {
   MessageCircle,
 } from "lucide-react";
 import { toast, Toaster } from "react-hot-toast";
+import axiosInstance from "../../../services/axios";
 
 const BlogsDetails = () => {
   const dispatch = useDispatch();
@@ -68,18 +69,32 @@ const BlogsDetails = () => {
       dispatch(getBlogById(id));
     }
 
-    // Simulate fetching related blogs (you can implement actual API call)
-    if (blogData?.category) {
-      const mockRelated = Array.from({ length: 3 }, (_, i) => ({
-        _id: i,
-        title: `Related ${blogData.category} Article ${i + 1}`,
-        excerpt: `Discover more about ${blogData.category} and related topics in this comprehensive guide.`,
-        category: blogData.category,
-        image: blogData.image,
-        publish_date: new Date().toISOString(),
-      }));
-      setRelatedBlogs(mockRelated);
-    }
+    const fetchRelatedBlogs = async () => {
+      if (!blogData?._id) return;
+      try {
+        const response = await axiosInstance.get("/api/blogs");
+        const allBlogs = response?.data?.data || [];
+
+        const related = allBlogs
+          .filter((blog) => blog._id !== blogData._id)
+          .filter((blog) => {
+            const sameCategory =
+              blogData.category && blog.category === blogData.category;
+            const hasCommonTag =
+              Array.isArray(blogData.tags) &&
+              Array.isArray(blog.tags) &&
+              blog.tags.some((tag) => blogData.tags.includes(tag));
+            return sameCategory || hasCommonTag;
+          })
+          .slice(0, 3);
+
+        setRelatedBlogs(related);
+      } catch (_error) {
+        setRelatedBlogs([]);
+      }
+    };
+
+    fetchRelatedBlogs();
 
     // Increment view count (you need to implement this in your slice)
     if (blogData && blogData._id) {
@@ -97,7 +112,7 @@ const BlogsDetails = () => {
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [dispatch, id, selectedBlog, blogFromState, blogData]);
+  }, [dispatch, id, selectedBlog, blogFromState, blogData?._id]);
 
   const handleShare = async (platform = null) => {
     if (!blogData) return;
@@ -224,7 +239,7 @@ const BlogsDetails = () => {
           <p className="text-gray-600 mb-6 max-w-md mx-auto">{error}</p>
           <div className="flex gap-4 justify-center">
             <button
-              onClick={() => navigate("/blogs")}
+              onClick={() => navigate("/view-all-blogs")}
               className="px-6 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition"
             >
               Browse Articles
@@ -256,7 +271,7 @@ const BlogsDetails = () => {
             moved.
           </p>
           <button
-            onClick={() => navigate("/blogs")}
+            onClick={() => navigate("/view-all-blogs")}
             className="px-6 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition"
           >
             Explore Other Articles
@@ -324,7 +339,7 @@ const BlogsDetails = () => {
               </button>
               <ChevronRight className="w-4 h-4 text-gray-400" />
               <button
-                onClick={() => navigate("/blogs")}
+                onClick={() => navigate("/view-all-blogs")}
                 className="text-sm text-gray-500 hover:text-gray-700 transition-colors"
               >
                 Insights
@@ -545,7 +560,7 @@ const BlogsDetails = () => {
                   Related Articles
                 </h2>
                 <button
-                  onClick={() => navigate("/blogs")}
+                  onClick={() => navigate("/view-all-blogs")}
                   className="flex items-center gap-2 text-blue-600 hover:text-blue-700 transition-colors"
                 >
                   View All

@@ -1,16 +1,13 @@
 import React from "react";
+import { useSelector } from "react-redux";
 import { Outlet, Navigate } from "react-router-dom";
 
 const ProtectedRouteWrapper = () => {
+  const { user } = useSelector((state) => state.auth);
   const token = localStorage.getItem("token");
+  const isAuthenticated = Boolean(token || user);
 
-  if (token) {
-    console.log(`Checking Token in Protected Route Wrapper: ${token}`);
-  } else {
-    console.log("No token found in Protected Route Wrapper");
-  }
-
-  return token ? <Outlet /> : <Navigate to="/login" replace />;
+  return isAuthenticated ? <Outlet /> : <Navigate to="/login" replace />;
 };
 
 export default ProtectedRouteWrapper;
